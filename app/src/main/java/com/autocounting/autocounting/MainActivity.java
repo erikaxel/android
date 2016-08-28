@@ -27,8 +27,8 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements TurbolinksAdapter {
     // Change the BASE_URL to an address that your VM or device can hit.
-//    private static final String BASE_URL = "https://beta.autocounting.no";
-    private static final String BASE_URL = "http://192.168.1.107:3000/";
+    private static final String BASE_URL = "https://beta.autocounting.no/";
+//    private static final String BASE_URL = "http://192.168.1.107:3000/";
     private static final String INTENT_URL = "intentUrl";
 
     private String location;
