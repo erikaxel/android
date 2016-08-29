@@ -1,10 +1,12 @@
 package com.autocounting.autocounting;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,26 +15,29 @@ import com.basecamp.turbolinks.TurbolinksSession;
 import com.basecamp.turbolinks.TurbolinksAdapter;
 import com.basecamp.turbolinks.TurbolinksView;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TurbolinksAdapter {
     // Change the BASE_URL to an address that your VM or device can hit.
     private static final String BASE_URL = "https://beta.autocounting.no/";
 //    private static final String BASE_URL = "http://192.168.1.107:3000/";
+//    private static final String BASE_URL = "http://10.10.10.180:3000/";
     private static final String INTENT_URL = "intentUrl";
 
     private String location;
     private TurbolinksView turbolinksView;
+
+    private static final String TAG = "MainActivity";
 
     // -----------------------------------------------------------------------
     // Activity overrides
@@ -104,17 +109,23 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     }
 
+    //    TODO: Need to get rid of all statics
+    private static boolean auto_ocr = false;
+
     // The starting point for any href clicked inside a Turbolinks enabled site. In a simple case
     // you can just open another activity, or in more complex cases, this would be a good spot for
     // routing logic to take you to the right place within your app.
     @Override
     public void visitProposedToLocationWithAction(String location, String action) {
-//        http://192.168.1.107:3000/take_picture
         try {
             URL url = new URL(location);
             Log.d("visitProposedToLocation", "location:" + location + " action:" + action + " path:" + url.getPath());
 
-            if(url.getPath().equals("/take_picture")) {
+            if (url.getPath().equals("/take_picture")) {
+                auto_ocr = false;
+                dispatchTakePictureIntent();
+            } else if (url.getPath().equals("/scan_receipt")) {
+                auto_ocr = true;
                 dispatchTakePictureIntent();
             } else {
                 Intent intent = new Intent(this, MainActivity.class);
@@ -124,17 +135,19 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-
     }
 
-    String mCurrentPhotoPath;
+    static String mCurrentPhotoPath;
+    static Uri photoURI;
 
     private File createImageFile() throws IOException {
         // Create an image file name
+        Log.d(TAG, "createImageFile()");
+
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        Log.d("createImageFile", storageDir.getAbsolutePath());
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -143,142 +156,140 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        Log.d(TAG, "mCurrentPhotoPath saved: " + mCurrentPhotoPath);
+        Log.d(TAG, "this: " + this);
         return image;
     }
 
-//    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_TAKE_PHOTO = 1;
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-        // Ensure that there's a camera activity to handle the intent
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-//            // Create the File where the photo should go
-//            File photoFile = null;
+//    static final int REQUEST_TAKE_PHOTO = 1;
+//
+//    private void dispatchTakePictureIntent() {
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+//    }
+//
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if (requestCode==REQUEST_TAKE_PHOTO)
+//        {
+//            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+//            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//            thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
 //            try {
-//                photoFile = createImageFile();
-//            } catch (IOException ex) {
-//                // Error occurred while creating the File
-//            }
-//            // Continue only if the File was successfully created
-//            if (photoFile != null) {
-//                Uri photoURI = FileProvider.getUriForFile(this,
-//                        "com.example.android.fileprovider",
-//                        photoFile);
-//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-//                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+//                File destination = createImageFile();
+//                FileOutputStream fo;
+//                fo = new FileOutputStream(destination);
+//                fo.write(bytes.toByteArray());
+//                fo.close();
+//                new uploadFileToServerTask().execute(destination.getAbsolutePath());
+//            } catch (IOException e) {
+//                e.printStackTrace();
 //            }
 //        }
+//    }
+
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+//    Uri photoURI;
+//    File photoFile;
+
+    private void dispatchTakePictureIntent() {
+        Log.d(TAG, "dispatchTakePictureIntent()");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+//                ...
+//                Log.e("dispatchTakePicture", ex.getMessage());
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                photoURI = FileProvider.getUriForFile(this,
+                        "com.autocounting.fileprovider",
+                        photoFile);
+                Log.d("dispatchTakePicture", photoURI.getPath());
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult requestCode:" + requestCode + " resultCode:" + resultCode);
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+//            Uri photoURI = FileProvider.getUriForFile(this,
+//                    "com.autocounting.fileprovider",
+//                    f);
+//            photoURI = FileProvider.getUriForFile(this,
+//                    "com.autocounting.fileprovider",
+//                    photoFile);
+//            Uri photoURI2 = (Uri)data.getExtras().get(MediaStore.EXTRA_OUTPUT);
 
-        if (requestCode==REQUEST_TAKE_PHOTO)
-        {
-            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-//            File destination = new File(Environment.getExternalStorageDirectory(),"temp.jpg");
-            try {
-                File destination = createImageFile();
-                FileOutputStream fo;
-                fo = new FileOutputStream(destination);
-                fo.write(bytes.toByteArray());
-                fo.close();
-                new uploadFileToServerTask().execute(destination.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            Log.d("onActivityResult", photoURI2.getPath());
+//            Log.d(TAG, "onActivityResult mCurrentPhotoPath: "  + mCurrentPhotoPath);
+//            Log.d(TAG, "this: " + this);
+//            File f = new File(mCurrentPhotoPath);
+//            Log.d(TAG, "onActivityResult file exists?: "  + f.exists());
+//            Uri photoURI2 = FileProvider.getUriForFile(this,
+//                    "com.autocounting.fileprovider",
+//                    f);
+//            Log.d("onActivityResult", photoURI2.getPath());
+            new uploadFileToServerTask().execute(photoURI);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void afterFileUpload(String newId) {
+        if(!newId.equals("-1")) {
+            TurbolinksSession.getDefault(this).visit(BASE_URL + "/receipts/" + newId);
         }
     }
 
-    private class uploadFileToServerTask extends AsyncTask<String, String, Object> {
+    private class uploadFileToServerTask extends AsyncTask<Uri, String, String> {
         @Override
-        protected String doInBackground(String... args) {
+        protected String doInBackground(Uri... args) {
             try {
-                String lineEnd = "\r\n";
-                String twoHyphens = "--";
-                String boundary = "*****";
-                int bytesRead, bytesAvailable, bufferSize;
-                byte[] buffer;
-                @SuppressWarnings("PointlessArithmeticExpression")
-                int maxBufferSize = 1 * 1024 * 1024;
+                MultipartHelper multipart = new MultipartHelper(BASE_URL + "receipts.json", "UTF-8");
 
-
-//                java.net.URL url = new URL((ApplicationConstant.UPLOAD_IMAGE_URL) + IMAGE + customer_id);
-                java.net.URL url = new URL(BASE_URL + "receipts");
-//                Log.d(ApplicationConstant.TAG, "url " + url);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                // Allow Inputs &amp; Outputs.
-                connection.setDoInput(true);
-                connection.setDoOutput(true);
-                connection.setUseCaches(false);
-
-                // Set HTTP method to POST.
-                connection.setRequestMethod("POST");
-
-                connection.setRequestProperty("Connection", "Keep-Alive");
-                connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-
-                FileInputStream fileInputStream;
-                DataOutputStream outputStream;
-                {
-                    outputStream = new DataOutputStream(connection.getOutputStream());
-
-                    outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                    String filename = args[0];
-                    outputStream.writeBytes("Content-Disposition: form-data; name=\"receipt[picture]\";filename=\"" + filename + "\"" + lineEnd);
-                    outputStream.writeBytes(lineEnd);
-//                    Log.d(ApplicationConstant.TAG, "filename " + filename);
-
-                    fileInputStream = new FileInputStream(filename);
-
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-
-                    buffer = new byte[bufferSize];
-
-                    // Read file
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                    while (bytesRead > 0) {
-                        outputStream.write(buffer, 0, bufferSize);
-                        bytesAvailable = fileInputStream.available();
-                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-                    }
-                    outputStream.writeBytes(lineEnd);
-                    outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                if(auto_ocr) {
+                    multipart.addFormField("use_ocr", "1");
                 }
 
-                int serverResponseCode = connection.getResponseCode();
-                String serverResponseMessage = connection.getResponseMessage();
-                Log.d("serverResponseCode", "" + serverResponseCode);
-                Log.d("serverResponseMessage", "" + serverResponseMessage);
+                InputStream fileInputStream = getContentResolver().openInputStream(args[0]);
+                multipart.addFilePart("receipt[picture]", fileInputStream, args[0].getPath());
 
-                fileInputStream.close();
-                outputStream.flush();
-                outputStream.close();
+                List<String> response = multipart.finish();
+                JSONArray arr = new JSONArray(response.toString());
+                int id = arr.getJSONObject(0).getInt("id");
+                Log.d(TAG, "Found id " + id);
 
-                if (serverResponseCode == 200) {
-                    return "true";
-                }
+//                Log.v("rht", "SERVER REPLIED:");
+//                for (String line : response) {
+//                    Log.v("rht", "Line : " + line);
+//                }
+                return "" + id;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return "false";
+            return "-1";
         }
 
         @Override
-        protected void onPostExecute(Object result) {
-
+        protected void onPostExecute(String result) {
+            afterFileUpload(result);
         }
-    }
 
+    }
 
 
     // -----------------------------------------------------------------------
