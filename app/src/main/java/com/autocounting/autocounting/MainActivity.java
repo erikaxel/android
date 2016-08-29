@@ -10,6 +10,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 
 import com.basecamp.turbolinks.TurbolinksSession;
 import com.basecamp.turbolinks.TurbolinksAdapter;
@@ -27,12 +28,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import io.ably.lib.realtime.AblyRealtime;
+import io.ably.lib.realtime.Channel;
+import io.ably.lib.types.AblyException;
+import io.ably.lib.types.Message;
+
 public class MainActivity extends AppCompatActivity implements TurbolinksAdapter {
     // Change the BASE_URL to an address that your VM or device can hit.
     private static final String BASE_URL = "https://beta.autocounting.no/";
 //    private static final String BASE_URL = "http://192.168.1.107:3000/";
-//    private static final String BASE_URL = "http://10.10.10.180:3000/";
+    //    private static final String BASE_URL = "http://10.10.10.180:3000/";
     private static final String INTENT_URL = "intentUrl";
+
+    private static AblyRealtime ably;
 
     private String location;
     private TurbolinksView turbolinksView;
@@ -58,12 +66,60 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         // For this example we set a default location, unless one is passed in through an intent
         location = getIntent().getStringExtra(INTENT_URL) != null ? getIntent().getStringExtra(INTENT_URL) : BASE_URL;
 
+        if (ably == null) {
+            try {
+                Log.d(TAG, "Starting Ably");
+
+                //    TODO Probably unsafe to store the API key here in code, but will be ok for demo.
+                ably = new AblyRealtime("_CstnA.02JI4Q:Z8FOnr7bIpnrBxi_");
+
+                Channel channel = ably.channels.get("autocounting");
+                try {
+                    channel.subscribe(new Channel.MessageListener() {
+                        @Override
+                        public void onMessage(Message messages) {
+                            Log.d(TAG, "ably.onMessage: " + messages.toString());
+                            onPingFromServer();
+                        }
+                    });
+                } catch (AblyException e) {
+                    e.printStackTrace();
+                }
+            } catch (AblyException e) {
+                Log.e(TAG, "Couldn't start Ably");
+                e.printStackTrace();
+            }
+        } {
+            Log.d(TAG, "Ably not null");
+        }
+
         // Execute the visit
         TurbolinksSession.getDefault(this)
                 .activity(this)
                 .adapter(this)
                 .view(turbolinksView)
                 .visit(location);
+    }
+
+    public void onPingFromServer() {
+        Log.d(TAG, "onPingFromServer");
+
+        final String newUrl = BASE_URL + "receipts";
+        Log.d(TAG, "Visiting " + newUrl);
+
+        final Activity act = this;
+//       Need to update URL on UI-thread, or else it wont work.
+        runOnUiThread(new Runnable() {
+            public void run() {
+                WebView webView = TurbolinksSession.getDefault(act).getWebView();
+                String oldUrl = webView.getUrl();
+                Log.d(TAG, "Old url" + oldUrl);
+                // Only do refresh if we are already at the receipts page
+                if(oldUrl.equals(newUrl)) {
+                    TurbolinksSession.getDefault(act).visit(newUrl);
+                }
+            }
+        });
     }
 
     @Override
@@ -192,8 +248,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
 
     static final int REQUEST_TAKE_PHOTO = 1;
-//    Uri photoURI;
-//    File photoFile;
 
     private void dispatchTakePictureIntent() {
         Log.d(TAG, "dispatchTakePictureIntent()");
@@ -205,9 +259,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                // Error occurred while creating the File
-//                ...
-//                Log.e("dispatchTakePicture", ex.getMessage());
                 ex.printStackTrace();
             }
             // Continue only if the File was successfully created
@@ -221,7 +272,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
             }
         }
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -250,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     }
 
     public void afterFileUpload(String newId) {
-        if(!newId.equals("-1")) {
+        if (!newId.equals("-1")) {
             TurbolinksSession.getDefault(this).visit(BASE_URL + "/receipts/" + newId);
         }
     }
@@ -261,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
             try {
                 MultipartHelper multipart = new MultipartHelper(BASE_URL + "receipts.json", "UTF-8");
 
-                if(auto_ocr) {
+                if (auto_ocr) {
                     multipart.addFormField("use_ocr", "1");
                 }
 
