@@ -1,49 +1,53 @@
 package com.autocounting.autocounting;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Toast;
 
-import com.basecamp.turbolinks.TurbolinksSession;
+import com.autocounting.autocounting.models.User;
+import com.autocounting.autocounting.network.upload.UploadImageTask;
+import com.autocounting.autocounting.network.upload.UploadResponseHandler;
+import com.autocounting.autocounting.utils.ImageHandler;
+import com.autocounting.autocounting.utils.SimpleUrlBuilder;
+import com.autocounting.autocounting.views.widgets.CameraFab;
 import com.basecamp.turbolinks.TurbolinksAdapter;
+import com.basecamp.turbolinks.TurbolinksSession;
 import com.basecamp.turbolinks.TurbolinksView;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
-import io.ably.lib.realtime.AblyRealtime;
-import io.ably.lib.realtime.Channel;
-import io.ably.lib.types.AblyException;
-import io.ably.lib.types.Message;
-
-public class MainActivity extends AppCompatActivity implements TurbolinksAdapter {
+public class MainActivity extends AppCompatActivity implements TurbolinksAdapter, UploadResponseHandler {
     // Change the BASE_URL to an address that your VM or device can hit.
     private static final String BASE_URL = "https://beta.autocounting.no/";
-//    private static final String BASE_URL = "http://192.168.1.107:3000/";
+    //    private static final String BASE_URL = "http://192.168.1.107:3000/";
     //    private static final String BASE_URL = "http://10.10.10.180:3000/";
     private static final String INTENT_URL = "intentUrl";
 
-    private static AblyRealtime ably;
-
     private String location;
     private TurbolinksView turbolinksView;
+    private CameraFab fab;
+    private CoordinatorLayout coordinatorLayout;
+    private Uri lastReceiptUri;
+    private Toolbar toolbar;
 
     private static final String TAG = "MainActivity";
 
@@ -56,42 +60,19 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Find the custom TurbolinksView object in your layout
         turbolinksView = (TurbolinksView) findViewById(R.id.turbolinks_view);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.fab_coordinator);
+        fab = (CameraFab) findViewById(R.id.camera_button);
+        fab.setup(this);
+
 
         // For this demo app, we force debug logging on. You will only want to do
         // this for debug builds of your app (it is off by default)
         TurbolinksSession.getDefault(this).setDebugLoggingEnabled(true);
 
         // For this example we set a default location, unless one is passed in through an intent
-        location = getIntent().getStringExtra(INTENT_URL) != null ? getIntent().getStringExtra(INTENT_URL) : BASE_URL;
-
-        if (ably == null) {
-            try {
-                Log.d(TAG, "Starting Ably");
-
-                //    TODO Probably unsafe to store the API key here in code, but will be ok for demo.
-                ably = new AblyRealtime("_CstnA.02JI4Q:Z8FOnr7bIpnrBxi_");
-
-                Channel channel = ably.channels.get("autocounting");
-                try {
-                    channel.subscribe(new Channel.MessageListener() {
-                        @Override
-                        public void onMessage(Message messages) {
-                            Log.d(TAG, "ably.onMessage: " + messages.toString());
-                            onPingFromServer();
-                        }
-                    });
-                } catch (AblyException e) {
-                    e.printStackTrace();
-                }
-            } catch (AblyException e) {
-                Log.e(TAG, "Couldn't start Ably");
-                e.printStackTrace();
-            }
-        } {
-            Log.d(TAG, "Ably not null");
-        }
+        System.out.println("Token: " + User.getCurrentUser(this).getSavedToken());
+        location = SimpleUrlBuilder.buildUrl(BASE_URL, "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
 
         // Execute the visit
         TurbolinksSession.getDefault(this)
@@ -99,6 +80,33 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                 .adapter(this)
                 .view(turbolinksView)
                 .visit(location);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+
+            case R.id.logout_option :
+                AuthUI.getInstance()
+                        .signOut(this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            public void onComplete(@NonNull Task<Void> task) {
+                                // user is now signed out
+                                startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
+                                finish();
+                            }
+                        });
+                break;
+            default :
+                Toast.makeText(this, "None of the above!", Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void onPingFromServer() {
@@ -115,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                 String oldUrl = webView.getUrl();
                 Log.d(TAG, "Old url" + oldUrl);
                 // Only do refresh if we are already at the receipts page
-                if(oldUrl.equals(newUrl)) {
+                if (oldUrl.equals(newUrl)) {
                     TurbolinksSession.getDefault(act).visit(newUrl);
                 }
             }
@@ -165,8 +173,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     }
 
-    //    TODO: Need to get rid of all statics
-    private static boolean auto_ocr = false;
 
     // The starting point for any href clicked inside a Turbolinks enabled site. In a simple case
     // you can just open another activity, or in more complex cases, this would be a good spot for
@@ -177,170 +183,64 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
             URL url = new URL(location);
             Log.d("visitProposedToLocation", "location:" + location + " action:" + action + " path:" + url.getPath());
 
-            if (url.getPath().equals("/take_picture")) {
-                auto_ocr = false;
-                dispatchTakePictureIntent();
-            } else if (url.getPath().equals("/scan_receipt")) {
-                auto_ocr = true;
-                dispatchTakePictureIntent();
-            } else {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(INTENT_URL, location);
-                this.startActivity(intent);
+            switch (url.getPath()) {
+                case "/take_picture":
+                    break;
+                case "/scan_receipt":
+                    break;
+                default:
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra(INTENT_URL, location);
+                    startActivity(intent);
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
 
-    static String mCurrentPhotoPath;
-    static Uri photoURI;
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        Log.d(TAG, "createImageFile()");
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        Log.d("createImageFile", storageDir.getAbsolutePath());
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        Log.d(TAG, "mCurrentPhotoPath saved: " + mCurrentPhotoPath);
-        Log.d(TAG, "this: " + this);
-        return image;
-    }
-
-//    static final int REQUEST_TAKE_PHOTO = 1;
-//
-//    private void dispatchTakePictureIntent() {
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-//    }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode==REQUEST_TAKE_PHOTO)
-//        {
-//            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-//            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//            thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-//            try {
-//                File destination = createImageFile();
-//                FileOutputStream fo;
-//                fo = new FileOutputStream(destination);
-//                fo.write(bytes.toByteArray());
-//                fo.close();
-//                new uploadFileToServerTask().execute(destination.getAbsolutePath());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
-
     static final int REQUEST_TAKE_PHOTO = 1;
-
-    private void dispatchTakePictureIntent() {
-        Log.d(TAG, "dispatchTakePictureIntent()");
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                photoURI = FileProvider.getUriForFile(this,
-                        "com.autocounting.fileprovider",
-                        photoFile);
-                Log.d("dispatchTakePicture", photoURI.getPath());
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "onActivityResult requestCode:" + requestCode + " resultCode:" + resultCode);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-//            Uri photoURI = FileProvider.getUriForFile(this,
-//                    "com.autocounting.fileprovider",
-//                    f);
-//            photoURI = FileProvider.getUriForFile(this,
-//                    "com.autocounting.fileprovider",
-//                    photoFile);
-//            Uri photoURI2 = (Uri)data.getExtras().get(MediaStore.EXTRA_OUTPUT);
-
-//            Log.d("onActivityResult", photoURI2.getPath());
-//            Log.d(TAG, "onActivityResult mCurrentPhotoPath: "  + mCurrentPhotoPath);
-//            Log.d(TAG, "this: " + this);
-//            File f = new File(mCurrentPhotoPath);
-//            Log.d(TAG, "onActivityResult file exists?: "  + f.exists());
-//            Uri photoURI2 = FileProvider.getUriForFile(this,
-//                    "com.autocounting.fileprovider",
-//                    f);
-//            Log.d("onActivityResult", photoURI2.getPath());
-            new uploadFileToServerTask().execute(photoURI);
+            uploadImage(data.getData());
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void afterFileUpload(String newId) {
-        if (!newId.equals("-1")) {
-            TurbolinksSession.getDefault(this).visit(BASE_URL + "/receipts/" + newId);
-        }
+    private void uploadImage(Uri filepath) {
+        lastReceiptUri = filepath;
+        Bitmap bitmap = ImageHandler.getBitmapFromUri(this, lastReceiptUri);
+        new UploadImageTask(this).execute(bitmap);
     }
 
-    private class uploadFileToServerTask extends AsyncTask<Uri, String, String> {
-        @Override
-        protected String doInBackground(Uri... args) {
-            try {
-                MultipartHelper multipart = new MultipartHelper(BASE_URL + "receipts.json", "UTF-8");
+    // -----------------------------------------------------------------------
+    // UploadResponseHandler actions
+    // -----------------------------------------------------------------------
 
-                if (auto_ocr) {
-                    multipart.addFormField("use_ocr", "1");
-                }
-
-                InputStream fileInputStream = getContentResolver().openInputStream(args[0]);
-                multipart.addFilePart("receipt[picture]", fileInputStream, args[0].getPath());
-
-                List<String> response = multipart.finish();
-                JSONArray arr = new JSONArray(response.toString());
-                int id = arr.getJSONObject(0).getInt("id");
-                Log.d(TAG, "Found id " + id);
-
-//                Log.v("rht", "SERVER REPLIED:");
-//                for (String line : response) {
-//                    Log.v("rht", "Line : " + line);
-//                }
-                return "" + id;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return "-1";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            afterFileUpload(result);
-        }
-
+    @Override
+    public void onFileUploadFinished(String result) {
+        System.out.println("Finished");
     }
 
+    @Override
+    public void onFileUploadFailed() {
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, "Couldn't upload photo", Snackbar.LENGTH_LONG)
+                .setAction("RETRY", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        uploadImage(lastReceiptUri);
+                    }
+                });
+
+        snackbar.show();
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
 
     // -----------------------------------------------------------------------
     // Private

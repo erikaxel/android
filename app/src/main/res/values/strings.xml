@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Autocounting</string>
+    <string name="title_activity_welcome">Autocounting</string>
+    <string name="login_text">Login</string>
+    <string name="logout_text">Logout</string>
+    <string name="username_field_hint">Email</string>
+    <string name="password_field_hint">Passord</string>
+    <string name="subtitle">Swipe left to begin.</string>
 </resources>
