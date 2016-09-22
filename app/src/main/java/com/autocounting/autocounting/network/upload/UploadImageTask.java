@@ -1,23 +1,17 @@
 package com.autocounting.autocounting.network.upload;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.autocounting.autocounting.models.User;
 import com.autocounting.autocounting.utils.ImageHandler;
-import com.firebase.client.annotations.NotNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.mimecraft.FormEncoding;
 
-import java.io.File;
 import java.io.IOException;
 
 import okhttp3.FormBody;
@@ -50,8 +44,6 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
         StorageReference storageRef = storage.getReferenceFromUrl(FIREBASE_STORAGE_URL);
 
         // Potentially unsafe
-        System.out.println("Change made");
-        System.out.println("User.getCurrentUser()");
         System.out.println(User.getCurrentUser(responseHandler.getContext()).getSavedUid());
         storageRef.child(user.generateUserFileLocation("thumbnail", true))
                 .putBytes(ImageHandler.makeByteArray(thumbnail));
@@ -71,7 +63,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
             }
         });
 
-        return "-1";
+        return "";
     }
 
     @Override
@@ -81,9 +73,6 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
 
     private void postReceipt() {
         OkHttpClient client = new OkHttpClient();
-        System.out.println("So this fired");
-        System.out.println(user.getLastGeneratedName());
-        System.out.println(user.getToken());
 
         RequestBody form = new FormBody.Builder()
                 .add("receipt[image_file_name]", user.getLastGeneratedName() + ".jpg")
@@ -99,6 +88,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
 
         try {
             Response response = client.newCall(request).execute();
+            response.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

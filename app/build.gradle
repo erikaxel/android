@@ -21,6 +21,10 @@ android {
             debuggable true
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
 }
 
 repositories {
@@ -45,5 +49,4 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.firebaseui:firebase-ui-auth:0.5.3'
 }
-
 apply plugin: 'com.google.gms.google-services'

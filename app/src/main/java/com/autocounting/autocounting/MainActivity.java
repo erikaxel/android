@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +18,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.autocounting.autocounting.models.User;
+import com.autocounting.autocounting.network.upload.FirebaseLogger;
 import com.autocounting.autocounting.network.upload.UploadImageTask;
 import com.autocounting.autocounting.network.upload.UploadResponseHandler;
 import com.autocounting.autocounting.utils.ImageHandler;
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     private CameraFab fab;
     private CoordinatorLayout coordinatorLayout;
     private Uri lastReceiptUri;
-    private Toolbar toolbar;
+    private FirebaseLogger logger;
 
     private static final String TAG = "MainActivity";
 
@@ -150,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void onPageFinished() {
-
     }
 
     @Override
@@ -170,9 +168,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void visitCompleted() {
-
     }
-
 
     // The starting point for any href clicked inside a Turbolinks enabled site. In a simple case
     // you can just open another activity, or in more complex cases, this would be a good spot for
@@ -203,14 +199,16 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            uploadImage(data.getData());
+            startFileUpload(data.getData());
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void uploadImage(Uri filepath) {
+    private void startFileUpload(Uri filepath) {
         lastReceiptUri = filepath;
         Bitmap bitmap = ImageHandler.getBitmapFromUri(this, lastReceiptUri);
+        logger = new FirebaseLogger();
+        logger.start();
         new UploadImageTask(this).execute(bitmap);
     }
 
@@ -221,6 +219,8 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     @Override
     public void onFileUploadFinished(String result) {
         System.out.println("Finished");
+        System.out.println(result);
+        logger.onFinish();
     }
 
     @Override
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                 .setAction("RETRY", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        uploadImage(lastReceiptUri);
+                        startFileUpload(lastReceiptUri);
                     }
                 });
 
