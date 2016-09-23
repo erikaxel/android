@@ -15,6 +15,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
+import io.ably.lib.util.Log;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,7 +31,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
 
     private User user;
     private Bitmap originalImage;
-    private boolean otherFileIsReady = false;
+    private int numberOfFilesReady = 0;
 
     public UploadImageTask(UploadResponseHandler responseHandler) {
         this.responseHandler = responseHandler;
@@ -43,7 +44,9 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
 
     @Override
     protected String doInBackground(Bitmap... args) {
-        originalImage = ImageHandler.scaleOriginal(args[0]);
+        responseHandler.onFileUploadStarted(user.getTempName());
+        originalImage = args[0];
+        Bitmap mediumImage = ImageHandler.makeMedium(originalImage);
         Bitmap thumbnail = ImageHandler.makeThumbnail(originalImage);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -56,10 +59,26 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 logger.onThumbUploaded();
-                if(otherFileIsReady)
+                if(++numberOfFilesReady == 3)
                     postReceipt();
-                else
-                    otherFileIsReady = true;
+            }
+        });
+
+        UploadTask uploadMedium = storageRef.
+                child(user.generateUserFileLocation("medium", false))
+                .putBytes(ImageHandler.makeByteArray(originalImage));
+        uploadMedium.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                responseHandler.onFileUploadFailed();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                logger.onOriginalUploaded();
+                if(++numberOfFilesReady == 3)
+                    postReceipt();;
+                responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
 
@@ -76,10 +95,8 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 logger.onOriginalUploaded();
-                if(otherFileIsReady)
-                    postReceipt();
-                else
-                    otherFileIsReady = true;
+                if(++numberOfFilesReady == 3)
+                    postReceipt();;
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
@@ -93,6 +110,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
     }
 
     private void postReceipt() {
+        System.out.println("Filename: " + user.getTempName());
         OkHttpClient client = new OkHttpClient();
 
         RequestBody form = new FormBody.Builder()

@@ -14,10 +14,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.autocounting.autocounting.models.User;
+import com.autocounting.autocounting.network.upload.ReceiptEvent;
 import com.autocounting.autocounting.network.upload.UploadImageTask;
 import com.autocounting.autocounting.network.upload.UploadResponseHandler;
 import com.autocounting.autocounting.utils.ImageHandler;
@@ -31,6 +34,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("UID", User.getCurrentUser(this).getSavedUid());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -96,9 +101,11 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                             public void onComplete(@NonNull Task<Void> task) {
                                 // user is now signed out
                                 User.clearSavedData(MainActivity.this);
+                                // Deprecated, but available for API 19
+                                CookieManager.getInstance().removeAllCookie();
                                 FirebaseAuth.getInstance().signOut();
                                 finish();
-                                startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
+                                startActivity(new Intent(MainActivity.this, LoginActivity.class));
                             }
                         });
                 break;
@@ -114,16 +121,15 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         final String newUrl = BASE_URL + "receipts";
         Log.d(TAG, "Visiting " + newUrl);
 
-        final Activity act = this;
 //       Need to update URL on UI-thread, or else it wont work.
         runOnUiThread(new Runnable() {
             public void run() {
-                WebView webView = TurbolinksSession.getDefault(act).getWebView();
+                WebView webView = TurbolinksSession.getDefault(MainActivity.this).getWebView();
                 String oldUrl = webView.getUrl();
                 Log.d(TAG, "Old url" + oldUrl);
                 // Only do refresh if we are already at the receipts page
                 if (oldUrl.equals(newUrl)) {
-                    TurbolinksSession.getDefault(act).visit(newUrl);
+                    TurbolinksSession.getDefault(MainActivity.this).visit(newUrl);
                 }
             }
         });
@@ -206,13 +212,25 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     private void startFileUpload(Uri filepath) {
         lastReceiptUri = filepath;
-        Bitmap bitmap = ImageHandler.getBitmapFromUri(this, lastReceiptUri);
+        Bitmap bitmap = null;
+        try {
+            bitmap = ImageHandler.correctRotation(ImageHandler.getBitmapFromUri(this, lastReceiptUri), lastReceiptUri);
+        } catch (IOException e) {
+            // Uploaded unrotated image
+            new UploadImageTask(this).execute(bitmap);
+            e.printStackTrace();
+        }
         new UploadImageTask(this).execute(bitmap);
     }
 
     // -----------------------------------------------------------------------
     // UploadResponseHandler actions
     // -----------------------------------------------------------------------
+
+    @Override
+    public void onFileUploadStarted(String filename) {
+        new ReceiptEvent(this, filename).receiptAdded();
+    }
 
     @Override
     public void onFileUploadFinished(String result) {

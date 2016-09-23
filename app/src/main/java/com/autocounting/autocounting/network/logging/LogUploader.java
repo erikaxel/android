@@ -4,8 +4,6 @@ import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import io.ably.lib.util.Log;
-
 public class LogUploader extends Thread {
 
     private FirebaseAnalytics analytics;

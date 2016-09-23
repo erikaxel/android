@@ -7,9 +7,12 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.autocounting.autocounting.R;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +37,7 @@ public class CameraFab extends FloatingActionButton implements View.OnClickListe
     @Override
     public void onClick(View view) {
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         // Ensure that there's a camera activity to handle the intent
         if (takePhotoIntent.resolveActivity(getContext().getPackageManager()) != null) {
 

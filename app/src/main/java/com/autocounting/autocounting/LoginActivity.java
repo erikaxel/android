@@ -14,10 +14,12 @@ import com.google.firebase.auth.GetTokenResult;
 
 import io.ably.lib.util.Log;
 
-public class WelcomeActivity extends Activity {
+public class LoginActivity extends Activity {
 
     private static final int RC_SIGN_IN = 100;
     private FirebaseAuth auth;
+
+    private final String TAG = "LOGIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +28,7 @@ public class WelcomeActivity extends Activity {
         auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
             startActivityForResult(
                     AuthUI.getInstance()
@@ -40,20 +42,18 @@ public class WelcomeActivity extends Activity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("Get this");
-        System.out.println(data);
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
-                auth.getCurrentUser().getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        new User(WelcomeActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
-                        startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+                        new User(LoginActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     }
                 });
             } else {
-                Log.d("Callback", "Something wrong happened");
+                Log.d(TAG, "Something wrong happened");
             }
         }
     }
