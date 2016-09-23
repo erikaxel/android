@@ -9,16 +9,18 @@ public class User {
     private String token;
     private String uid;
     private SharedPreferences preferences;
-    private String lastGeneratedName;
+    private String tempName;
 
     public User(Context context, String token, String uid) {
         setPreferences(context);
         setToken(token);
         setUid(uid);
+        generateTempName();
     }
 
     public User(Context context) {
         setPreferences(context);
+        generateTempName();
         this.token = getSavedToken();
         this.uid = getSavedUid();
     }
@@ -28,25 +30,34 @@ public class User {
     }
 
     public String generateUserFileLocation(String type, Boolean needsNewName) {
-        if(needsNewName)
-            lastGeneratedName = String.valueOf(System.currentTimeMillis() / 1000L);
-
         return new StringBuilder("receipts/")
                 .append(getSavedUid())
                 .append("/")
-                .append(lastGeneratedName)
+                .append(tempName)
                 .append(".")
                 .append(type)
                 .append(".jpg")
                 .toString();
     }
 
+    public static void clearSavedData(Context context){
+        SharedPreferences.Editor editor = PreferenceManager
+                .getDefaultSharedPreferences(context).edit();
+        editor.putString("token", null);
+        editor.putString("uid", null);
+        editor.apply();
+    }
+
     public String getSavedToken() {
         return preferences.getString("token", "");
     }
 
-    public String getLastGeneratedName() {
-        return lastGeneratedName;
+    public String getTempName() {
+        return tempName;
+    }
+
+    private void generateTempName(){
+        tempName = String.valueOf(System.currentTimeMillis() / 1000L);
     }
 
     public String getSavedUid() {
@@ -55,6 +66,8 @@ public class User {
 
     public void save() {
         SharedPreferences.Editor editor = preferences.edit();
+        System.out.println("token");
+        System.out.println(token);
         editor.putString("token", token);
         editor.putString("uid", uid);
         editor.apply();

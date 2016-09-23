@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.autocounting.autocounting.models.User;
+import com.autocounting.autocounting.network.logging.FirebaseLogger;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,28 +26,44 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
     private static final String FIREBASE_STORAGE_URL = "gs://autocounting.appspot.com";
     private static final String POST_RECEIPT_URL = "https://beta.autocounting.no/receipts?";
     private UploadResponseHandler responseHandler;
+    private FirebaseLogger logger;
 
     private User user;
     private Bitmap originalImage;
+    private boolean otherFileIsReady = false;
 
     public UploadImageTask(UploadResponseHandler responseHandler) {
         this.responseHandler = responseHandler;
+        user = User.getCurrentUser(responseHandler.getContext());
+        logger = new FirebaseLogger(responseHandler.getContext(),
+                user.getUid(),
+                user.getTempName());
+        logger.start();
     }
 
     @Override
     protected String doInBackground(Bitmap... args) {
-
-        originalImage = args[0];
+        originalImage = ImageHandler.scaleOriginal(args[0]);
         Bitmap thumbnail = ImageHandler.makeThumbnail(originalImage);
-        user = User.getCurrentUser(responseHandler.getContext());
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl(FIREBASE_STORAGE_URL);
 
-        // Potentially unsafe
-        System.out.println(User.getCurrentUser(responseHandler.getContext()).getSavedUid());
-        storageRef.child(user.generateUserFileLocation("thumbnail", true))
+        logger.startUploadingThumb();
+        UploadTask uploadThumbnail = storageRef.child(user.generateUserFileLocation("thumbnail", true))
                 .putBytes(ImageHandler.makeByteArray(thumbnail));
+        uploadThumbnail.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                logger.onThumbUploaded();
+                if(otherFileIsReady)
+                    postReceipt();
+                else
+                    otherFileIsReady = true;
+            }
+        });
+
+        logger.startUploadingOriginal();
         UploadTask uploadOriginal = storageRef.
                 child(user.generateUserFileLocation("original", false))
                 .putBytes(ImageHandler.makeByteArray(originalImage));
@@ -58,12 +75,16 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                postReceipt();
+                logger.onOriginalUploaded();
+                if(otherFileIsReady)
+                    postReceipt();
+                else
+                    otherFileIsReady = true;
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
 
-        return "";
+        return "processed";
     }
 
     @Override
@@ -75,7 +96,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody form = new FormBody.Builder()
-                .add("receipt[image_file_name]", user.getLastGeneratedName() + ".jpg")
+                .add("receipt[image_file_name]", user.getTempName() + ".jpg")
                 .add("receipt[image_content_type]", "image/jpeg")
                 .add("receipt[image_file_size]", String.valueOf(originalImage.getByteCount()))
                 .add("token", user.getToken())
@@ -88,6 +109,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
 
         try {
             Response response = client.newCall(request).execute();
+            logger.onReceiptUploaded();
             response.close();
         } catch (IOException e) {
             e.printStackTrace();

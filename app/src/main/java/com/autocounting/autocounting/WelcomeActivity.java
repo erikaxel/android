@@ -28,7 +28,6 @@ public class WelcomeActivity extends Activity {
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
         } else {
-            System.out.println("Code " + RC_SIGN_IN);
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
@@ -41,6 +40,8 @@ public class WelcomeActivity extends Activity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("Get this");
+        System.out.println(data);
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 auth.getCurrentUser().getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -48,6 +49,7 @@ public class WelcomeActivity extends Activity {
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         new User(WelcomeActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
                         startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+                        finish();
                     }
                 });
             } else {

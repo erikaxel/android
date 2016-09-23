@@ -11,9 +11,14 @@ import java.io.IOException;
 public class ImageHandler {
 
     private final static int THUMBNAIL_SIZE = 25;
+    private final static int MAX_SIZE = 500;
 
     public static Bitmap makeThumbnail(Bitmap original) {
         return scaleDown(original, THUMBNAIL_SIZE, true);
+    }
+
+    public static Bitmap scaleOriginal(Bitmap original){
+        return scaleDown(original, MAX_SIZE, true);
     }
 
     public static byte[] makeByteArray(Bitmap bitmap) {

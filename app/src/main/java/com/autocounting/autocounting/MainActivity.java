@@ -18,7 +18,6 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.autocounting.autocounting.models.User;
-import com.autocounting.autocounting.network.upload.FirebaseLogger;
 import com.autocounting.autocounting.network.upload.UploadImageTask;
 import com.autocounting.autocounting.network.upload.UploadResponseHandler;
 import com.autocounting.autocounting.utils.ImageHandler;
@@ -30,6 +29,7 @@ import com.basecamp.turbolinks.TurbolinksView;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     private CameraFab fab;
     private CoordinatorLayout coordinatorLayout;
     private Uri lastReceiptUri;
-    private FirebaseLogger logger;
 
     private static final String TAG = "MainActivity";
 
@@ -70,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         TurbolinksSession.getDefault(this).setDebugLoggingEnabled(true);
 
         // For this example we set a default location, unless one is passed in through an intent
-        System.out.println("Token: " + User.getCurrentUser(this).getSavedToken());
         location = SimpleUrlBuilder.buildUrl(BASE_URL, "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
 
         // Execute the visit
@@ -82,27 +80,29 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
 
-            case R.id.logout_option :
+            case R.id.logout_option:
                 AuthUI.getInstance()
                         .signOut(this)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
                                 // user is now signed out
-                                startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
+                                User.clearSavedData(MainActivity.this);
+                                FirebaseAuth.getInstance().signOut();
                                 finish();
+                                startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
                             }
                         });
                 break;
-            default :
+            default:
                 Toast.makeText(this, "None of the above!", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
@@ -207,8 +207,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     private void startFileUpload(Uri filepath) {
         lastReceiptUri = filepath;
         Bitmap bitmap = ImageHandler.getBitmapFromUri(this, lastReceiptUri);
-        logger = new FirebaseLogger();
-        logger.start();
         new UploadImageTask(this).execute(bitmap);
     }
 
@@ -220,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     public void onFileUploadFinished(String result) {
         System.out.println("Finished");
         System.out.println(result);
-        logger.onFinish();
     }
 
     @Override
@@ -256,6 +253,10 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                     .restoreWithCachedSnapshot(false)
                     .view(turbolinksView)
                     .visit(BASE_URL + "/error");
+        } else {
+            Snackbar
+                    .make(coordinatorLayout, "Error loading receipts", Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 }
