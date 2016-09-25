@@ -3,6 +3,7 @@ package com.autocounting.autocounting;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     //    private static final String BASE_URL = "http://192.168.1.107:3000/";
     //    private static final String BASE_URL = "http://10.10.10.180:3000/";
     private static final String INTENT_URL = "intentUrl";
-
+    private static final int REQUEST_READ_WRITE = 22;
     private String location;
     private TurbolinksView turbolinksView;
     private CameraFab fab;
@@ -93,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
             case R.id.logout_option:
                 AuthUI.getInstance()
                         .signOut(this)
@@ -214,13 +214,34 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         lastReceiptUri = filepath;
         Bitmap bitmap = null;
         try {
-            bitmap = ImageHandler.correctRotation(ImageHandler.getBitmapFromUri(this, lastReceiptUri), lastReceiptUri);
+            bitmap = ImageHandler.correctRotation(ImageHandler.getBitmapFromUri(this, lastReceiptUri));
         } catch (IOException e) {
             // Uploaded unrotated image
             new UploadImageTask(this).execute(bitmap);
             e.printStackTrace();
         }
         new UploadImageTask(this).execute(bitmap);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_WRITE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    fab.takePicture();
+                } else {
+                    Toast.makeText(this, "This app depends on read/write permission to function", Toast.LENGTH_LONG).show();
+                }
+
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     // -----------------------------------------------------------------------

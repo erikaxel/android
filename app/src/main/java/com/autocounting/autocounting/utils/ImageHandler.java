@@ -3,7 +3,6 @@ package com.autocounting.autocounting.utils;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -14,7 +13,7 @@ public class ImageHandler {
 
     private final static int THUMBNAIL_SIZE = 100;
     private final static int MEDIUM_SIZE = 300;
-    private final static int MAX_SIZE = 500; // Not used
+    private final static int MAX_SIZE = 1000; // Not used
 
     public static Bitmap makeThumbnail(Bitmap original) {
         return scaleDown(original, THUMBNAIL_SIZE, true);
@@ -24,7 +23,7 @@ public class ImageHandler {
         return scaleDown(original, MEDIUM_SIZE, true);
     }
 
-    public static Bitmap correctRotation(Bitmap image, Uri selectedImage) throws IOException {
+    public static Bitmap correctRotation(Bitmap image) throws IOException {
         if(image.getWidth() > image.getHeight())
             return rotateImage(image, 90);
         else

@@ -7,9 +7,9 @@ android {
     defaultConfig {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
-        targetSdkVersion 21
-        versionCode 6
-        versionName "0.1-b6"
+        targetSdkVersion 24
+        versionCode 7
+        versionName "0.1-b7"
     }
     buildTypes {
         release {

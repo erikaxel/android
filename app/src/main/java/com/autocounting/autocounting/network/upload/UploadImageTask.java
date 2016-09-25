@@ -45,7 +45,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
     @Override
     protected String doInBackground(Bitmap... args) {
         responseHandler.onFileUploadStarted(user.getTempName());
-        originalImage = args[0];
+        originalImage = ImageHandler.scaleOriginal(args[0]);
         Bitmap mediumImage = ImageHandler.makeMedium(originalImage);
         Bitmap thumbnail = ImageHandler.makeThumbnail(originalImage);
 
