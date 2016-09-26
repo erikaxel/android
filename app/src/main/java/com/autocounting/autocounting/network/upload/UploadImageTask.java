@@ -15,7 +15,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
-import io.ably.lib.util.Log;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
