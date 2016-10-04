@@ -21,10 +21,6 @@ android {
             debuggable true
         }
     }
-
-    packagingOptions {
-        exclude 'META-INF/LICENSE.txt'
-    }
 }
 
 repositories {

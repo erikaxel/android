@@ -66,8 +66,6 @@ public class User {
 
     public void save() {
         SharedPreferences.Editor editor = preferences.edit();
-        System.out.println("token");
-        System.out.println(token);
         editor.putString("token", token);
         editor.putString("uid", uid);
         editor.apply();

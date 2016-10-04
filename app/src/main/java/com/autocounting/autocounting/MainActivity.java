@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -34,6 +33,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -41,17 +41,19 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements TurbolinksAdapter, UploadResponseHandler {
     // Change the BASE_URL to an address that your VM or device can hit.
-    private static final String BASE_URL = "https://beta.autocounting.no/";
+    private static final String INTENT_URL = "intentUrl";
+    private static final String BASE_URL = "https://beta.autocounting.no";
     //    private static final String BASE_URL = "http://192.168.1.107:3000/";
     //    private static final String BASE_URL = "http://10.10.10.180:3000/";
-    private static final String INTENT_URL = "intentUrl";
-    private static final int REQUEST_READ_WRITE = 22;
     private String location;
     private TurbolinksView turbolinksView;
     private CameraFab fab;
     private CoordinatorLayout coordinatorLayout;
     private Uri lastReceiptUri;
+    private FirebaseAuth auth;
 
+    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int REQUEST_READ_WRITE = 22;
     private static final String TAG = "MainActivity";
 
     // -----------------------------------------------------------------------
@@ -60,29 +62,19 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("UID", User.getCurrentUser(this).getSavedUid());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        refreshAuth();
 
         turbolinksView = (TurbolinksView) findViewById(R.id.turbolinks_view);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.fab_coordinator);
         fab = (CameraFab) findViewById(R.id.camera_button);
         fab.setup(this);
 
-
         // For this demo app, we force debug logging on. You will only want to do
         // this for debug builds of your app (it is off by default)
         TurbolinksSession.getDefault(this).setDebugLoggingEnabled(true);
-
-        // For this example we set a default location, unless one is passed in through an intent
-        location = SimpleUrlBuilder.buildUrl(BASE_URL, "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
-
-        // Execute the visit
-        TurbolinksSession.getDefault(this)
-                .activity(this)
-                .adapter(this)
-                .view(turbolinksView)
-                .visit(location);
     }
 
     @Override
@@ -200,8 +192,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         }
     }
 
-    static final int REQUEST_TAKE_PHOTO = 1;
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
@@ -217,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
             bitmap = ImageHandler.correctRotation(ImageHandler.getBitmapFromUri(this, lastReceiptUri));
         } catch (IOException e) {
             // Uploaded unrotated image
-            new UploadImageTask(this).execute(bitmap);
+            new UploadImageTask(this).execute(ImageHandler.getBitmapFromUri(this, lastReceiptUri));
             e.printStackTrace();
         }
         new UploadImageTask(this).execute(bitmap);
@@ -235,12 +225,10 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                 } else {
                     Toast.makeText(this, "This app depends on read/write permission to function", Toast.LENGTH_LONG).show();
                 }
-
-                return;
             }
 
             // other 'case' lines to check for other
-            // permissions this app might request
+            // permissions this app might need
         }
     }
 
@@ -282,8 +270,29 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     // Private
     // -----------------------------------------------------------------------
 
-    // Simply forwards to an error page, but you could alternatively show your own native screen
-    // or do whatever other kind of error handling you want.
+    // Should probably not do a full refresh every time.
+    private void refreshAuth() {
+        auth = FirebaseAuth.getInstance();
+        auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+                new User(MainActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
+                visitPage();
+            }
+        });
+    }
+
+    private void visitPage() {
+        location = SimpleUrlBuilder.buildUrl(BASE_URL, "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
+
+        // Execute the visit
+        TurbolinksSession.getDefault(this)
+                .activity(this)
+                .adapter(this)
+                .view(turbolinksView)
+                .visit(location);
+    }
+
     private void handleError(int code) {
         if (code == 404) {
             TurbolinksSession.getDefault(this)
@@ -294,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                     .visit(BASE_URL + "/error");
         } else {
             Snackbar
-                    .make(coordinatorLayout, "Error loading receipts", Snackbar.LENGTH_LONG)
+                    .make(coordinatorLayout, "Failed to reach server", Snackbar.LENGTH_LONG)
                     .show();
         }
     }
