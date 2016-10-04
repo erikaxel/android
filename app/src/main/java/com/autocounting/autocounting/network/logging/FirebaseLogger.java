@@ -6,8 +6,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.commons.lang3.time.StopWatch;
 
-import io.ably.lib.util.Log;
-
 public class FirebaseLogger {
 
     private StopWatch timer;
