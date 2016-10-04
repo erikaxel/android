@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.autocounting.autocounting.models.User;
+import com.autocounting.autocounting.network.RouteManager;
 import com.autocounting.autocounting.network.upload.ReceiptEvent;
 import com.autocounting.autocounting.network.upload.UploadImageTask;
 import com.autocounting.autocounting.network.upload.UploadResponseHandler;
@@ -40,41 +41,31 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements TurbolinksAdapter, UploadResponseHandler {
-    // Change the BASE_URL to an address that your VM or device can hit.
-    private static final String INTENT_URL = "intentUrl";
-    private static final String BASE_URL = "https://beta.autocounting.no";
-    //    private static final String BASE_URL = "http://192.168.1.107:3000/";
-    //    private static final String BASE_URL = "http://10.10.10.180:3000/";
+
     private String location;
     private TurbolinksView turbolinksView;
     private CameraFab fab;
     private CoordinatorLayout coordinatorLayout;
     private Uri lastReceiptUri;
     private FirebaseAuth auth;
+    private RouteManager routeManager;
 
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int REQUEST_READ_WRITE = 22;
     private static final String TAG = "MainActivity";
-
-    // -----------------------------------------------------------------------
-    // Activity overrides
-    // -----------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        refreshAuth();
-
         turbolinksView = (TurbolinksView) findViewById(R.id.turbolinks_view);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.fab_coordinator);
         fab = (CameraFab) findViewById(R.id.camera_button);
         fab.setup(this);
 
-        // For this demo app, we force debug logging on. You will only want to do
-        // this for debug builds of your app (it is off by default)
-        TurbolinksSession.getDefault(this).setDebugLoggingEnabled(true);
+        routeManager = new RouteManager(this);
+        refreshAuth();
     }
 
     @Override
@@ -101,27 +92,24 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                             }
                         });
                 break;
+            case R.id.settings_option:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                break;
             default:
-                Toast.makeText(this, "None of the above!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "An unknown option was selected (or you forgot to add break;)", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void onPingFromServer() {
-        Log.d(TAG, "onPingFromServer");
-
-        final String newUrl = BASE_URL + "receipts";
-        Log.d(TAG, "Visiting " + newUrl);
-
-//       Need to update URL on UI-thread, or else it wont work.
         runOnUiThread(new Runnable() {
             public void run() {
                 WebView webView = TurbolinksSession.getDefault(MainActivity.this).getWebView();
                 String oldUrl = webView.getUrl();
                 Log.d(TAG, "Old url" + oldUrl);
                 // Only do refresh if we are already at the receipts page
-                if (oldUrl.equals(newUrl)) {
-                    TurbolinksSession.getDefault(MainActivity.this).visit(newUrl);
+                if (oldUrl.equals(routeManager.receiptsUrl())) {
+                    TurbolinksSession.getDefault(MainActivity.this).visit(routeManager.receiptsUrl());
                 }
             }
         });
@@ -184,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                     break;
                 default:
                     Intent intent = new Intent(this, MainActivity.class);
-                    intent.putExtra(INTENT_URL, location);
+                    intent.putExtra("IntentUrl", location);
                     startActivity(intent);
             }
         } catch (MalformedURLException e) {
@@ -277,13 +265,16 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
                 new User(MainActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
+                Log.i("VISIT", "Visiting ...");
                 visitPage();
             }
         });
     }
 
     private void visitPage() {
-        location = SimpleUrlBuilder.buildUrl(BASE_URL, "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
+        location = SimpleUrlBuilder.buildUrl(routeManager.baseUrl(), "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
+
+//        Toast.makeText(this, "Visiting " + location, Toast.LENGTH_SHORT).show();
 
         // Execute the visit
         TurbolinksSession.getDefault(this)
@@ -300,8 +291,9 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                     .adapter(this)
                     .restoreWithCachedSnapshot(false)
                     .view(turbolinksView)
-                    .visit(BASE_URL + "/error");
+                    .visit(routeManager.errorUrl());
         } else {
+            Log.w("NETWORK", "Failed to reach server");
             Snackbar
                     .make(coordinatorLayout, "Failed to reach server", Snackbar.LENGTH_LONG)
                     .show();

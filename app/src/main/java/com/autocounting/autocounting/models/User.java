@@ -29,14 +29,15 @@ public class User {
         return new User(context);
     }
 
-    public String generateUserFileLocation(String type, Boolean needsNewName) {
-        return new StringBuilder("receipts/")
-                .append(getSavedUid())
-                .append("/")
-                .append(tempName)
-                .append(".")
-                .append(type)
-                .append(".jpg")
+    public String generateUserFileLocation(String type, String storagePath) {
+        return new StringBuilder(storagePath)
+                        .append("/")
+                        .append(getSavedUid())
+                        .append("/")
+                        .append(tempName)
+                        .append(".")
+                        .append(type)
+                        .append(".jpg")
                 .toString();
     }
 
