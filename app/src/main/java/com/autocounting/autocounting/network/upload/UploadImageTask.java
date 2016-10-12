@@ -50,40 +50,9 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
         routeManager = new RouteManager(responseHandler.getContext());
 
         Bitmap mediumImage = ImageHandler.makeMedium(originalImage);
-        Bitmap thumbnail = ImageHandler.makeThumbnail(originalImage);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl(RouteManager.FIREBASE_STORAGE_URL);
-
-        logger.startUploadingThumb();
-        UploadTask uploadThumbnail = storageRef.child(user.generateUserFileLocation("thumbnail", routeManager.storageUrl()))
-                .putBytes(ImageHandler.makeByteArray(thumbnail));
-        uploadThumbnail.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                logger.onThumbUploaded();
-                if(++numberOfFilesReady == 3)
-                    postReceipt();
-            }
-        });
-
-        UploadTask uploadMedium = storageRef.
-                child(user.generateUserFileLocation("medium", routeManager.storageUrl()))
-                .putBytes(ImageHandler.makeByteArray(originalImage));
-        uploadMedium.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                responseHandler.onFileUploadFailed();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                logger.onOriginalUploaded();
-                if(++numberOfFilesReady == 3)
-                    postReceipt();;
-                responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
-            }
-        });
 
         logger.startUploadingOriginal();
         UploadTask uploadOriginal = storageRef.
@@ -98,8 +67,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 logger.onOriginalUploaded();
-                if(++numberOfFilesReady == 3)
-                    postReceipt();;
+                postReceipt();;
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
@@ -120,6 +88,7 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
                 .add("receipt[image_file_name]", user.getTempName() + ".jpg")
                 .add("receipt[image_content_type]", "image/jpeg")
                 .add("receipt[image_file_size]", String.valueOf(originalImage.getByteCount()))
+                .add("resize_images", "1")
                 .add("token", user.getToken())
                 .build();
 
