@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
         routeManager = new RouteManager(this);
         refreshAuth();
+
+        TurbolinksSession.getDefault(this).setDebugLoggingEnabled(true);
     }
 
     @Override
@@ -172,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                     break;
                 default:
                     Intent intent = new Intent(this, MainActivity.class);
-                    intent.putExtra("IntentUrl", location);
+                    intent.putExtra("intentUrl", location);
                     startActivity(intent);
             }
         } catch (MalformedURLException e) {
@@ -272,9 +274,10 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     }
 
     private void visitPage() {
-        location = SimpleUrlBuilder.buildUrl(routeManager.baseUrl(), "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
+        location = getIntent().getStringExtra("intentUrl");
 
-//        Toast.makeText(this, "Visiting " + location, Toast.LENGTH_SHORT).show();
+        if(location == null)
+            location = SimpleUrlBuilder.buildUrl(routeManager.baseUrl(), "/receipts", "token=", User.getCurrentUser(this).getSavedToken());
 
         // Execute the visit
         TurbolinksSession.getDefault(this)

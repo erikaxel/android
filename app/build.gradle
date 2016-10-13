@@ -8,8 +8,8 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 10
-        versionName "0.1-b10"
+        versionCode 12
+        versionName "0.1-b12"
     }
     buildTypes {
         release {
