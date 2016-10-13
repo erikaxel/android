@@ -16,7 +16,7 @@ public class RouteManager {
     private static final String ERROR_PATH = "/error";
 
     // Firebase Storage URLs
-    public static final String FIREBASE_STORAGE_URL = "gs://autocounting.appspot.com";
+    public static final String FIREBASE_STORAGE_URL = "gs://eu-autocounting";
     private static final String DEVELOPMENT_BUCKET = "/development/receipts";
     private static final String STAGING_BUCKET = "/staging/receipts";
     private static final String PRODUCTION_BUCKET = "/production/receipts";
