@@ -23,6 +23,8 @@ public class RouteManager {
 
     private String environment;
 
+    private static final String TAG = "ROUTES";
+
     public String getEnvironment() {
         return environment;
     }
@@ -45,8 +47,8 @@ public class RouteManager {
             case "Development":
                 return DEVELOPMENT_BUCKET;
             default:
-                Log.w("ROUTES", "Using default bucket");
-                return STAGING_BUCKET;
+                Log.w(TAG, "Using default bucket");
+                return PRODUCTION_BUCKET;
         }
     }
 
@@ -59,8 +61,8 @@ public class RouteManager {
             case "Development":
                 return DEVELOPMENT_BASE_URL;
             default:
-                Log.w("ROUTES", "Using default base url");
-                return STAGING_BASE_URL;
+                Log.w(TAG, "Using default base url");
+                return PRODUCTION_BASE_URL;
         }
     }
 
