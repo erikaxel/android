@@ -33,8 +33,7 @@ public class LoginActivity extends Activity {
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setProviders(
-                                    AuthUI.EMAIL_PROVIDER,
-                                    AuthUI.GOOGLE_PROVIDER)
+                                    AuthUI.EMAIL_PROVIDER)
                             .build(), RC_SIGN_IN);
         }
     }
