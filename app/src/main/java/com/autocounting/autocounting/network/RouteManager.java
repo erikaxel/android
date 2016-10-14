@@ -9,8 +9,8 @@ public class RouteManager {
 
     // Website URLs
     private static final String DEVELOPMENT_BASE_URL = "http://10.10.10.193:3000";
-    private static final String STAGING_BASE_URL = "https://staging.autocounting.no";
-    private static final String PRODUCTION_BASE_URL = "https://autocounting.no";
+    private static final String STAGING_BASE_URL = "https://staging.autocounting.com";
+    private static final String PRODUCTION_BASE_URL = "https://system.autocounting.com";
 
     private static final String RECEIPT_PATH = "/receipts";
     private static final String ERROR_PATH = "/error";
