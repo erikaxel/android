@@ -1,6 +1,7 @@
 package com.autocounting.autocounting.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -40,9 +41,9 @@ public class ImageHandler {
         return baos.toByteArray();
     }
 
-    public static Bitmap getBitmapFromUri(Activity activity, Uri imageUri) {
+    public static Bitmap getBitmapFromUri(Context context, Uri imageUri) {
         try {
-            return MediaStore.Images.Media.getBitmap(activity.getContentResolver(), imageUri);
+            return MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
