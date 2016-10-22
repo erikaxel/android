@@ -8,7 +8,7 @@ import android.util.Log;
 public class RouteManager {
 
     // Website URLs
-    private static final String DEVELOPMENT_BASE_URL = "http://10.10.10.193:3000";
+    private static final String DEVELOPMENT_BASE_URL = "http://192.168.10.143:3000";
     private static final String STAGING_BASE_URL = "https://staging.autocounting.com";
     private static final String PRODUCTION_BASE_URL = "https://system.autocounting.com";
 

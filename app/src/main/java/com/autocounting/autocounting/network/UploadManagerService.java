@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Network;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -32,8 +31,10 @@ public class UploadManagerService extends IntentService implements UploadRespons
     protected void onHandleIntent(Intent intent) {
         Log.i(TAG, "Running");
 
-        if (isRunning || !NetworkManager.networkIsAvailable(this))
+        if (isRunning || !NetworkManager.readyToUpload(this)) {
+            Log.i(TAG, "Not runnign upload queue");
             return;
+        }
 
         Log.i(TAG, "Running upload queue");
 

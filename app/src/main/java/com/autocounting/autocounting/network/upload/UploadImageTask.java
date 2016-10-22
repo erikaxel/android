@@ -1,7 +1,10 @@
 package com.autocounting.autocounting.network.upload;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.autocounting.autocounting.models.Receipt;
@@ -93,13 +96,16 @@ public class UploadImageTask extends AsyncTask<Bitmap, String, String> {
     private void postReceipt() {
         OkHttpClient client = new OkHttpClient();
 
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(responseHandler.getContext());
+
         Log.i(TAG, "Posting " + receipt.getFilename());
         RequestBody form = new FormBody.Builder()
                 .add("receipt[image_file_name]", receipt.getFilename() + ".jpg")
                 .add("receipt[image_content_type]", "image/jpeg")
                 .add("receipt[image_file_size]", String.valueOf(originalImage.getByteCount()))
                 .add("resize_images", "1")
-                .add("use_ocr", "0")
+                .add("user_ocr", prefs.getBoolean("disable_ocr_pref", false)? "0" : "1")
                 .add("token", user.getToken())
                 .build();
 

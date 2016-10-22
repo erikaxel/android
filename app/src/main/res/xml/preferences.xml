@@ -15,7 +15,9 @@
             android:title="@string/wifi_only_pref"
             android:key="wifi_only_pref" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/advanced_category">
+    <PreferenceCategory
+        android:id="@+id/advanced_category"
+        android:title="@string/advanced_category">
 
         <ListPreference
             android:entries="@array/available_environments"
@@ -25,5 +27,15 @@
             android:summary="Select server/storage environment"
             android:title="Environment" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:title="@string/disable_ocr_pref"
+            android:key="disable_ocr_pref"
+            android:summary="@string/disable_ocr_summary"/>
+
+        <Preference
+            android:key="version_number"
+            android:title="@string/version"
+            android:summary="" />
     </PreferenceCategory>
 </PreferenceScreen>

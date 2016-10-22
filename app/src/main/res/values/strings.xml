@@ -19,8 +19,12 @@
     <!-- Settings Activity -->
     <string name="save_to_album_pref">Save images to album</string>
     <string name="wifi_only_pref">Upload using Wifi only</string>
+    <string name="disable_ocr_pref">Disable receipt scan</string>
+    <string name="disable_ocr_summary">Skip OCR</string>
 
     <string name="images_category">Images</string>
     <string name="network_category">Network</string>
     <string name="advanced_category">Advanced</string>
+
+    <string name="version">Version</string>
 </resources>
