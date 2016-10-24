@@ -1,7 +1,9 @@
 package com.autocounting.autocounting.network.upload;
 
-import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import com.basecamp.turbolinks.TurbolinksSession;
 
@@ -10,19 +12,21 @@ import com.basecamp.turbolinks.TurbolinksSession;
  */
 public class ReceiptEvent {
 
-    private Activity activity;
+    private static String TAG = "ReceiptEvent";
+    private Context context;
     private String filename;
 
-    public ReceiptEvent(Activity activity, String filename) {
-        this.activity = activity;
+    public ReceiptEvent(Context context, String filename) {
+        this.context = context;
         this.filename = filename;
     }
 
     public void receiptAdded() {
-        activity.runOnUiThread(new Runnable() {
+        Log.i(TAG, "Javascript: Receipt.add_receipt " + filename);
+        new Handler(Looper.getMainLooper()).post((new Runnable() {
             public void run() {
-                TurbolinksSession.getDefault(activity).getWebView().loadUrl("javascript:Receipt.add_receipt({'receipt[image_file_name]':'" + filename + ".jpg'});");
+                TurbolinksSession.getDefault(context).getWebView().loadUrl("javascript:Receipt.add_receipt({'receipt[image_file_name]':'" + filename + ".jpg'});");
             }
-        });
+        }));
     }
 }

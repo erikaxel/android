@@ -3,14 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     package="com.autocounting.autocounting">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="true" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- android:maxSdkVersion="18" /> -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -35,6 +30,15 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".CameraActivity" />
+
+        <service
+            android:name=".network.UploadManagerService"
+            android:exported="false" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -46,9 +50,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".OfflineActivity" />
     </application>
 
 </manifest>

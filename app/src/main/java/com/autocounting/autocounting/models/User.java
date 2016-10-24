@@ -9,18 +9,15 @@ public class User {
     private String token;
     private String uid;
     private SharedPreferences preferences;
-    private String tempName;
 
     public User(Context context, String token, String uid) {
         setPreferences(context);
         setToken(token);
         setUid(uid);
-        generateTempName();
     }
 
     public User(Context context) {
         setPreferences(context);
-        generateTempName();
         this.token = getSavedToken();
         this.uid = getSavedUid();
     }
@@ -29,12 +26,12 @@ public class User {
         return new User(context);
     }
 
-    public String generateUserFileLocation(String type, String storagePath) {
+    public String generateUserFileLocation(String type, String storagePath, String filename) {
         return new StringBuilder(storagePath)
                         .append("/")
                         .append(getSavedUid())
                         .append("/")
-                        .append(tempName)
+                        .append(filename)
                         .append(".")
                         .append(type)
                         .append(".jpg")
@@ -51,14 +48,6 @@ public class User {
 
     public String getSavedToken() {
         return preferences.getString("token", "");
-    }
-
-    public String getTempName() {
-        return tempName;
-    }
-
-    private void generateTempName(){
-        tempName = String.valueOf(System.currentTimeMillis() / 1000L);
     }
 
     public String getSavedUid() {

@@ -2,20 +2,15 @@ package com.autocounting.autocounting;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.SharedPreferences;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 
 import com.basecamp.turbolinks.TurbolinksSession;
 
-public class SettingsActivity extends AppCompatActivity {
-
-
+public class SettingsActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,20 +26,31 @@ public class SettingsActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    @Override
-    protected void onStop(){
-        super.onStop();
 
-        Log.i("TURBOLINKS", "Resetting view");
+    @Override
+    protected void onStop() {
         TurbolinksSession.resetDefault();
+        super.onStop();
     }
 
     public static class SettingsFragment extends PreferenceFragment {
 
         @Override
-        public void onCreate(Bundle savedInstanceState){
+        public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
+
+            Preference preference = findPreference("version_number");
+            preference.setSummary(getVersionName());
+        }
+
+        private String getVersionName() {
+            try {
+                return getActivity().getPackageManager()
+                        .getPackageInfo(getActivity().getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                return "Unknown";
+            }
         }
     }
 }

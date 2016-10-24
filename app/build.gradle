@@ -8,8 +8,8 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 12
-        versionName "0.1-b12"
+        versionCode 17
+        versionName "0.22-b17"
     }
     buildTypes {
         release {
@@ -59,7 +59,11 @@ dependencies {
     compile 'com.firebase:firebase-client-android:2.5.0'
     compile 'com.firebaseui:firebase-ui-auth:0.5.3'
 
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    compile 'commons-io:commons-io:2.4'
+
 //    For HTTP-requests
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
 }
+
 apply plugin: 'com.google.gms.google-services'

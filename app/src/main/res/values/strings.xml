@@ -8,7 +8,23 @@
     <string name="login_text">Login</string>
     <string name="logout_text">Logout</string>
     <string name="settings_text">Settings</string>
-    <string name="username_field_hint">Email</string>
-    <string name="password_field_hint">Passord</string>
-    <string name="subtitle">Swipe left to begin.</string>
+
+    <!-- Offline Activity -->
+    <string name="offline_notification">You are offline.</string>
+    <string name="receipts_status_text">We have saved your %1$d receipts and will upload them when you go online.</string>
+    <string name="receipts_status__is_one_text">We have saved your receipt and will upload it when you go online.</string>
+    <string name="receipts_status_is_zero_text">All receipts are synchronised.</string>
+    <string name="go_online_prompt">Go online</string>
+
+    <!-- Settings Activity -->
+    <string name="save_to_album_pref">Save images to album</string>
+    <string name="wifi_only_pref">Upload using Wifi only</string>
+    <string name="disable_ocr_pref">Disable receipt scan</string>
+    <string name="disable_ocr_summary">Skip OCR</string>
+
+    <string name="images_category">Images</string>
+    <string name="network_category">Network</string>
+    <string name="advanced_category">Advanced</string>
+
+    <string name="version">Version</string>
 </resources>

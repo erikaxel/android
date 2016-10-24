@@ -1,6 +1,7 @@
 package com.autocounting.autocounting.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -14,6 +15,8 @@ public class ImageHandler {
     private final static int THUMBNAIL_SIZE = 100;
     private final static int MEDIUM_SIZE = 300;
     private final static int MAX_SIZE = 1000; // Not used
+
+    public final static int JPEG_COMPRESSION_RATE = 80;
 
     public static Bitmap makeThumbnail(Bitmap original) {
         return scaleDown(original, THUMBNAIL_SIZE, true);
@@ -40,9 +43,9 @@ public class ImageHandler {
         return baos.toByteArray();
     }
 
-    public static Bitmap getBitmapFromUri(Activity activity, Uri imageUri) {
+    public static Bitmap getBitmapFromUri(Context context, Uri imageUri) {
         try {
-            return MediaStore.Images.Media.getBitmap(activity.getContentResolver(), imageUri);
+            return MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
