@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
-import com.autocounting.autocounting.network.upload.UploadImageTask;
+import com.autocounting.autocounting.models.Receipt;
+import com.autocounting.autocounting.network.upload.ReceiptEvent;
+import com.autocounting.autocounting.network.upload.UploadReceiptTask;
 import com.autocounting.autocounting.network.upload.UploadResponseHandler;
 import com.autocounting.autocounting.utils.ImageHandler;
 
@@ -55,8 +57,8 @@ public class UploadManagerService extends IntentService implements UploadRespons
                         Uri.fromFile(new File(imageFolder, imageAdress)));
 
                 if (bitmap != null) {
-                    Log.i(TAG, "Uploading bitmap " + bitmap.toString());
-                    new UploadImageTask(this).execute(bitmap);
+                    Log.i(TAG, "Uploading receipt with bitmap: " + bitmap.toString());
+                    new UploadReceiptTask(this).execute(new Receipt(imageAdress, bitmap));
                 } else {
                     Log.i(TAG, "Image not found");
                 }
@@ -81,8 +83,8 @@ public class UploadManagerService extends IntentService implements UploadRespons
     // UploadResponseHandler
 
     @Override
-    public void onFileUploadStarted(String filenme) {
-
+    public void onFileUploadStarted(String filename) {
+        new ReceiptEvent(this, filename).receiptAdded();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.autocounting.autocounting.utils;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.autocounting.autocounting.CameraActivity;
+import com.autocounting.autocounting.models.Receipt;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,18 +18,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ImageSaver implements Runnable {
 
     private static final String TAG = "ImageSaver";
-    private final CameraActivity contextActivity;
+    private final Context context;
     private final Image image;
     private final File imageFile;
 
-    public ImageSaver(CameraActivity contextActivity, Image image, File imageFile) {
-        this.contextActivity = contextActivity;
+    public ImageSaver(Context context, Image image, File imageFile) {
+        this.context = context;
         this.image = image;
         this.imageFile = imageFile;
     }
@@ -47,16 +47,14 @@ public class ImageSaver implements Runnable {
             e.printStackTrace();
         } finally {
 
-            if(PreferenceManager.getDefaultSharedPreferences(contextActivity).getBoolean("save_to_album_pref", false))
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("save_to_album_pref", false))
                 try {
-                    saveCopyToAlbum(imageFile, createImageFile());
+                    saveCopyToAlbum(imageFile, new Receipt().makeFile(Environment.getExternalStorageDirectory()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             image.close();
-
-            contextActivity.onImageSaved();
 
             if (fileOutputStream != null)
                 try {
@@ -83,14 +81,6 @@ public class ImageSaver implements Runnable {
 
         Intent mediaStoreUpdateIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaStoreUpdateIntent.setData(Uri.fromFile(new File(destination.getAbsolutePath())));
-        contextActivity.sendBroadcast(mediaStoreUpdateIntent);
-    }
-
-    // Duplicate
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "IMAGE_" + timeStamp + "_";
-        File image = File.createTempFile(imageFileName, ".jpg", Environment.getExternalStorageDirectory());
-        return image;
+        context.sendBroadcast(mediaStoreUpdateIntent);
     }
 }

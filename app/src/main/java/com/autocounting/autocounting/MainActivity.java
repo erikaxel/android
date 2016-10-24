@@ -1,6 +1,5 @@
 package com.autocounting.autocounting;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -21,8 +19,6 @@ import com.autocounting.autocounting.network.NetworkManager;
 import com.autocounting.autocounting.network.RouteManager;
 import com.autocounting.autocounting.network.UploadManagerService;
 import com.autocounting.autocounting.network.upload.ReceiptEvent;
-import com.autocounting.autocounting.network.upload.UploadImageTask;
-import com.autocounting.autocounting.network.upload.UploadResponseHandler;
 import com.autocounting.autocounting.utils.PermissionManager;
 import com.autocounting.autocounting.utils.SimpleUrlBuilder;
 import com.autocounting.autocounting.views.widgets.CameraFab;
@@ -38,7 +34,7 @@ import com.google.firebase.auth.GetTokenResult;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements TurbolinksAdapter, UploadResponseHandler {
+public class MainActivity extends AppCompatActivity implements TurbolinksAdapter {
 
     private String location;
     private TurbolinksView turbolinksView;
@@ -46,10 +42,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     private CoordinatorLayout coordinatorLayout;
     private FirebaseAuth auth;
     private RouteManager routeManager;
-    private Bitmap lastImage;
-    private boolean shouldDiplayError;
-
-    private final static int REQUEST_TAKE_PHOTO = 1;
+    private boolean isUpdated;
 
     private static final String TAG = "MainActivity";
 
@@ -66,15 +59,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         fab.setup(this);
 
         routeManager = new RouteManager(this);
-
-        if (NetworkManager.networkIsAvailable(this)) {
-            if (auth == null)
-                refreshAuth();
-        } else {
-            Intent toOfflineIntent = new Intent(this, OfflineActivity.class);
-            toOfflineIntent.putExtra("networkStatus", NetworkManager.INTERNET_UNAVAILABLE);
-            startActivity(toOfflineIntent);
-        }
     }
 
     @Override
@@ -133,9 +117,23 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         TurbolinksSession.getDefault(this)
                 .activity(this)
                 .adapter(this)
-                .restoreWithCachedSnapshot(true)
+                .restoreWithCachedSnapshot(false)
                 .view(turbolinksView)
                 .visit(location);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        if (NetworkManager.networkIsAvailable(this)) {
+            if (auth == null)
+                refreshAuth();
+        } else {
+            Intent toOfflineIntent = new Intent(this, OfflineActivity.class);
+            toOfflineIntent.putExtra("networkStatus", NetworkManager.INTERNET_UNAVAILABLE);
+            startActivity(toOfflineIntent);
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -144,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void onPageFinished() {
+        Log.i(TAG, "onPageFinished");
     }
 
     @Override
@@ -153,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void pageInvalidated() {
-
+        Log.i(TAG, "pageInvalidated");
     }
 
     @Override
@@ -164,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void visitCompleted() {
+        updateReceiptList();
     }
 
     // The starting point for any href clicked inside a Turbolinks enabled site. In a simple case
@@ -190,51 +190,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         }
     }
 
-    private void startFileUpload(Bitmap bitmap) {
-        lastImage = bitmap;
-        new UploadImageTask(this).execute(lastImage);
-    }
-
-    // -----------------------------------------------------------------------
-    // UploadResponseHandler actions
-    // -----------------------------------------------------------------------
-
-    @Override
-    public void onFileUploadStarted(String filename) {
-        new ReceiptEvent(this, filename).receiptAdded();
-    }
-
-    @Override
-    public void onFileUploadFinished(String result) {
-        System.out.println("Finished");
-        System.out.println(result);
-    }
-
-    @Override
-    public void onFileUploadFailed() {
-        Snackbar snackbar = Snackbar
-                .make(coordinatorLayout, "Couldn't upload photo", Snackbar.LENGTH_LONG)
-                .setAction("RETRY", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        startFileUpload(lastImage);
-                    }
-                });
-
-        snackbar.show();
-    }
-
-    @Override
-    public Context getContext() {
-        return this;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK)
-            startFileUpload((Bitmap) data.getExtras().get("photo_bitmap"));
-    }
-
     // -----------------------------------------------------------------------
     // Private
     // -----------------------------------------------------------------------
@@ -248,6 +203,16 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                 visitPage();
             }
         });
+    }
+
+    private void updateReceiptList() {
+        String filename = "something";
+
+        String receiptFilename = getIntent().getStringExtra("receiptFilename");
+        if(receiptFilename != null && !isUpdated) {
+            isUpdated = true;
+            new ReceiptEvent(getApplicationContext(), receiptFilename).receiptAdded();
+        }
     }
 
     private void visitPage() {
@@ -278,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                     .make(coordinatorLayout, "An error occured on server", Snackbar.LENGTH_LONG)
                     .show();
             Intent toOfflineIntent = new Intent();
-            toOfflineIntent.putExtra("shouldDisplayError", shouldDiplayError);
+            toOfflineIntent.putExtra("shouldDisplayError", true);
             startActivity(new Intent(this, OfflineActivity.class));
         }
     }

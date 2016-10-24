@@ -18,11 +18,16 @@ public class NetworkManager {
     public static boolean readyToUpload(Context context) {
 
         NetworkInfo networkInfo = getNetworkInfo(context);
-        boolean isConnectedToWifi = networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
-        boolean isConnectedToCellular = networkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
 
-        return isConnectedToWifi || (isConnectedToCellular && !PreferenceManager.
-                getDefaultSharedPreferences(context).getBoolean("wifi_only_pref", false));
+        if(networkInfo != null) {
+            boolean isConnectedToWifi = networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            boolean isConnectedToCellular = networkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+
+            return (networkInfo.isConnected()) && (isConnectedToWifi || (isConnectedToCellular && !PreferenceManager.
+                    getDefaultSharedPreferences(context).getBoolean("wifi_only_pref", false)));
+        }
+
+        return false;
     }
 
     private static NetworkInfo getNetworkInfo(Context context) {

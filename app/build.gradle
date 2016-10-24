@@ -8,8 +8,8 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 15
-        versionName "0.21-b15"
+        versionCode 17
+        versionName "0.22-b17"
     }
     buildTypes {
         release {
@@ -62,4 +62,5 @@ dependencies {
 //    For HTTP-requests
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
 }
+
 apply plugin: 'com.google.gms.google-services'

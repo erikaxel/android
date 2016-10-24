@@ -32,18 +32,17 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.autocounting.autocounting.models.Receipt;
 import com.autocounting.autocounting.network.UploadManagerService;
 import com.autocounting.autocounting.utils.ImageSaver;
 import com.autocounting.autocounting.utils.PermissionManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 public class CameraActivity extends AppCompatActivity {
@@ -102,11 +101,15 @@ public class CameraActivity extends AppCompatActivity {
                     break;
                 case STATE_WAIT_LOCK:
                     state = STATE_PREVIEW;
-                    Log.i(TAG, "Capture result");
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
-                    Log.i(TAG, "Capturing image");
-                    captureImage();
+                    if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
+                            afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN ||
+                            afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED) {
+                        captureImage();
+                    } else {
+                        Log.i(TAG, "afState is " + afState);
+                    }
                     break;
             }
         }
@@ -145,6 +148,7 @@ public class CameraActivity extends AppCompatActivity {
                 public void onImageAvailable(ImageReader reader) {
                     Log.i(TAG, "Saving image");
                     handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage(), imageFile));
+                    onImageSaved();
                 }
             };
 
@@ -191,6 +195,7 @@ public class CameraActivity extends AppCompatActivity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                cameraButton.setEnabled(false);
                 takePhoto();
             }
         });
@@ -362,20 +367,13 @@ public class CameraActivity extends AppCompatActivity {
         Log.i(TAG, "Take photo");
         try {
             Log.i(TAG, "Create image file");
-            imageFile = createImageFile();
+            imageFile = new Receipt().makeFile(imageFolder);
         } catch (IOException e) {
             Log.i(TAG, "Failed to create image file");
             e.printStackTrace();
         }
 
         lockFocus();
-    }
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "IMAGE_" + timeStamp + "_";
-        File image = File.createTempFile(imageFileName, ".jpg", imageFolder);
-        return image;
     }
 
     private void createImageFolder() {
@@ -405,7 +403,8 @@ public class CameraActivity extends AppCompatActivity {
         state = STATE_PREVIEW;
         captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
         try {
-            cameraCaptureSession.capture(captureRequestBuilder.build(), sessionCaptureCallback, handler);
+            if(cameraCaptureSession != null)
+                cameraCaptureSession.capture(captureRequestBuilder.build(), sessionCaptureCallback, handler);
         } catch (CameraAccessException e) {
             handleCameraAccessException(e);
         }
@@ -420,8 +419,13 @@ public class CameraActivity extends AppCompatActivity {
             CaptureRequest.Builder captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureRequestBuilder.addTarget(imageReader.getSurface());
 
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+
+            int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
+
+            Log.i(TAG, "Device rotation: " + deviceOrientation);
+            Log.i(TAG, "Orentation gotten: " + ORIENTATIONS.get(deviceOrientation));
+
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(deviceOrientation));
 
             CameraCaptureSession.CaptureCallback captureCallback =
                     new CameraCaptureSession.CaptureCallback() {
@@ -476,7 +480,10 @@ public class CameraActivity extends AppCompatActivity {
         Log.i(TAG, "On image saved");
         startService(new Intent(this, UploadManagerService.class));
 
-        startActivity(new Intent(this, MainActivity.class));
+        Intent toMainIntent = new Intent(this, MainActivity.class);
+        Log.i("ReceiptEvent", "imagefile get name " + imageFile.getName());
+        toMainIntent.putExtra("receiptFilename", imageFile.getName());
+        startActivity(toMainIntent);
         finish();
     }
 
