@@ -8,7 +8,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.autocounting.autocounting.CameraActivity;
 import com.autocounting.autocounting.models.Receipt;
 
 import java.io.File;

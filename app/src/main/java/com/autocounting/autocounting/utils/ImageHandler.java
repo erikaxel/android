@@ -16,6 +16,8 @@ public class ImageHandler {
     private final static int MEDIUM_SIZE = 300;
     private final static int MAX_SIZE = 1000; // Not used
 
+    public final static int JPEG_COMPRESSION_RATE = 80;
+
     public static Bitmap makeThumbnail(Bitmap original) {
         return scaleDown(original, THUMBNAIL_SIZE, true);
     }

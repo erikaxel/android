@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.autocounting.autocounting.models.Receipt;
 import com.autocounting.autocounting.network.UploadManagerService;
+import com.autocounting.autocounting.utils.ImageHandler;
 import com.autocounting.autocounting.utils.ImageSaver;
 import com.autocounting.autocounting.utils.PermissionManager;
 
@@ -105,7 +106,8 @@ public class CameraActivity extends AppCompatActivity {
 
                     if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                             afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN ||
-                            afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED) {
+                            afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED ||
+                            afState == CaptureResult.CONTROL_CAPTURE_INTENT_MANUAL) {
                         captureImage();
                     } else {
                         Log.i(TAG, "afState is " + afState);
@@ -332,8 +334,6 @@ public class CameraActivity extends AppCompatActivity {
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(previewSurface);
 
-            int i = 2;
-
             cameraDevice.createCaptureSession(Arrays.asList(previewSurface, imageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
                         @Override
@@ -422,10 +422,8 @@ public class CameraActivity extends AppCompatActivity {
 
             int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
 
-            Log.i(TAG, "Device rotation: " + deviceOrientation);
-            Log.i(TAG, "Orentation gotten: " + ORIENTATIONS.get(deviceOrientation));
-
             captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(deviceOrientation));
+            captureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) ImageHandler.JPEG_COMPRESSION_RATE);
 
             CameraCaptureSession.CaptureCallback captureCallback =
                     new CameraCaptureSession.CaptureCallback() {

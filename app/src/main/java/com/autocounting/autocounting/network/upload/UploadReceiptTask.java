@@ -1,8 +1,6 @@
 package com.autocounting.autocounting.network.upload;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -19,6 +17,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import android.util.Log;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import okhttp3.FormBody;
@@ -57,9 +58,14 @@ public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
         StorageReference storageRef = storage.getReferenceFromUrl(RouteManager.FIREBASE_STORAGE_URL);
 
         logger.startUploadingOriginal();
-        UploadTask uploadOriginal = storageRef.
-                child(user.generateUserFileLocation("original", routeManager.storageUrl(), receipt.getFilename()))
-                .putBytes(ImageHandler.makeByteArray(receipt.getImage()));
+        UploadTask uploadOriginal = null;
+        try {
+            uploadOriginal = storageRef.
+                    child(user.generateUserFileLocation("original", routeManager.storageUrl(), receipt.getFilename()))
+                    .putBytes(IOUtils.toByteArray(new FileInputStream(receipt.getImageFile())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         uploadOriginal.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -70,6 +76,7 @@ public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 logger.onOriginalUploaded();
                 postReceipt();
+                receipt.deleteFromQueue();
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
@@ -95,11 +102,11 @@ public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(responseHandler.getContext());
 
-        Log.i(TAG, "Posting " + receipt.getFilename());
+        Log.i(TAG, "Posting " + receipt.getFilename() + " for ");
         RequestBody form = new FormBody.Builder()
                 .add("receipt[image_file_name]", receipt.getFilename() + ".jpg")
                 .add("receipt[image_content_type]", "image/jpeg")
-                .add("receipt[image_file_size]", String.valueOf(receipt.getImage().getByteCount()))
+                .add("receipt[image_file_size]", String.valueOf(receipt.getImageFile().length()))
                 .add("resize_images", "1")
                 .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false)? "0" : "1")
                 .add("token", user.getToken())

@@ -1,30 +1,29 @@
 package com.autocounting.autocounting.models;
 
-import android.graphics.Bitmap;
 import android.util.Log;
-
-import com.autocounting.autocounting.utils.ImageHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Receipt {
 
     public static final String TAG = "Receipt";
     private String filename;
-    private Bitmap image;
+    private File imageFile;
 
-    public Receipt(){
+    public Receipt() {
         this.filename = generateFilename();
         Log.i(TAG, "New empty receipt: " + filename);
     }
 
-    public Receipt(String filename, Bitmap image) {
+    public Receipt(File folder, String filename) {
         this.filename = filename;
-        this.image = ImageHandler.scaleOriginal(image);
-        Log.i(TAG, "New receipt from file/image: " + filename);
+        this.imageFile = new File(folder, filename);
+    }
+
+    public void deleteFromQueue(){
+        Log.i(TAG, "Deleting receipt " + filename + " from queue");
+        imageFile.delete();
     }
 
     private static String generateFilename() {
@@ -39,7 +38,7 @@ public class Receipt {
         return filename;
     }
 
-    public Bitmap getImage() {
-        return image;
+    public File getImageFile() {
+        return imageFile;
     }
 }
