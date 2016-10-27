@@ -1,8 +1,10 @@
 package com.autocounting.autocounting;
 
+import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -17,7 +19,7 @@ import android.widget.Toast;
 import com.autocounting.autocounting.models.User;
 import com.autocounting.autocounting.network.NetworkManager;
 import com.autocounting.autocounting.network.RouteManager;
-import com.autocounting.autocounting.network.UploadManagerService;
+import com.autocounting.autocounting.network.UploadManager;
 import com.autocounting.autocounting.network.upload.ReceiptEvent;
 import com.autocounting.autocounting.utils.PermissionManager;
 import com.autocounting.autocounting.utils.SimpleUrlBuilder;
@@ -43,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     private FirebaseAuth auth;
     private RouteManager routeManager;
     private boolean isUpdated;
-
     private static final String TAG = "MainActivity";
 
     @Override
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startService(new Intent(this, UploadManagerService.class));
+        startService(new Intent(this, UploadManager.class));
 
         turbolinksView = (TurbolinksView) findViewById(R.id.turbolinks_view);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.fab_coordinator);
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
 
         if (NetworkManager.networkIsAvailable(this)) {
@@ -209,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         String filename = "something";
 
         String receiptFilename = getIntent().getStringExtra("receiptFilename");
-        if(receiptFilename != null && !isUpdated) {
+        if (receiptFilename != null && !isUpdated) {
             isUpdated = true;
             new ReceiptEvent(getApplicationContext(), receiptFilename).receiptAdded();
         }

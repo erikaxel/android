@@ -33,7 +33,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.autocounting.autocounting.models.Receipt;
-import com.autocounting.autocounting.network.UploadManagerService;
+import com.autocounting.autocounting.network.UploadManager;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.autocounting.autocounting.utils.ImageSaver;
 import com.autocounting.autocounting.utils.PermissionManager;
@@ -150,7 +150,7 @@ public class CameraActivity extends AppCompatActivity {
                 public void onImageAvailable(ImageReader reader) {
                     Log.i(TAG, "Saving image");
                     handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage(), imageFile));
-                    onImageSaved();
+                    goToMain();
                 }
             };
 
@@ -431,7 +431,6 @@ public class CameraActivity extends AppCompatActivity {
                         @Override
                         public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                             super.onCaptureCompleted(session, request, result);
-
                             unlockFocus();
                         }
                     };
@@ -441,6 +440,8 @@ public class CameraActivity extends AppCompatActivity {
                     captureCallback,
                     uiHandler
             );
+
+            Log.i(TAG, "7");
 
         } catch (CameraAccessException e) {
             handleCameraAccessException(e);
@@ -474,10 +475,8 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    public void onImageSaved() {
-        Log.i(TAG, "On image saved");
-        startService(new Intent(this, UploadManagerService.class));
-
+    public void goToMain() {
+        Log.i(TAG, "Going to Main Activity");
         Intent toMainIntent = new Intent(this, MainActivity.class);
         Log.i("ReceiptEvent", "imagefile get name " + imageFile.getName());
         toMainIntent.putExtra("receiptFilename", imageFile.getName());

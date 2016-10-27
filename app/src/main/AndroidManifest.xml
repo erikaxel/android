@@ -37,7 +37,7 @@
         <activity android:name=".CameraActivity" />
 
         <service
-            android:name=".network.UploadManagerService"
+            android:name=".network.UploadManager"
             android:exported="false" />
 
         <provider
