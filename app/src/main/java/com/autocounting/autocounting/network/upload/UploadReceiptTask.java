@@ -1,21 +1,19 @@
 package com.autocounting.autocounting.network.upload;
 
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.autocounting.autocounting.models.Receipt;
 import com.autocounting.autocounting.models.User;
 import com.autocounting.autocounting.network.RouteManager;
 import com.autocounting.autocounting.network.logging.FirebaseLogger;
-import com.autocounting.autocounting.utils.ImageHandler;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
 
@@ -28,7 +26,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
+public class UploadReceiptTask {
 
     private static final String TAG = "UploadReceiptTask";
     private UploadResponseHandler responseHandler;
@@ -45,11 +43,13 @@ public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
         user = User.getCurrentUser(responseHandler.getContext());
     }
 
-    @Override
-    protected String doInBackground(Receipt... args) {
-        this.receipt = args[0];
+    public void uploadReceipt(Receipt receipt) {
+        this.receipt = receipt;
         startLogs();
+        start();
+    }
 
+    private void start() {
         Log.i(TAG, "Initialising receipt " + receipt.getFilename());
         responseHandler.onFileUploadStarted(receipt.getFilename());
         routeManager = new RouteManager(responseHandler.getContext());
@@ -80,8 +80,6 @@ public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
-
-        return "processed";
     }
 
     private void startLogs() {
@@ -89,11 +87,6 @@ public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
                 user.getUid(),
                 receipt.getFilename());
         logger.start();
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        responseHandler.onFileUploadFinished(result);
     }
 
     private void postReceipt() {
@@ -108,7 +101,7 @@ public class UploadReceiptTask extends AsyncTask<Receipt, String, String> {
                 .add("receipt[image_content_type]", "image/jpeg")
                 .add("receipt[image_file_size]", String.valueOf(receipt.getImageFile().length()))
                 .add("resize_images", "1")
-                .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false)? "0" : "1")
+                .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false) ? "0" : "1")
                 .add("token", user.getToken())
                 .build();
 
