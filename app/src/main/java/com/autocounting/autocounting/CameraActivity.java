@@ -52,10 +52,10 @@ public class CameraActivity extends AppCompatActivity {
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
     static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+        ORIENTATIONS.append(Surface.ROTATION_0, 0);
+        ORIENTATIONS.append(Surface.ROTATION_90, 90);
+        ORIENTATIONS.append(Surface.ROTATION_180, 180);
+        ORIENTATIONS.append(Surface.ROTATION_270, 270);
     }
 
     private static final int NUMBER_OF_IMAGES_CAPTURED = 1;
@@ -419,10 +419,11 @@ public class CameraActivity extends AppCompatActivity {
             CaptureRequest.Builder captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureRequestBuilder.addTarget(imageReader.getSurface());
 
+            CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            CameraCharacteristics cameraCharacteristics = cameraManager
+                    .getCameraCharacteristics(cameraId);
 
-            int deviceOrientation = getWindowManager().getDefaultDisplay().getRotation();
-
-            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(deviceOrientation));
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION));
             captureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) ImageHandler.JPEG_COMPRESSION_RATE);
 
             CameraCaptureSession.CaptureCallback captureCallback =
