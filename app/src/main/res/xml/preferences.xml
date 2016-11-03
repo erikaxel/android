@@ -17,7 +17,8 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:id="@+id/advanced_category"
-        android:title="@string/advanced_category">
+        android:title="@string/advanced_category"
+        android:key="advanced_cat">
 
         <ListPreference
             android:entries="@array/available_environments"

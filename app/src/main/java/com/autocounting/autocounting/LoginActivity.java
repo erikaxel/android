@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.autocounting.autocounting.models.User;
 import com.firebase.ui.auth.AuthUI;
@@ -18,40 +19,52 @@ public class LoginActivity extends Activity {
     private static final int RC_SIGN_IN = 100;
     private FirebaseAuth auth;
 
-    private final String TAG = "LOGIN";
+    private final String TAG = "Login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         auth = FirebaseAuth.getInstance();
+    }
+
+    protected void onResume(){
+        super.onResume();
 
         if (auth.getCurrentUser() != null) {
+            Log.i(TAG, "User is " + auth.getCurrentUser().getDisplayName() + ". Logging in ...");
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
+            Log.i(TAG, "User is null. Starting login");
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setProviders(
-                                    AuthUI.EMAIL_PROVIDER)
+                                    AuthUI.EMAIL_PROVIDER,
+                                    AuthUI.GOOGLE_PROVIDER)
+                            .setTheme(R.style.AppTheme)
                             .build(), RC_SIGN_IN);
         }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult with resultCode" + resultCode);
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        new User(LoginActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
+                        new User(LoginActivity.this,
+                                task.getResult().getToken(),
+                                auth.getCurrentUser().getUid(),
+                                auth.getCurrentUser().getEmail()).save();
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     }
                 });
             } else {
-                Log.d(TAG, "Something wrong happened");
+                Toast.makeText(this, "Failed to login", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "Sign in failed (RESULT_CANCELLED)");
             }
         }
     }

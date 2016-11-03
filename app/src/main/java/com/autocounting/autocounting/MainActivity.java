@@ -200,7 +200,10 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
         auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
-                new User(MainActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
+                new User(MainActivity.this,
+                        task.getResult().getToken(),
+                        auth.getCurrentUser().getUid(),
+                        auth.getCurrentUser().getEmail()).save();
                 visitPage();
             }
         });
