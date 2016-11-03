@@ -10,17 +10,18 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
+import android.media.MediaActionSound;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +34,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.autocounting.autocounting.models.Receipt;
-import com.autocounting.autocounting.network.UploadManager;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.autocounting.autocounting.utils.ImageSaver;
 import com.autocounting.autocounting.utils.PermissionManager;
@@ -50,13 +50,6 @@ public class CameraActivity extends AppCompatActivity {
 
     private static final String TAG = "CameraActivity";
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 0);
-        ORIENTATIONS.append(Surface.ROTATION_90, 90);
-        ORIENTATIONS.append(Surface.ROTATION_180, 180);
-        ORIENTATIONS.append(Surface.ROTATION_270, 270);
-    }
 
     private static final int NUMBER_OF_IMAGES_CAPTURED = 1;
 
@@ -95,43 +88,35 @@ public class CameraActivity extends AppCompatActivity {
     private CameraCaptureSession.CaptureCallback sessionCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
 
+        @Override
+        public void onCaptureStarted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, long timestamp, long frameNumber) {
+            super.onCaptureStarted(session, request, timestamp, frameNumber);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            super.onCaptureCompleted(session, request, result);
+            process(result);
+        }
+
         private void process(CaptureResult result) {
             switch (state) {
                 case STATE_PREVIEW:
                     // Keep running
                     break;
                 case STATE_WAIT_LOCK:
-                    state = STATE_PREVIEW;
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
                     if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
-                            afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN ||
-                            afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED ||
-                            afState == CaptureResult.CONTROL_CAPTURE_INTENT_MANUAL) {
+                            afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                        new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
+                        state = STATE_PREVIEW;
                         captureImage();
                     } else {
                         Log.i(TAG, "afState is " + afState);
                     }
                     break;
             }
-        }
-
-        @Override
-        public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
-            super.onCaptureStarted(session, request, timestamp, frameNumber);
-        }
-
-        @Override
-        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-            super.onCaptureCompleted(session, request, result);
-            process(result);
-        }
-
-        @Override
-        public void onCaptureFailed(CameraCaptureSession session, CaptureRequest request, CaptureFailure failure) {
-            Log.i(TAG, "on capture failed");
-            super.onCaptureFailed(session, request, failure);
-            // Handle
         }
     };
 
@@ -150,7 +135,6 @@ public class CameraActivity extends AppCompatActivity {
                 public void onImageAvailable(ImageReader reader) {
                     Log.i(TAG, "Saving image");
                     handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage(), imageFile));
-                    goToMain();
                 }
             };
 
@@ -275,7 +259,6 @@ public class CameraActivity extends AppCompatActivity {
         }
 
         try {
-
             cameraManager.openCamera(cameraId, stateCallback, handler);
 
         } catch (CameraAccessException e) {
@@ -399,17 +382,6 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
-    private void unlockFocus() {
-        state = STATE_PREVIEW;
-        captureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
-        try {
-            if(cameraCaptureSession != null)
-                cameraCaptureSession.capture(captureRequestBuilder.build(), sessionCaptureCallback, handler);
-        } catch (CameraAccessException e) {
-            handleCameraAccessException(e);
-        }
-    }
-
     private void captureImage() {
         Log.i(TAG, "Capture Image");
 
@@ -426,23 +398,15 @@ public class CameraActivity extends AppCompatActivity {
             captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION));
             captureRequestBuilder.set(CaptureRequest.JPEG_QUALITY, (byte) ImageHandler.JPEG_COMPRESSION_RATE);
 
-            CameraCaptureSession.CaptureCallback captureCallback =
-                    new CameraCaptureSession.CaptureCallback() {
-
-                        @Override
-                        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                            super.onCaptureCompleted(session, request, result);
-                            unlockFocus();
-                        }
-                    };
-
             cameraCaptureSession.capture(
                     captureRequestBuilder.build(),
-                    captureCallback,
-                    uiHandler
+                    sessionCaptureCallback,
+                    handler
             );
 
-            Log.i(TAG, "7");
+            goToMain();
+
+            Log.i(TAG, "Done with all the picture stuff");
 
         } catch (CameraAccessException e) {
             handleCameraAccessException(e);

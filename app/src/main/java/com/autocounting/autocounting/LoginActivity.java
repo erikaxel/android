@@ -31,37 +31,40 @@ public class LoginActivity extends Activity {
         super.onResume();
 
         if (auth.getCurrentUser() != null) {
-            Log.d(TAG, "User is " + auth.getCurrentUser().getDisplayName() + ". Logging in ...");
+            Log.i(TAG, "User is " + auth.getCurrentUser().getDisplayName() + ". Logging in ...");
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
-            Log.d(TAG, "User is null. Starting login");
+            Log.i(TAG, "User is null. Starting login");
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setProviders(
                                     AuthUI.EMAIL_PROVIDER,
                                     AuthUI.GOOGLE_PROVIDER)
+                            .setTheme(R.style.AppTheme)
                             .build(), RC_SIGN_IN);
-            overridePendingTransition(0, 0);
         }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult with resultCode" + resultCode);
+        Log.i(TAG, "onActivityResult with resultCode" + resultCode);
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        new User(LoginActivity.this, task.getResult().getToken(), auth.getCurrentUser().getUid()).save();
+                        new User(LoginActivity.this,
+                                task.getResult().getToken(),
+                                auth.getCurrentUser().getUid(),
+                                auth.getCurrentUser().getEmail()).save();
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     }
                 });
             } else {
                 Toast.makeText(this, "Failed to login", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "Sign in failed (RESULT_CANCELLED)");
+                Log.i(TAG, "Sign in failed (RESULT_CANCELLED)");
             }
         }
     }

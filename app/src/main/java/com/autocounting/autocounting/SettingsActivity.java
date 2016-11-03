@@ -6,11 +6,16 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 
+import com.autocounting.autocounting.models.User;
 import com.basecamp.turbolinks.TurbolinksSession;
 
 public class SettingsActivity extends PreferenceActivity {
+
+    private static final String TAG = "SettingsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,17 @@ public class SettingsActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
 
-            Preference preference = findPreference("version_number");
-            preference.setSummary(getVersionName());
+            Preference pref = findPreference("version_number");
+            pref.setSummary(getVersionName());
+
+            if(!User.getCurrentUser(this.getActivity().getApplicationContext()).isAdmin())
+                removeAdminSettings();
+        }
+
+        private void removeAdminSettings() {
+            PreferenceCategory prefCategory = (PreferenceCategory) findPreference("advanced_cat");
+            Preference pref = findPreference("environment_pref");
+            prefCategory.removePreference(pref);
         }
 
         private String getVersionName() {
