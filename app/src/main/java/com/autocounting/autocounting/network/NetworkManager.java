@@ -9,6 +9,7 @@ public class NetworkManager {
 
     public final static int OK = 0;
     public final static int INTERNET_UNAVAILABLE = 1;
+    public final static int SERVER_ERROR = 500;
 
     public static boolean networkIsAvailable(Context context) {
         NetworkInfo networkInfo = getNetworkInfo(context);

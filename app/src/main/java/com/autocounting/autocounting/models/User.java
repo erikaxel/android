@@ -49,6 +49,7 @@ public class User {
                 .getDefaultSharedPreferences(context).edit();
         editor.putString("token", null);
         editor.putString("uid", null);
+        editor.putString("email", null);
         editor.apply();
     }
 
@@ -100,5 +101,10 @@ public class User {
 
     public boolean isAdmin(){
         return getSavedEmail().contains("@autocounting.com");
+    }
+
+    public void logout(Context context){
+        Receipt.deleteReceiptFolder();
+        clearSavedData(context);
     }
 }

@@ -26,5 +26,7 @@
     <string name="network_category">Network</string>
     <string name="advanced_category">Advanced</string>
 
+    <string name="facebook_application_id" translatable="false">335970566774032</string>
+
     <string name="version">Version</string>
 </resources>

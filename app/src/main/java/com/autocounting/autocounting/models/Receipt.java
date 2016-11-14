@@ -1,5 +1,6 @@
 package com.autocounting.autocounting.models;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -21,7 +22,7 @@ public class Receipt {
         this.imageFile = new File(folder, filename);
     }
 
-    public void deleteFromQueue(){
+    public void deleteFromQueue() {
         Log.i(TAG, "Deleting receipt " + filename + " from queue");
         imageFile.delete();
     }
@@ -40,5 +41,21 @@ public class Receipt {
 
     public File getImageFile() {
         return imageFile;
+    }
+
+    public static File getReceiptFolder() {
+        File imageFolder = new File(Environment.getExternalStorageDirectory(), "receipt_queue");
+
+        if (!imageFolder.exists())
+            imageFolder.mkdirs();
+
+        return imageFolder;
+    }
+
+    public static void deleteReceiptFolder() {
+        File receiptFolder = getReceiptFolder();
+        for (File file : receiptFolder.listFiles())
+            file.delete();
+        receiptFolder.delete();
     }
 }
