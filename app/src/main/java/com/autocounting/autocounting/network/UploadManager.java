@@ -31,7 +31,8 @@ public class UploadManager extends Service implements UploadResponseHandler {
         @Override
         public void handleMessage(Message msg) {
             synchronized (UploadManager.this) {
-                uploadQueue();
+                if(NetworkManager.networkIsAvailable(getContext()))
+                    uploadQueue();
             }
         }
     }
@@ -66,7 +67,7 @@ public class UploadManager extends Service implements UploadResponseHandler {
 
     private void uploadQueue() {
         Log.i(TAG, "Running upload queue");
-        File imageFolder = getImageFolder();
+        File imageFolder = Receipt.getReceiptFolder();
 
         if (imageFolder.list() != null) {
             Log.i(TAG, imageFolder.list().length + " images in " + imageFolder.getAbsolutePath());
@@ -77,15 +78,6 @@ public class UploadManager extends Service implements UploadResponseHandler {
         }
 
         Log.i(TAG, "Queue uploaded");
-    }
-
-    private File getImageFolder() {
-        File imageFolder = new File(Environment.getExternalStorageDirectory(), "receipt_queue");
-
-        if (!imageFolder.exists())
-            imageFolder.mkdirs();
-
-        return imageFolder;
     }
 
     // UploadResponseHandler

@@ -59,27 +59,32 @@ public class UploadReceiptTask {
 
         logger.startUploadingOriginal();
         UploadTask uploadOriginal = null;
+
         try {
+            FileInputStream receiptFos = new FileInputStream(receipt.getImageFile());
+
             uploadOriginal = storageRef.
                     child(user.generateUserFileLocation("original", routeManager.storageUrl(), receipt.getFilename()))
-                    .putBytes(IOUtils.toByteArray(new FileInputStream(receipt.getImageFile())));
-        } catch (IOException e) {
+                    .putBytes(IOUtils.toByteArray(receiptFos));
+
+            uploadOriginal.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    responseHandler.onFileUploadFailed();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    logger.onOriginalUploaded();
+                    postReceipt();
+                    receipt.deleteFromQueue();
+                    responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
+                }
+            });
+
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
-        uploadOriginal.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                responseHandler.onFileUploadFailed();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                logger.onOriginalUploaded();
-                postReceipt();
-                receipt.deleteFromQueue();
-                responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
-            }
-        });
     }
 
     private void startLogs() {

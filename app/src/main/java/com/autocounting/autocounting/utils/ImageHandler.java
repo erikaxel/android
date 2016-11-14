@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 public class ImageHandler {
@@ -43,9 +44,10 @@ public class ImageHandler {
         return baos.toByteArray();
     }
 
-    public static Bitmap getBitmapFromUri(Context context, Uri imageUri) {
+    public static Bitmap getBitmapFromFile(Context context, File file) {
         try {
-            return MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+            return MediaStore.Images.Media.getBitmap(context.getContentResolver(),
+                    Uri.fromFile(file));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
