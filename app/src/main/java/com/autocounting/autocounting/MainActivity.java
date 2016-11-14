@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
             if (auth == null)
                 refreshAuth();
         } else {
+            Log.i(TAG, "Network unavailable");
             Intent toOfflineIntent = new Intent(this, OfflineActivity.class);
             toOfflineIntent.putExtra("networkStatus", NetworkManager.INTERNET_UNAVAILABLE);
             startActivity(toOfflineIntent);
@@ -242,19 +243,16 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                     .view(turbolinksView)
                     .visit(routeManager.errorUrl());
         } else {
-            Log.w("NETWORK", "An error ocurred on server");
-            Snackbar
-                    .make(coordinatorLayout, "An error occured on server", Snackbar.LENGTH_LONG)
-                    .show();
+            Log.w(TAG, code + ": Error occurred on server");
             Intent toOfflineIntent = new Intent();
-            toOfflineIntent.putExtra("shouldDisplayError", true);
+            toOfflineIntent.putExtra("networkStatus", NetworkManager.SERVER_ERROR);
             startActivity(new Intent(this, OfflineActivity.class));
         }
     }
 
     // Permissions
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         if (requestCode == PermissionManager.CAMERA_AND_STORAGE)
             startActivity(new Intent(this, CameraActivity.class));
         else

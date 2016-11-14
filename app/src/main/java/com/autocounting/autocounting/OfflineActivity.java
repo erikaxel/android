@@ -58,6 +58,9 @@ public class OfflineActivity extends AppCompatActivity {
             case NetworkManager.INTERNET_UNAVAILABLE:
                 Snackbar.make(coordinatorLayout, "Network unavailable", Snackbar.LENGTH_LONG).show();
                 break;
+            case NetworkManager.SERVER_ERROR:
+                Snackbar.make(coordinatorLayout, "An error occurred on server.", Snackbar.LENGTH_LONG).show();
+                break;
         }
     }
 
