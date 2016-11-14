@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
+import java.util.Arrays;
+import java.util.List;
 
 import com.autocounting.autocounting.models.User;
 import com.firebase.ui.auth.AuthUI;
@@ -18,6 +20,11 @@ public class LoginActivity extends Activity {
 
     private static final int RC_SIGN_IN = 100;
     private FirebaseAuth auth;
+    private final List PROVIDERS = Arrays.asList(
+            new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()
+    );
 
     private final String TAG = "Login";
 
@@ -39,8 +46,7 @@ public class LoginActivity extends Activity {
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setProviders(
-                                    AuthUI.EMAIL_PROVIDER,
-                                    AuthUI.GOOGLE_PROVIDER)
+                                    PROVIDERS)
                             .setTheme(R.style.AppTheme)
                             .build(), RC_SIGN_IN);
         }

@@ -66,26 +66,17 @@ public class UploadManager extends Service implements UploadResponseHandler {
 
     private void uploadQueue() {
         Log.i(TAG, "Running upload queue");
-        File imageFolder = getImageFolder();
+        File receiptFolder = Receipt.getReceiptFolder();
 
-        if (imageFolder.list() != null) {
-            Log.i(TAG, imageFolder.list().length + " images in " + imageFolder.getAbsolutePath());
-            for (String imageAddress : imageFolder.list())
-                new UploadReceiptTask(this).uploadReceipt(new Receipt(imageFolder, imageAddress));
+        if (receiptFolder.list() != null) {
+            Log.i(TAG, receiptFolder.list().length + " images in " + receiptFolder.getAbsolutePath());
+            for (String imageAddress : receiptFolder.list())
+                new UploadReceiptTask(this).uploadReceipt(new Receipt(receiptFolder, imageAddress));
         } else {
-            Log.i(TAG, imageFolder.getAbsolutePath() + " is empty");
+            Log.i(TAG, receiptFolder.getAbsolutePath() + " is empty");
         }
 
         Log.i(TAG, "Queue uploaded");
-    }
-
-    private File getImageFolder() {
-        File imageFolder = new File(Environment.getExternalStorageDirectory(), "receipt_queue");
-
-        if (!imageFolder.exists())
-            imageFolder.mkdirs();
-
-        return imageFolder;
     }
 
     // UploadResponseHandler
