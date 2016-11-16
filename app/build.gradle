@@ -8,8 +8,8 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 20
-        versionName "0.31-20"
+        versionCode 21
+        versionName "0.32-b21"
     }
 
     buildTypes {
@@ -48,15 +48,16 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
 //    Android support libraries
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:support-v4:25.0.0'
-    compile 'com.android.support:design:25.0.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:design:25.0.1'
 
     compile 'com.basecamp:turbolinks:1.0.3'
 //    Firebase **Use 9.6.0 and ui 0.6.0 with AVD
     compile 'com.google.firebase:firebase-core:9.8.0'
     compile 'com.google.firebase:firebase-auth:9.8.0'
     compile 'com.google.firebase:firebase-storage:9.8.0'
+    compile 'com.google.firebase:firebase-database:9.8.0'
     compile 'com.firebase:firebase-client-android:2.5.2'
     compile 'com.firebaseui:firebase-ui-auth:1.0.0'
 

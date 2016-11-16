@@ -11,6 +11,8 @@ import com.autocounting.autocounting.network.RouteManager;
 import com.autocounting.autocounting.network.logging.FirebaseLogger;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -34,6 +36,7 @@ public class UploadReceiptTask {
 
     private User user;
     private Receipt receipt;
+    private DatabaseReference dbReference;
 
     private RouteManager routeManager;
 
@@ -54,18 +57,32 @@ public class UploadReceiptTask {
         responseHandler.onFileUploadStarted(receipt.getFilename());
         routeManager = new RouteManager(responseHandler.getContext());
 
+        dbReference = FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child(routeManager.getEnvironment())
+                .child(user.getSavedUid())
+                .child("receipts")
+                .push();
+
+        new ReceiptEvent(responseHandler.getContext(), dbReference.getKey()).receiptAdded();
+
+        Log.i(TAG, "Saving reference with key " + dbReference.getKey());
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl(RouteManager.FIREBASE_STORAGE_URL);
 
         logger.startUploadingOriginal();
         UploadTask uploadOriginal = null;
+
         try {
             uploadOriginal = storageRef.
-                    child(user.generateUserFileLocation("original", routeManager.storageUrl(), receipt.getFilename()))
+                    child(user.generateUserFileLocation(dbReference.getKey(), routeManager.storageBucket()))
                     .putBytes(IOUtils.toByteArray(new FileInputStream(receipt.getImageFile())));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         uploadOriginal.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -95,14 +112,13 @@ public class UploadReceiptTask {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(responseHandler.getContext());
 
-        Log.i(TAG, "Posting " + receipt.getFilename() + " for ");
         RequestBody form = new FormBody.Builder()
-                .add("receipt[image_file_name]", receipt.getFilename() + ".jpg")
-                .add("receipt[image_content_type]", "image/jpeg")
-                .add("receipt[image_file_size]", String.valueOf(receipt.getImageFile().length()))
-                .add("resize_images", "1")
-                .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false) ? "0" : "1")
+                .add("receipt[firebase_ref]", dbReference.getKey())
+                .add("page_one_file_name", "0.jpg")
                 .add("token", user.getToken())
+                .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false) ? "0" : "1")
+                .add("page_one_file_size", String.valueOf(receipt.getImageFile().length()))
+                // .add date & time
                 .build();
 
         Request request = new Request.Builder()

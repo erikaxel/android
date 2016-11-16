@@ -12,7 +12,7 @@ public class RouteManager {
     private static final String STAGING_BASE_URL = "https://staging.autocounting.com";
     private static final String PRODUCTION_BASE_URL = "https://system.autocounting.com";
 
-    private static final String RECEIPT_PATH = "/receipts";
+    private static final String RECEIPT_PATH = "/api/v1/receipts";
     private static final String ERROR_PATH = "/error";
 
     // Firebase Storage URLs
@@ -26,7 +26,7 @@ public class RouteManager {
     private static final String TAG = "ROUTES";
 
     public String getEnvironment() {
-        return environment;
+        return environment.toLowerCase();
     }
 
     public String receiptsUrl() {
@@ -38,7 +38,7 @@ public class RouteManager {
         this.environment = sharedPreferences.getString("environment_pref", "");
     }
 
-    public String storageUrl() {
+    public String storageBucket() {
         switch (environment) {
             case "Production":
                 return PRODUCTION_BUCKET;
