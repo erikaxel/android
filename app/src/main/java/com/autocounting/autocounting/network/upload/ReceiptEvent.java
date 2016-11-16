@@ -14,18 +14,18 @@ public class ReceiptEvent {
 
     private static String TAG = "ReceiptEvent";
     private Context context;
-    private String filename;
+    private String reference;
 
-    public ReceiptEvent(Context context, String filename) {
+    public ReceiptEvent(Context context, String reference) {
         this.context = context;
-        this.filename = filename;
+        this.reference = reference;
     }
 
     public void receiptAdded() {
-        Log.i(TAG, "Javascript: Receipt.add_receipt " + filename);
+        Log.i(TAG, "Javascript: Receipt.add_receipt " + reference);
         new Handler(Looper.getMainLooper()).post((new Runnable() {
             public void run() {
-                TurbolinksSession.getDefault(context).getWebView().loadUrl("javascript:Receipt.add_receipt({'receipt[image_file_name]':'" + filename + ".jpg'});");
+                TurbolinksSession.getDefault(context).getWebView().loadUrl("javascript:Receipt.add_receipt({'receipt[firebase_ref]':'" + reference + "'});");
             }
         }));
     }
