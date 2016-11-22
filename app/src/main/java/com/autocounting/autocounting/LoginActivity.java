@@ -69,8 +69,8 @@ public class LoginActivity extends Activity {
                     }
                 });
             } else {
-                Toast.makeText(this, "Failed to login", Toast.LENGTH_SHORT).show();
-                Log.i(TAG, "Sign in failed (RESULT_CANCELLED)");
+                Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "Login failed (RESULT_CANCELLED)");
             }
         }
     }
