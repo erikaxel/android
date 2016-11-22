@@ -8,8 +8,8 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 21
-        versionName "0.32-b21"
+        versionCode 22
+        versionName "0.32-b22"
     }
 
     dexOptions { jumboMode = true }
