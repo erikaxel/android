@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
     private CoordinatorLayout coordinatorLayout;
     private FirebaseAuth auth;
     private RouteManager routeManager;
-    private boolean isUpdated;
     private static final String TAG = "MainActivity";
 
     @Override
@@ -165,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
 
     @Override
     public void visitCompleted() {
-        updateReceiptList();
     }
 
     // The starting point for any href clicked inside a Turbolinks enabled site. In a simple case
@@ -208,16 +206,6 @@ public class MainActivity extends AppCompatActivity implements TurbolinksAdapter
                 visitPage();
             }
         });
-    }
-
-    private void updateReceiptList() {
-        String filename = "something";
-
-        String receiptFilename = getIntent().getStringExtra("receiptFilename");
-        if (receiptFilename != null && !isUpdated) {
-            isUpdated = true;
-            new ReceiptEvent(getApplicationContext(), receiptFilename).receiptAdded();
-        }
     }
 
     private void visitPage() {

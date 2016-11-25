@@ -3,9 +3,8 @@ package com.autocounting.autocounting.models;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 
-import com.firebase.client.annotations.NotNull;
+import android.util.Log;
 
 public class User {
 
@@ -32,19 +31,18 @@ public class User {
     }
 
     // Move to receipts
-    public String generateUserFileLocation(String type, String storagePath, String filename) {
+    public String generateUserFileLocation(String firebaseReference, String storagePath) {
         return new StringBuilder(storagePath)
-                        .append("/")
-                        .append(getSavedUid())
-                        .append("/")
-                        .append(filename)
-                        .append(".")
-                        .append(type)
-                        .append(".jpg")
+                .append("/")
+                .append(getSavedUid())
+                .append("/")
+                .append(firebaseReference)
+                .append("/pages")
+                .append("/0.original.jpg")
                 .toString();
     }
 
-    public static void clearSavedData(Context context){
+    public static void clearSavedData(Context context) {
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(context).edit();
         editor.putString("token", null);
@@ -99,11 +97,13 @@ public class User {
         this.email = email;
     }
 
-    public boolean isAdmin(){
-        return getSavedEmail().contains("@autocounting.com");
+    public boolean isAdmin() {
+        return getSavedEmail().contains("@autocounting.com")
+                || getSavedEmail().contains("@lucalabs.io")
+                || getSavedEmail().contains("tmbv93@gmail.com");
     }
 
-    public void logout(Context context){
+    public void logout(Context context) {
         Receipt.deleteReceiptFolder();
         clearSavedData(context);
     }
