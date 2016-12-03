@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Autocounting</string>
+    <string name="app_name">Luca expenses</string>
 
     <!-- Activity names -->
     <string name="title_activity_welcome">Autocounting</string>
