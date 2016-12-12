@@ -1,4 +1,4 @@
-package com.autocounting.autocounting;
+package com.autocounting.autocounting.activities;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -10,6 +10,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 
+import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.models.User;
 import com.basecamp.turbolinks.TurbolinksSession;
 

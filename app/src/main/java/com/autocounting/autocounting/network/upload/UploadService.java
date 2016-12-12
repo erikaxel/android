@@ -1,9 +1,8 @@
-package com.autocounting.autocounting.network;
+package com.autocounting.autocounting.network.upload;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -14,13 +13,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.autocounting.autocounting.models.Receipt;
-import com.autocounting.autocounting.network.upload.UploadReceiptTask;
-import com.autocounting.autocounting.network.upload.UploadResponseHandler;
+import com.autocounting.autocounting.network.NetworkStatus;
 
 import java.io.File;
 
-public class UploadManager extends Service implements UploadResponseHandler {
-    private final static String TAG = "UploadManager";
+public class UploadService extends Service implements UploadResponseHandler {
+    private final static String TAG = "UploadService";
     private ServiceHandler serviceHandler;
 
     private final class ServiceHandler extends Handler {
@@ -30,8 +28,9 @@ public class UploadManager extends Service implements UploadResponseHandler {
 
         @Override
         public void handleMessage(Message msg) {
-            synchronized (UploadManager.this) {
-                uploadQueue();
+            synchronized (UploadService.this) {
+                if (NetworkStatus.networkIsAvailable(getContext()))
+                    uploadQueue();
             }
         }
     }
@@ -43,7 +42,6 @@ public class UploadManager extends Service implements UploadResponseHandler {
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
         serviceHandler.sendMessage(msg);
-
         return Service.START_NOT_STICKY;
     }
 
@@ -70,8 +68,10 @@ public class UploadManager extends Service implements UploadResponseHandler {
 
         if (receiptFolder.list() != null) {
             Log.i(TAG, receiptFolder.list().length + " images in " + receiptFolder.getAbsolutePath());
-            for (String imageAddress : receiptFolder.list())
+            for (String imageAddress : receiptFolder.list()) {
+                Log.i(TAG, "Filename is supposed to be " + imageAddress);
                 new UploadReceiptTask(this).uploadReceipt(new Receipt(receiptFolder, imageAddress));
+            }
         } else {
             Log.i(TAG, receiptFolder.getAbsolutePath() + " is empty");
         }

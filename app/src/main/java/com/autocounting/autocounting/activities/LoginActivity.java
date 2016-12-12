@@ -1,4 +1,4 @@
-package com.autocounting.autocounting;
+package com.autocounting.autocounting.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.widget.Toast;
 import java.util.Arrays;
 import java.util.List;
 
+import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.models.User;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,7 +39,6 @@ public class LoginActivity extends Activity {
         super.onResume();
 
         if (auth.getCurrentUser() != null) {
-            Log.i(TAG, "User is " + auth.getCurrentUser().getDisplayName() + ". Logging in ...");
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
             Log.i(TAG, "User is null. Starting login");

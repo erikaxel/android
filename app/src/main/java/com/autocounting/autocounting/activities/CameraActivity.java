@@ -1,4 +1,4 @@
-package com.autocounting.autocounting;
+package com.autocounting.autocounting.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +33,9 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.models.Receipt;
+import com.autocounting.autocounting.network.NetworkManager;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.autocounting.autocounting.utils.ImageSaver;
 import com.autocounting.autocounting.utils.PermissionManager;
@@ -441,12 +443,19 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void goToMain() {
-        Log.i(TAG, "Going to Main Activity");
-        Intent toMainIntent = new Intent(this, MainActivity.class);
-        Log.i("ReceiptEvent", "imagefile get name " + imageFile.getName());
-        toMainIntent.putExtra("receiptFilename", imageFile.getName());
-        startActivity(toMainIntent);
-        finish();
+
+        if (NetworkManager.networkIsAvailable(this)) {
+            Log.i(TAG, "Going to Main Activity. Putting extra: " + imageFile.getName());
+            Intent toMainIntent = new Intent(this, OfflineActivity.class);
+            toMainIntent.putExtra("receiptFilename", imageFile.getName());
+            startActivity(toMainIntent);
+
+        } else {
+            Log.i(TAG, "Going to offline activity");
+            Intent toOfflineIntent = new Intent();
+            toOfflineIntent.putExtra("imageWasAdded", true);
+            startActivity(new Intent(this, OfflineActivity.class));
+        }
     }
 
     // Permissions

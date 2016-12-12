@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="1dip"
+    android:paddingBottom="1dip"
+    android:paddingStart="8dip"
+    android:paddingEnd="8dip"
+    android:weightSum="1">
+
+    <ImageView android:id="@+id/receipt_thumb"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_weight="0.11" />
+
+    <TextView android:id="@+id/receipt_text"
+        android:layout_width="274dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textColor="@color/darkgrey"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+</LinearLayout>

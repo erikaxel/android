@@ -5,7 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
-public class NetworkManager {
+public class NetworkStatus {
 
     public final static int OK = 0;
     public final static int INTERNET_UNAVAILABLE = 1;
