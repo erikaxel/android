@@ -1,4 +1,4 @@
-package com.autocounting.autocounting.utils;
+package com.autocounting.autocounting.managers;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

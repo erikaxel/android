@@ -1,4 +1,4 @@
-package com.autocounting.autocounting;
+package com.autocounting.autocounting.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +33,11 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.autocounting.autocounting.R;
+import com.autocounting.autocounting.managers.PermissionManager;
 import com.autocounting.autocounting.models.Receipt;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.autocounting.autocounting.utils.ImageSaver;
-import com.autocounting.autocounting.utils.PermissionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -134,7 +135,7 @@ public class CameraActivity extends AppCompatActivity {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
                     Log.i(TAG, "Saving image");
-                    handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage(), imageFile));
+                    handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage()));
                 }
             };
 
@@ -404,9 +405,8 @@ public class CameraActivity extends AppCompatActivity {
                     handler
             );
 
-            goToMain();
-
-            Log.i(TAG, "Done with all the picture stuff");
+            Log.i(TAG, "Upload and go to main");
+            startActivity(new Intent(this, MainActivity.class));
 
         } catch (CameraAccessException e) {
             handleCameraAccessException(e);
@@ -438,15 +438,6 @@ public class CameraActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public void goToMain() {
-        Log.i(TAG, "Going to Main Activity");
-        Intent toMainIntent = new Intent(this, MainActivity.class);
-        Log.i("ReceiptEvent", "imagefile get name " + imageFile.getName());
-        toMainIntent.putExtra("receiptFilename", imageFile.getName());
-        startActivity(toMainIntent);
-        finish();
     }
 
     // Permissions

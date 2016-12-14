@@ -1,4 +1,4 @@
-package com.autocounting.autocounting;
+package com.autocounting.autocounting.activities;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -8,10 +8,10 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
-import android.util.Log;
 
+import com.autocounting.autocounting.R;
+import com.autocounting.autocounting.managers.EnvironmentManager;
 import com.autocounting.autocounting.models.User;
-import com.basecamp.turbolinks.TurbolinksSession;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -34,7 +34,6 @@ public class SettingsActivity extends PreferenceActivity {
 
     @Override
     protected void onStop() {
-        TurbolinksSession.resetDefault();
         super.onStop();
     }
 
@@ -45,10 +44,22 @@ public class SettingsActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
 
-            Preference pref = findPreference("version_number");
-            pref.setSummary(getVersionName());
+            Preference versionDisplay = findPreference("version_number");
+            versionDisplay.setSummary(getVersionName());
 
-            if(!User.getCurrentUser(this.getActivity().getApplicationContext()).isAdmin())
+            Preference emailDisplay = findPreference("user_email");
+            emailDisplay.setSummary(User.getCurrentUser().getEmail());
+
+            Preference environmentPref = findPreference("environment_pref");
+            environmentPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    EnvironmentManager.reset();
+                    return true;
+                }
+            });
+
+            if(!User.isAdmin())
                 removeAdminSettings();
         }
 

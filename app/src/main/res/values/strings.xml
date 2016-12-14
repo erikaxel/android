@@ -2,7 +2,7 @@
     <string name="app_name">Luca expenses</string>
 
     <!-- Activity names -->
-    <string name="title_activity_welcome">Autocounting</string>
+    <string name="title_activity_welcome">Luca Expenses</string>
     <string name="title_activity_settings">Application Settings</string>
 
     <string name="login_text">Login</string>
@@ -10,11 +10,7 @@
     <string name="settings_text">Settings</string>
 
     <!-- Offline Activity -->
-    <string name="offline_notification">You are offline.</string>
-    <string name="receipts_status_text">We have saved your %1$d receipts and will upload them when you go online.</string>
-    <string name="receipts_status__is_one_text">We have saved your receipt and will upload it when you go online.</string>
-    <string name="receipts_status_is_zero_text">All receipts are synchronised.</string>
-    <string name="go_online_prompt">Go online</string>
+    <string name="receipt_thumbnail">Receipt thumbnail</string>
 
     <!-- Settings Activity -->
     <string name="save_to_album_pref">Save images to album</string>
@@ -29,4 +25,6 @@
     <string name="facebook_application_id" translatable="false">335970566774032</string>
 
     <string name="version">Version</string>
+    <string name="email">Email</string>
+
 </resources>

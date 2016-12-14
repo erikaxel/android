@@ -11,11 +11,8 @@ import android.util.Log;
 import com.autocounting.autocounting.models.Receipt;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 public class ImageSaver implements Runnable {
@@ -23,12 +20,10 @@ public class ImageSaver implements Runnable {
     private static final String TAG = "ImageSaver";
     private final Context context;
     private final Image image;
-    private final File imageFile;
 
-    public ImageSaver(Context context, Image image, File imageFile) {
+    public ImageSaver(Context context, Image image) {
         this.context = context;
         this.image = image;
-        this.imageFile = imageFile;
     }
 
     @Override
@@ -36,50 +31,30 @@ public class ImageSaver implements Runnable {
         ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
         byte[] bytes = new byte[byteBuffer.remaining()];
         byteBuffer.get(bytes);
+        Receipt rec = new Receipt(bytes, context);
+        rec.save();
+        Log.i(TAG, "Receipt saved " + Receipt.count(Receipt.class));
 
-        FileOutputStream fileOutputStream = null;
-
-        try {
-            fileOutputStream = new FileOutputStream(imageFile);
-            fileOutputStream.write(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-
-            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("save_to_album_pref", false))
-                try {
-                    saveCopyToAlbum(imageFile, new Receipt().makeFile(Environment.getExternalStorageDirectory()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            image.close();
-
-            if (fileOutputStream != null)
-                try {
-                    fileOutputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("save_to_album_pref", false)) {
+            try {
+                saveCopyToAlbum(bytes);
+            } catch (IOException e) {
+                Log.w(TAG, "Couldn't save copy");
+                e.printStackTrace();
+            }
         }
+        image.close();
     }
 
-    private void saveCopyToAlbum(File source, File destination) throws IOException {
-        Log.i(TAG, "Saving copy ...");
-        InputStream in = new FileInputStream(source);
-        OutputStream out = new FileOutputStream(destination);
+    private void saveCopyToAlbum(byte[] bytes) throws IOException {
+        File imageFile = new Receipt().makeFile(Environment.getExternalStorageDirectory());
 
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
+        FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+        fileOutputStream.write(bytes);
+        fileOutputStream.close();
 
         Intent mediaStoreUpdateIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        mediaStoreUpdateIntent.setData(Uri.fromFile(new File(destination.getAbsolutePath())));
+        mediaStoreUpdateIntent.setData(Uri.fromFile(new File(imageFile.getAbsolutePath())));
         context.sendBroadcast(mediaStoreUpdateIntent);
     }
 }

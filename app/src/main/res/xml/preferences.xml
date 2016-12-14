@@ -38,5 +38,10 @@
             android:key="version_number"
             android:title="@string/version"
             android:summary="" />
+
+        <Preference
+            android:key="user_email"
+            android:title="@string/email"
+            android:summary="" />
     </PreferenceCategory>
 </PreferenceScreen>

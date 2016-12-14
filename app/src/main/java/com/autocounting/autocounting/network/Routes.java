@@ -2,10 +2,17 @@ package com.autocounting.autocounting.network;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class RouteManager {
+import com.autocounting.autocounting.managers.EnvironmentManager;
+
+/**
+ * Contains routes to the Rails server
+ * @deprecated Will be phased out entirely.
+ */
+public class Routes {
 
     // Website URLs
     private static final String DEVELOPMENT_BASE_URL = "http://192.168.10.143:3000";
@@ -13,7 +20,6 @@ public class RouteManager {
     private static final String PRODUCTION_BASE_URL = "https://expenses.lucalabs.io";
 
     private static final String RECEIPT_PATH = "/api/v1/receipts";
-    private static final String ERROR_PATH = "/error";
 
     // Firebase Storage URLs
     public static final String FIREBASE_STORAGE_URL = "gs://eu-autocounting";
@@ -21,30 +27,19 @@ public class RouteManager {
     private static final String STAGING_BUCKET = "/staging/receipts";
     private static final String PRODUCTION_BUCKET = "/production/receipts";
 
-    private String environment;
+    private static final String TAG = "Routes";
 
-    private static final String TAG = "ROUTES";
-
-    public String getEnvironment() {
-        return environment.toLowerCase();
+    public static String receiptsUrl(Context context) {
+        return baseUrl(context) + RECEIPT_PATH;
     }
 
-    public String receiptsUrl() {
-        return baseUrl() + RECEIPT_PATH;
-    }
-
-    public RouteManager(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.environment = sharedPreferences.getString("environment_pref", "");
-    }
-
-    public String storageBucket() {
-        switch (environment) {
-            case "Production":
+    public static String storageBucket(Context context) {
+        switch (EnvironmentManager.currentEnvironment(context)) {
+            case "production":
                 return PRODUCTION_BUCKET;
-            case "Staging":
+            case "staging":
                 return STAGING_BUCKET;
-            case "Development":
+            case "development":
                 return DEVELOPMENT_BUCKET;
             default:
                 Log.w(TAG, "Using default bucket");
@@ -52,8 +47,8 @@ public class RouteManager {
         }
     }
 
-    public String baseUrl() {
-        switch (environment) {
+    private static String baseUrl(Context context) {
+        switch (EnvironmentManager.currentEnvironment(context)) {
             case "Production":
                 return PRODUCTION_BASE_URL;
             case "Staging":
@@ -64,9 +59,5 @@ public class RouteManager {
                 Log.w(TAG, "Using default base url");
                 return PRODUCTION_BASE_URL;
         }
-    }
-
-    public String errorUrl() {
-        return baseUrl() + ERROR_PATH;
     }
 }

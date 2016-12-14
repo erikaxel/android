@@ -8,8 +8,9 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 25
-        versionName "0.32-b25"
+        versionCode 28
+        versionName "0.50-b28"
+        multiDexEnabled true
     }
 
     dexOptions { jumboMode = true }
@@ -50,24 +51,26 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
 //    Android support libraries
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:support-v4:25.0.1'
-    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:support-v4:25.1.0'
+    compile 'com.android.support:design:25.1.0'
 
-    compile 'com.basecamp:turbolinks:1.0.3'
-//    Firebase **Use 9.6.0 and ui 0.6.0 with AVD
-    compile 'com.google.firebase:firebase-core:9.8.0'
-    compile 'com.google.firebase:firebase-auth:9.8.0'
-    compile 'com.google.firebase:firebase-storage:9.8.0'
-    compile 'com.google.firebase:firebase-database:9.8.0'
+    // Firebase
+    compile 'com.google.firebase:firebase-core:10.0.1'
+    compile 'com.google.firebase:firebase-auth:10.0.1'
+    compile 'com.google.firebase:firebase-storage:10.0.1'
+    compile 'com.google.firebase:firebase-database:10.0.1'
     compile 'com.firebase:firebase-client-android:2.5.2'
-    compile 'com.firebaseui:firebase-ui-auth:1.0.0'
+    compile 'com.firebaseui:firebase-ui:1.0.1'
 
     // https://mvnrepository.com/artifact/commons-io/commons-io
     compile 'commons-io:commons-io:2.4'
 
-//    For HTTP-requests
+    // For HTTP-requests
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+
+    // Database ORM
+    compile 'com.github.satyan:sugar:1.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

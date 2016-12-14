@@ -5,21 +5,19 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.autocounting.autocounting.managers.EnvironmentManager;
 import com.autocounting.autocounting.models.Receipt;
 import com.autocounting.autocounting.models.User;
-import com.autocounting.autocounting.network.RouteManager;
-import com.autocounting.autocounting.network.logging.FirebaseLogger;
+import com.autocounting.autocounting.network.NetworkStatus;
+import com.autocounting.autocounting.network.Routes;
+import com.autocounting.autocounting.network.database.ReceiptDatabase;
+import com.autocounting.autocounting.network.storage.ReceiptStorage;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import okhttp3.FormBody;
@@ -28,60 +26,59 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+//import com.autocounting.autocounting.network.logging.FirebaseLogger;
+
 public class UploadReceiptTask {
 
     private static final String TAG = "UploadReceiptTask";
     private UploadResponseHandler responseHandler;
-    private FirebaseLogger logger;
+//    private FirebaseLogger logger;
 
-    private User user;
+    private FirebaseUser user;
     private Receipt receipt;
-    private DatabaseReference dbReference;
-
-    private RouteManager routeManager;
 
     public UploadReceiptTask(UploadResponseHandler responseHandler) {
         Log.i(TAG, "Running upload task " + this.toString());
         this.responseHandler = responseHandler;
-        user = User.getCurrentUser(responseHandler.getContext());
+        user = User.getCurrentUser();
     }
 
     public void uploadReceipt(Receipt receipt) {
         this.receipt = receipt;
-        startLogs();
+//        startLogs();
         start();
     }
 
     private void start() {
-        Log.i(TAG, "Initialising receipt " + receipt.getFilename());
         responseHandler.onFileUploadStarted(receipt.getFilename());
-        routeManager = new RouteManager(responseHandler.getContext());
 
-        dbReference = FirebaseDatabase
-                .getInstance()
-                .getReference()
-                .child(routeManager.getEnvironment())
-                .child(user.getSavedUid())
-                .child("receipts")
-                .push();
+        DatabaseReference dbRef = ReceiptDatabase
+                .getUserReference(user,
+                        EnvironmentManager.currentEnvironment(responseHandler.getContext()))
+                .child(receipt.getFirebase_ref());
+        dbRef.keepSynced(true);
 
-        new ReceiptEvent(responseHandler.getContext(), dbReference.getKey()).receiptAdded();
-
-        Log.i(TAG, "Saving reference with key " + dbReference.getKey());
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl(RouteManager.FIREBASE_STORAGE_URL);
-
-        logger.startUploadingOriginal();
-        UploadTask uploadOriginal = null;
-
-        try {
-            uploadOriginal = storageRef.
-                    child(user.generateUserFileLocation(dbReference.getKey(), routeManager.storageBucket()))
-                    .putBytes(IOUtils.toByteArray(new FileInputStream(receipt.getImageFile())));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!NetworkStatus.networkIsAvailable(responseHandler.getContext())){
+            Log.w(TAG, "No network detected");
+            return;
         }
+
+//        logger.startUploadingOriginal();
+
+        UploadTask uploadOriginal = ReceiptStorage.getReceiptReference(
+                user,
+                EnvironmentManager.currentEnvironment(responseHandler.getContext()),
+                receipt.getFirebase_ref())
+                .child("pages")
+                .child("0.original.jpg")
+                .putBytes(receipt.getImage());
+
+        Log.d(TAG, "Uploading to " + ReceiptStorage.getReceiptReference(
+                user,
+                EnvironmentManager.currentEnvironment(responseHandler.getContext()),
+                receipt.getFirebase_ref())
+                .child("pages")
+                .child("0.original.jpg").getPath());
 
         uploadOriginal.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -91,20 +88,22 @@ public class UploadReceiptTask {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                logger.onOriginalUploaded();
+//                    logger.onOriginalUploaded();
                 postReceipt();
-                receipt.deleteFromQueue();
+                receipt.setIsUploaded(true);
+                receipt.update();
+                Log.i(TAG, "receipt is uploaded: " + receipt.getIsUploaded());
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
     }
 
-    private void startLogs() {
-        logger = new FirebaseLogger(responseHandler.getContext(),
-                user.getUid(),
-                receipt.getFilename());
-        logger.start();
-    }
+//    private void startLogs() {
+//        logger = new FirebaseLogger(responseHandler.getContext(),
+//                user.getUid(),
+//                receipt.getFilename());
+//        logger.start();
+//    }
 
     private void postReceipt() {
         OkHttpClient client = new OkHttpClient();
@@ -113,22 +112,20 @@ public class UploadReceiptTask {
                 .getDefaultSharedPreferences(responseHandler.getContext());
 
         RequestBody form = new FormBody.Builder()
-                .add("receipt[firebase_ref]", dbReference.getKey())
+                .add("receipt[firebase_ref]", receipt.getFirebase_ref())
                 .add("page_one_file_name", "0.jpg")
-                .add("token", user.getToken())
+                .add("token", User.getToken(responseHandler.getContext()))
                 .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false) ? "0" : "1")
-                .add("page_one_file_size", String.valueOf(receipt.getImageFile().length()))
-                // .add date & time
+                .add("page_one_file_size", String.valueOf(receipt.getImage().length))
                 .build();
 
         Request request = new Request.Builder()
-                .url(routeManager.receiptsUrl())
+                .url(Routes.receiptsUrl(responseHandler.getContext()))
                 .post(form)
                 .build();
 
         try {
             Response response = client.newCall(request).execute();
-            logger.onReceiptUploaded();
             response.close();
         } catch (IOException e) {
             e.printStackTrace();

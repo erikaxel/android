@@ -1,9 +1,8 @@
-package com.autocounting.autocounting.network;
+package com.autocounting.autocounting.network.upload;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -14,13 +13,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.autocounting.autocounting.models.Receipt;
-import com.autocounting.autocounting.network.upload.UploadReceiptTask;
-import com.autocounting.autocounting.network.upload.UploadResponseHandler;
 
 import java.io.File;
 
-public class UploadManager extends Service implements UploadResponseHandler {
-    private final static String TAG = "UploadManager";
+public class UploadService extends Service implements UploadResponseHandler {
+    private final static String TAG = "UploadService";
     private ServiceHandler serviceHandler;
 
     private final class ServiceHandler extends Handler {
@@ -30,7 +27,7 @@ public class UploadManager extends Service implements UploadResponseHandler {
 
         @Override
         public void handleMessage(Message msg) {
-            synchronized (UploadManager.this) {
+            synchronized (UploadService.this) {
                 uploadQueue();
             }
         }
@@ -39,11 +36,9 @@ public class UploadManager extends Service implements UploadResponseHandler {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Starting ...");
-
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
         serviceHandler.sendMessage(msg);
-
         return Service.START_NOT_STICKY;
     }
 
@@ -68,12 +63,11 @@ public class UploadManager extends Service implements UploadResponseHandler {
         Log.i(TAG, "Running upload queue");
         File receiptFolder = Receipt.getReceiptFolder();
 
-        if (receiptFolder.list() != null) {
-            Log.i(TAG, receiptFolder.list().length + " images in " + receiptFolder.getAbsolutePath());
-            for (String imageAddress : receiptFolder.list())
-                new UploadReceiptTask(this).uploadReceipt(new Receipt(receiptFolder, imageAddress));
-        } else {
-            Log.i(TAG, receiptFolder.getAbsolutePath() + " is empty");
+        Log.i(TAG, Receipt.find(Receipt.class, "is_uploaded = 0").size() + " receipts waiting for upload");
+        Log.i(TAG, Receipt.find(Receipt.class, "is_uploaded = 1").size() + " receipts cached, but uploaded");
+        for (Receipt receipt : Receipt.find(Receipt.class, "is_uploaded = 0")) {
+            Log.i(TAG, "Upoading receipt: " + receipt.getFirebase_ref());
+            new UploadReceiptTask(this).uploadReceipt(receipt);
         }
 
         Log.i(TAG, "Queue uploaded");
