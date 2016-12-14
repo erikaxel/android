@@ -5,6 +5,9 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+/**
+ * Runs animations asynchronously.
+ */
 public class AnimationRunner extends Thread implements Runnable{
 
     private final Context context;
