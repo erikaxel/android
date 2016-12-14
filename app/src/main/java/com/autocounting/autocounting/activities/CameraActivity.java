@@ -36,8 +36,6 @@ import android.widget.Toast;
 import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.managers.PermissionManager;
 import com.autocounting.autocounting.models.Receipt;
-import com.autocounting.autocounting.network.NetworkStatus;
-import com.autocounting.autocounting.network.upload.UploadService;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.autocounting.autocounting.utils.ImageSaver;
 
@@ -137,7 +135,7 @@ public class CameraActivity extends AppCompatActivity {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
                     Log.i(TAG, "Saving image");
-                    handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage(), imageFile));
+                    handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage()));
                 }
             };
 

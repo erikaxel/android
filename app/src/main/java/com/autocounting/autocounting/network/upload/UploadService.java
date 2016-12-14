@@ -63,12 +63,11 @@ public class UploadService extends Service implements UploadResponseHandler {
         Log.i(TAG, "Running upload queue");
         File receiptFolder = Receipt.getReceiptFolder();
 
-        Log.i(TAG, Receipt.count(Receipt.class) + " receipts waiting for upload");
-        if(Receipt.count(Receipt.class) > 0) {
-            for (Receipt receipt : Receipt.listAll(Receipt.class)) {
-                Log.i(TAG, "One fine receipt");
-                new UploadReceiptTask(this).uploadReceipt(receipt);
-            }
+        Log.i(TAG, Receipt.find(Receipt.class, "is_uploaded = 0").size() + " receipts waiting for upload");
+        Log.i(TAG, Receipt.find(Receipt.class, "is_uploaded = 1").size() + " receipts cached, but uploaded");
+        for (Receipt receipt : Receipt.find(Receipt.class, "is_uploaded = 0")) {
+            Log.i(TAG, "Upoading receipt: " + receipt.getFirebase_ref());
+            new UploadReceiptTask(this).uploadReceipt(receipt);
         }
 
         Log.i(TAG, "Queue uploaded");

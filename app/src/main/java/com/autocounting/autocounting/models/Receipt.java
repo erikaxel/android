@@ -2,6 +2,7 @@ package com.autocounting.autocounting.models;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
@@ -16,8 +17,6 @@ import com.orm.dsl.Ignore;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 @IgnoreExtraProperties
 public class Receipt extends SugarRecord {
@@ -31,25 +30,26 @@ public class Receipt extends SugarRecord {
     @Ignore
     private File imageFile;
 
-    @Ignore
-    private Context context;
+    private boolean isUploaded; // column name = is_uploaded
+
+    private byte[] image; // column name = image
 
     // Firebase attributes
     @Ignore
     private String merchant_name;
 
-    private String firebase_ref;
-
-    private byte[] image;
-
+    private String firebase_ref;  // column name = firebaseref
     @Ignore
     private long amount_cents;
+    @Ignore
+    private String interpreted_at;
 
     public Receipt() {
     }
 
-    public Receipt(byte[] image, Context context){
+    public Receipt(byte[] image, Context context) {
         this.image = image;
+        this.isUploaded = false;
         DatabaseReference dbRef = ReceiptDatabase
                 .newReceiptReference(User.getCurrentUser(),
                         EnvironmentManager.currentEnvironment(context));
@@ -58,14 +58,9 @@ public class Receipt extends SugarRecord {
     }
 
     public Receipt(File folder, String filename) {
-        this(folder, filename, null);
-    }
-
-    public Receipt(File folder, String filename, Context context) {
         Log.i(TAG, "New receipt with filename" + filename);
         this.filename = filename;
         this.imageFile = new File(folder, filename);
-        this.context = context;
     }
 
     public void deleteFromQueue() {
@@ -90,28 +85,14 @@ public class Receipt extends SugarRecord {
         return imageFile;
     }
 
-    public Bitmap getThumbnail(Context context) {
-        Bitmap bitmap = ImageHandler.getBitmapFromFile(context, imageFile);
+    public Bitmap getThumbnail() {
+        Bitmap bitmap = BitmapFactory.decodeByteArray(getImage(), 0, getImage().length);
         try {
             return ImageHandler.correctRotation((ImageHandler.makeThumbnail(bitmap)));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return bitmap;
-    }
-
-    public Bitmap getThumbnail() {
-        return getThumbnail(context);
-    }
-
-    public static List<Receipt> getAll(Context context) {
-        File imageFolder = getReceiptFolder();
-        ArrayList<Receipt> receipts = new ArrayList<>();
-
-        if (imageFolder.list() != null)
-            for (String imageAdress : imageFolder.list())
-                receipts.add(0, new Receipt(imageFolder, imageAdress, context));
-        return receipts;
     }
 
     public static File getReceiptFolder() {
@@ -154,13 +135,13 @@ public class Receipt extends SugarRecord {
     }
 
     public String getAmountString() {
-        if (getAmount_cents()== 0)
+        if (getAmount_cents() == 0)
             return "";
         else return new DecimalFormat("#.00").format((double) getAmount_cents() / 100);
     }
 
-    public String getMerchantString(){
-        if(getMerchant_name() == null)
+    public String getMerchantString() {
+        if (getMerchant_name() == null)
             return "New receipt";
         else return getMerchant_name();
     }
@@ -171,5 +152,25 @@ public class Receipt extends SugarRecord {
 
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    public boolean getIsUploaded() {
+        return isUploaded;
+    }
+
+    public void setIsUploaded(boolean isUploaded) {
+        this.isUploaded = isUploaded;
+    }
+
+    public String getInterpreted_at() {
+        return interpreted_at;
+    }
+
+    public void setInterpreted_at(String interpreted_at) {
+        this.interpreted_at = interpreted_at;
+    }
+
+    public boolean isInterpreted(){
+        return getInterpreted_at() != null;
     }
 }

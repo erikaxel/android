@@ -24,7 +24,6 @@
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:layout_height="wrap_content"
-        android:text="Matkroken"
         android:textColor="@color/black"
         android:textSize="22sp" />
 
@@ -33,7 +32,6 @@
         android:gravity="center_vertical"
         android:layout_width="59dp"
         android:layout_height="match_parent"
-        android:text="NOK 13,70"
         android:textAlignment="center"
         android:textColor="@color/violetRed"
         android:textSize="18sp"

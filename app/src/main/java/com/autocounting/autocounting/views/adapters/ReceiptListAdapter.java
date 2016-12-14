@@ -1,17 +1,16 @@
 package com.autocounting.autocounting.views.adapters;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
 
 import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.managers.EnvironmentManager;
 import com.autocounting.autocounting.models.Receipt;
 import com.autocounting.autocounting.network.storage.ReceiptStorage;
+import com.autocounting.autocounting.utils.ImageFetcher;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
@@ -31,37 +30,56 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
 
     @Override
     protected void populateView(View v, Receipt receipt, int position) {
-        if(receipt.getFirebase_ref() != null) {
-            ((TextView) v.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString());
-            ((TextView) v.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
+        if (receipt == null || receipt.getFirebase_ref() == null)
+            return;
 
-            List<Receipt> cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());
+        ((TextView) v.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString());
+        ((TextView) v.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
 
-            if(!cachedReceipts.isEmpty()) {
-                Receipt cachedReceipt = cachedReceipts.get(0);
-                Bitmap cachedBitmap = BitmapFactory.decodeByteArray(cachedReceipt.getImage(), 0, cachedReceipt.getImage().length);
-                ((ImageView) v.findViewById(R.id.receipt_thumb)).setImageBitmap(cachedBitmap);
-            }
+        List<Receipt> cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());
 
-            else {
-
-                StorageReference storageReference = ReceiptStorage
-                        .getUserReference(FirebaseAuth.getInstance().getCurrentUser(),
-                                EnvironmentManager.currentEnvironment(mActivity))
-                        .child(receipt.getFirebase_ref())
-                        .child("pages")
-                        .child("0.thumbnail.jpg");
-
-                Glide.with(mActivity)
-                        .using(new FirebaseImageLoader())
-                        .load(storageReference)
-                        .placeholder(R.drawable.ic_menu_send)
-                        .into((ImageView) v.findViewById(R.id.receipt_thumb));
-
-            }
-        } else {
-            Log.w(TAG, "Receipt without firebase ref detected");
+        if (cachedReceipts.isEmpty())
+            setThumbnailFromFirebase(v, receipt);
+        else {
+            setThumbnailFromCache(v, cachedReceipts, receipt);
         }
+    }
+
+    /**
+     * Sets receipt thumbnail from Firebase.
+     * Caches it in memory with Glide.
+     */
+    private void setThumbnailFromFirebase(View v, Receipt receipt) {
+        StorageReference storageReference = ReceiptStorage
+                .getUserReference(FirebaseAuth.getInstance().getCurrentUser(),
+                        EnvironmentManager.currentEnvironment(mActivity))
+                .child(receipt.getFirebase_ref())
+                .child("pages")
+                .child("0.thumbnail.jpg");
+
+        Glide.with(mActivity)
+                .using(new FirebaseImageLoader())
+                .load(storageReference)
+                .into((ImageView) v.findViewById(R.id.receipt_thumb));
+    }
+
+
+    /**
+     * Sets receipt thumbnail from SQLite database.
+     * If receipt has been interpreted on server, the cached receipt is deleted and the one
+     * from firebase is used instead.
+     */
+    private void setThumbnailFromCache(View v, List<Receipt> cachedReceipts, Receipt receipt) {
+        Log.i(TAG, "Setting thumbnail from cache. Interpreted? " + receipt.isInterpreted());
+        Receipt cachedReceipt = cachedReceipts.get(0);
+        if(receipt.isInterpreted()){
+            setThumbnailFromFirebase(v, receipt);
+            Log.i(TAG, "Deleting ...");
+            cachedReceipt.delete();
+            return;
+        }
+
+        new ImageFetcher((ImageView) v.findViewById(R.id.receipt_thumb)).execute(cachedReceipt);
     }
 
     /**
@@ -69,6 +87,9 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
      */
     @Override
     public Receipt getItem(int position) {
-        return super.getItem(super.getCount() - position - 1);
+        Object obj = super.getItem(super.getCount() - position - 1);
+        if (obj instanceof Receipt)
+            return super.getItem(super.getCount() - position - 1);
+        else return null;
     }
 }

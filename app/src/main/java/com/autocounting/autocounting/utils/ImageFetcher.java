@@ -8,7 +8,8 @@ import com.autocounting.autocounting.models.Receipt;
 
 import java.lang.ref.WeakReference;
 
-/*
+/**
+ * Asynchronously fetches a Bitmap from receipt, and loads it into an ImageView
  * Based on code from https://developer.android.com/training/displaying-bitmaps/process-bitmap.html
  */
 
@@ -21,7 +22,7 @@ public class ImageFetcher extends AsyncTask<Receipt, Void, Bitmap> {
         imageViewReference = new WeakReference<ImageView>(imageView);
     }
 
-    // Decode image in background.
+    // Get image in background.
     @Override
     protected Bitmap doInBackground(Receipt... params) {
         receipt = params[0];

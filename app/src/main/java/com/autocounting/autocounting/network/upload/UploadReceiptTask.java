@@ -50,9 +50,6 @@ public class UploadReceiptTask {
     }
 
     private void start() {
-        Log.d(TAG, "Here's all we know about our receipt");
-        Log.d(TAG, "It has a name: " + receipt.getFirebase_ref());
-        Log.d(TAG, "It has this many bytes: " + receipt.getImage().length);
         responseHandler.onFileUploadStarted(receipt.getFilename());
 
         DatabaseReference dbRef = ReceiptDatabase
@@ -93,7 +90,9 @@ public class UploadReceiptTask {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 //                    logger.onOriginalUploaded();
                 postReceipt();
-                Receipt.delete(receipt);
+                receipt.setIsUploaded(true);
+                receipt.update();
+                Log.i(TAG, "receipt is uploaded: " + receipt.getIsUploaded());
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
@@ -127,8 +126,6 @@ public class UploadReceiptTask {
 
         try {
             Response response = client.newCall(request).execute();
-            Log.i(TAG, "Current token: " + User.getToken(responseHandler.getContext()));
-            Log.i(TAG, response.body().string());
             response.close();
         } catch (IOException e) {
             e.printStackTrace();
