@@ -35,15 +35,15 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
             ((TextView) v.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString());
             ((TextView) v.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
 
-//            List<Receipt> cachedReceipts = Receipt.find(Receipt.class, "2 + 2 = 4");
-//
-//            if(!cachedReceipts.isEmpty()) {
-//                Receipt cachedReceipt = cachedReceipts.get(0);
-//                Bitmap cachedBitmap = BitmapFactory.decodeByteArray(cachedReceipt.getImage(), 0, cachedReceipt.getImage().length);
-//                ((ImageView) v.findViewById(R.id.receipt_thumb)).setImageBitmap(cachedBitmap);
-//            }
+            List<Receipt> cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());
 
-//            else {
+            if(!cachedReceipts.isEmpty()) {
+                Receipt cachedReceipt = cachedReceipts.get(0);
+                Bitmap cachedBitmap = BitmapFactory.decodeByteArray(cachedReceipt.getImage(), 0, cachedReceipt.getImage().length);
+                ((ImageView) v.findViewById(R.id.receipt_thumb)).setImageBitmap(cachedBitmap);
+            }
+
+            else {
 
                 StorageReference storageReference = ReceiptStorage
                         .getUserReference(FirebaseAuth.getInstance().getCurrentUser(),
@@ -57,8 +57,8 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
                         .load(storageReference)
                         .placeholder(R.drawable.ic_menu_send)
                         .into((ImageView) v.findViewById(R.id.receipt_thumb));
-//
-//            }
+
+            }
         } else {
             Log.w(TAG, "Receipt without firebase ref detected");
         }

@@ -8,8 +8,8 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 26
-        versionName "0.35-b26"
+        versionCode 28
+        versionName "0.50-b28"
         multiDexEnabled true
     }
 
@@ -51,9 +51,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
 //    Android support libraries
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:support-v4:25.0.1'
-    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:support-v4:25.1.0'
+    compile 'com.android.support:design:25.1.0'
 
     // Firebase
     compile 'com.google.firebase:firebase-core:10.0.1'
