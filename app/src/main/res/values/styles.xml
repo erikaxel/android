@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="titleTextColor">@color/white</item>
         <item name="colorControlNormal">@color/colorPrimary</item>
-        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="colorButtonNormal">@color/white</item>
         <item name="android:actionOverflowButtonStyle">@style/ActionButtonLight</item>
     </style>
 

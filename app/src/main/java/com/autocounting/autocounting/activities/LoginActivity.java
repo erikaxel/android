@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 import java.util.Arrays;
@@ -19,7 +18,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GetTokenResult;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends FragmentActivity {
 
     private static final int RC_SIGN_IN = 100;
     private FirebaseAuth auth;
@@ -41,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
 
         if (auth.getCurrentUser() != null) {
-
+            startActivity(new Intent(this, MainActivity.class));
         } else {
             Log.i(TAG, "User is null. Starting login");
             startActivityForResult(

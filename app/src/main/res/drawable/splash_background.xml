@@ -9,5 +9,4 @@
             android:gravity="center"
             android:src="@mipmap/splash_icon"/>
     </item>
-
 </layer-list>

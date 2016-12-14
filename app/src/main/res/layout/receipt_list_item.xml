@@ -18,22 +18,45 @@
         android:contentDescription="@string/receipt_thumbnail"
         android:scaleType="fitXY"/>
 
-    <TextView
-        android:id="@+id/receipt_text"
-        android:layout_width="224dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="Example Receipt"
+            android:id="@+id/receipt_text"
+            android:layout_width="224dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:textColor="@color/darkgrey"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:text="29.09.1993"
+            android:id="@+id/receipt_date"
+            android:layout_width="224dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:textColor="@color/darkgrey"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
     <TextView
+        android:text="99,99"
         android:id="@+id/receipt_price"
-        android:gravity="center_vertical"
+        android:textAlignment="textEnd"
         android:layout_width="59dp"
-        android:layout_height="match_parent"
-        android:textAlignment="center"
-        android:textColor="@color/violetRed"
+        android:layout_height="wrap_content"
+        android:textColor="@color/darkgrey"
         android:textSize="18sp"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:textStyle="bold"/>
 </LinearLayout>

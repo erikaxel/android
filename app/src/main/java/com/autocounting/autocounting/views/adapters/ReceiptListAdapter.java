@@ -35,6 +35,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
 
         ((TextView) v.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString());
         ((TextView) v.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
+        ((TextView) v.findViewById(R.id.receipt_date)).setText(receipt.getDateString(mActivity));
 
         List<Receipt> cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());
 

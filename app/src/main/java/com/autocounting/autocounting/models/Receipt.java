@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.autocounting.autocounting.managers.EnvironmentManager;
 import com.autocounting.autocounting.network.database.ReceiptDatabase;
+import com.autocounting.autocounting.utils.DateFormatter;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -43,6 +44,8 @@ public class Receipt extends SugarRecord {
     private long amount_cents;
     @Ignore
     private String interpreted_at;
+    @Ignore
+    private String used_date;
 
     public Receipt() {
     }
@@ -172,5 +175,17 @@ public class Receipt extends SugarRecord {
 
     public boolean isInterpreted(){
         return getInterpreted_at() != null;
+    }
+
+    public String getUsed_date() {
+        return used_date;
+    }
+
+    public void setUsed_date(String used_date) {
+        this.used_date = used_date;
+    }
+
+    public String getDateString(Context context) {
+        return DateFormatter.formatToLocale(getUsed_date(), context);
     }
 }
