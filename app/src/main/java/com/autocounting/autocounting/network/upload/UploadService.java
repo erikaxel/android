@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.autocounting.autocounting.models.Receipt;
-import com.autocounting.autocounting.network.NetworkStatus;
 
 import java.io.File;
 
@@ -29,8 +28,7 @@ public class UploadService extends Service implements UploadResponseHandler {
         @Override
         public void handleMessage(Message msg) {
             synchronized (UploadService.this) {
-                if (NetworkStatus.networkIsAvailable(getContext()))
-                    uploadQueue();
+                uploadQueue();
             }
         }
     }
@@ -38,7 +36,6 @@ public class UploadService extends Service implements UploadResponseHandler {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Starting ...");
-
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
         serviceHandler.sendMessage(msg);
@@ -66,14 +63,12 @@ public class UploadService extends Service implements UploadResponseHandler {
         Log.i(TAG, "Running upload queue");
         File receiptFolder = Receipt.getReceiptFolder();
 
-        if (receiptFolder.list() != null) {
-            Log.i(TAG, receiptFolder.list().length + " images in " + receiptFolder.getAbsolutePath());
-            for (String imageAddress : receiptFolder.list()) {
-                Log.i(TAG, "Filename is supposed to be " + imageAddress);
-                new UploadReceiptTask(this).uploadReceipt(new Receipt(receiptFolder, imageAddress));
+        Log.i(TAG, Receipt.count(Receipt.class) + " receipts waiting for upload");
+        if(Receipt.count(Receipt.class) > 0) {
+            for (Receipt receipt : Receipt.listAll(Receipt.class)) {
+                Log.i(TAG, "One fine receipt");
+                new UploadReceiptTask(this).uploadReceipt(receipt);
             }
-        } else {
-            Log.i(TAG, receiptFolder.getAbsolutePath() + " is empty");
         }
 
         Log.i(TAG, "Queue uploaded");

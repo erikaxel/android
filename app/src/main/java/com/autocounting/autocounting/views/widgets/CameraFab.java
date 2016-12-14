@@ -10,8 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.autocounting.autocounting.CameraActivity;
-import com.autocounting.autocounting.utils.PermissionManager;
+import com.autocounting.autocounting.activities.CameraActivity;
+import com.autocounting.autocounting.managers.PermissionManager;
 
 public class CameraFab extends FloatingActionButton implements View.OnClickListener {
 
@@ -30,7 +30,7 @@ public class CameraFab extends FloatingActionButton implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (!PermissionManager.hasAll(contextActivity,
+        if (!PermissionManager.hasAll(getContext(),
                 Manifest.permission.CAMERA,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -38,8 +38,8 @@ public class CameraFab extends FloatingActionButton implements View.OnClickListe
             return;
         }
 
-        Intent toCameraIntent = new Intent(contextActivity, CameraActivity.class);
-        contextActivity.startActivity(toCameraIntent);
+        Intent toCameraIntent = new Intent(getContext(), CameraActivity.class);
+        getContext().startActivity(toCameraIntent);
     }
 
     // Permissions (result is handled in MainActivity)

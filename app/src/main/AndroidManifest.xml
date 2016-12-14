@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.autocounting.autocounting">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -12,17 +14,18 @@
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name="com.orm.SugarApp"
         android:screenOrientation="portrait"
-
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <meta-data
+        <meta-data android:name="VERSION" android:value="8" />
+        <meta-dat7
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_application_id" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/title_activity_welcome"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -33,21 +36,16 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".CameraActivity"
+            android:name=".activities.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".network.UploadManager"
+            android:name=".network.upload.UploadService"
             android:exported="false" />
 
         <provider
@@ -61,7 +59,7 @@
         </provider>
 
         <activity
-            android:name=".OfflineActivity" />
+            android:name=".activities.MainActivity" />
     </application>
 
 </manifest>

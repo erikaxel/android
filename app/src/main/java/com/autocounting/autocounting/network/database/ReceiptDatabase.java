@@ -1,6 +1,7 @@
 package com.autocounting.autocounting.network.database;
 
 import com.autocounting.autocounting.models.User;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -13,13 +14,23 @@ public class ReceiptDatabase {
     private static FirebaseDatabase firebaseDatabase;
 
     /**
-     * @return a reference to the database for the given user and application environment
+     * @return a database reference for the given user and application environment
      */
-    public static DatabaseReference forUser(User user, String environment){
+    public static DatabaseReference getUserReference(FirebaseUser user, String environment){
         return getReference()
                 .child(environment)
-                .child(user.getSavedUid())
+                .child(user.getUid())
                 .child("receipts");
+    }
+
+    /**
+     * Pushes a new receipt to the given user and application environment.
+     * @return a database reference to the new receipt
+     */
+    public static DatabaseReference newReceiptReference(FirebaseUser user, String environment) {
+        DatabaseReference ref = getUserReference(user, environment).push();
+        ref.child("firebase_ref").setValue(ref.getKey());
+        return ref;
     }
 
     private static DatabaseReference getReference(){
@@ -29,7 +40,7 @@ public class ReceiptDatabase {
         return firebaseDatabase.getReference();
     }
 
-    private static void setupFirebaseConnection(){
+    private static void setupFirebaseConnection() {
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.setPersistenceEnabled(true);
     }

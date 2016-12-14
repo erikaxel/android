@@ -36,6 +36,9 @@ public class ImageSaver implements Runnable {
         ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
         byte[] bytes = new byte[byteBuffer.remaining()];
         byteBuffer.get(bytes);
+        Receipt rec = new Receipt(bytes, context);
+        rec.save();
+        Log.i(TAG, "Receipt saved " + Receipt.count(Receipt.class));
 
         FileOutputStream fileOutputStream = null;
 

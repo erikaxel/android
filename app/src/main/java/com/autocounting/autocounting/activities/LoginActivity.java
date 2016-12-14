@@ -60,10 +60,7 @@ public class LoginActivity extends Activity {
                 auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     @Override
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        new User(LoginActivity.this,
-                                task.getResult().getToken(),
-                                auth.getCurrentUser().getUid(),
-                                auth.getCurrentUser().getEmail()).save();
+                        User.setToken(LoginActivity.this, task.getResult().getToken());
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     }

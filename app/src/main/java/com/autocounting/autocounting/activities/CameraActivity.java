@@ -34,11 +34,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.autocounting.autocounting.R;
+import com.autocounting.autocounting.managers.PermissionManager;
 import com.autocounting.autocounting.models.Receipt;
-import com.autocounting.autocounting.network.NetworkManager;
+import com.autocounting.autocounting.network.NetworkStatus;
+import com.autocounting.autocounting.network.upload.UploadService;
 import com.autocounting.autocounting.utils.ImageHandler;
 import com.autocounting.autocounting.utils.ImageSaver;
-import com.autocounting.autocounting.utils.PermissionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -406,9 +407,8 @@ public class CameraActivity extends AppCompatActivity {
                     handler
             );
 
-            goToMain();
-
-            Log.i(TAG, "Done with all the picture stuff");
+            Log.i(TAG, "Upload and go to main");
+            startActivity(new Intent(this, MainActivity.class));
 
         } catch (CameraAccessException e) {
             handleCameraAccessException(e);
@@ -439,22 +439,6 @@ public class CameraActivity extends AppCompatActivity {
             handler = null;
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void goToMain() {
-
-        if (NetworkManager.networkIsAvailable(this)) {
-            Log.i(TAG, "Going to Main Activity. Putting extra: " + imageFile.getName());
-            Intent toMainIntent = new Intent(this, OfflineActivity.class);
-            toMainIntent.putExtra("receiptFilename", imageFile.getName());
-            startActivity(toMainIntent);
-
-        } else {
-            Log.i(TAG, "Going to offline activity");
-            Intent toOfflineIntent = new Intent();
-            toOfflineIntent.putExtra("imageWasAdded", true);
-            startActivity(new Intent(this, OfflineActivity.class));
         }
     }
 

@@ -1,24 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="1dip"
-    android:paddingBottom="1dip"
-    android:paddingStart="8dip"
-    android:paddingEnd="8dip"
+    android:layout_height="78dp"
+    android:paddingBottom="8dp"
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp"
+    android:paddingTop="8dp"
     android:weightSum="1">
 
-    <ImageView android:id="@+id/receipt_thumb"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_weight="0.11" />
-
-    <TextView android:id="@+id/receipt_text"
-        android:layout_width="274dp"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/receipt_thumb"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:contentDescription="@string/receipt_thumbnail"
+        android:scaleType="fitXY"/>
+
+    <TextView
+        android:id="@+id/receipt_text"
+        android:layout_width="224dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:layout_height="wrap_content"
+        android:text="Matkroken"
+        android:textColor="@color/black"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/receipt_price"
+        android:gravity="center_vertical"
+        android:layout_width="59dp"
+        android:layout_height="match_parent"
+        android:text="NOK 13,70"
         android:textAlignment="center"
-        android:textColor="@color/darkgrey"
+        android:textColor="@color/violetRed"
         android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:textAllCaps="false" />
 </LinearLayout>

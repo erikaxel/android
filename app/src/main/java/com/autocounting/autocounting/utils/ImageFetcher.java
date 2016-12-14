@@ -28,7 +28,7 @@ public class ImageFetcher extends AsyncTask<Receipt, Void, Bitmap> {
         return receipt.getThumbnail();
     }
 
-    // Once complete, see if ImageView is still around and set bitmap.
+    // Once complete, check if ImageView is still around and set bitmap.
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         if (imageViewReference != null && bitmap != null) {
