@@ -15,7 +15,7 @@ import com.autocounting.autocounting.managers.EnvironmentManager;
 public class Routes {
 
     // Website URLs
-    private static final String DEVELOPMENT_BASE_URL = "http://192.168.10.143:3000";
+    private static final String DEVELOPMENT_BASE_URL = "http://198.168.10.143:3000";
     private static final String STAGING_BASE_URL = "https://staging.lucalabs.io";
     private static final String PRODUCTION_BASE_URL = "https://expenses.lucalabs.io";
 

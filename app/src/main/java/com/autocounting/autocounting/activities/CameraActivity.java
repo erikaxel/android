@@ -50,7 +50,6 @@ import java.util.List;
 public class CameraActivity extends AppCompatActivity {
 
     private static final String TAG = "CameraActivity";
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
     private static final int NUMBER_OF_IMAGES_CAPTURED = 1;
 

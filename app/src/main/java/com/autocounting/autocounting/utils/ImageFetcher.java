@@ -9,7 +9,7 @@ import com.autocounting.autocounting.models.Receipt;
 import java.lang.ref.WeakReference;
 
 /**
- * Asynchronously fetches a Bitmap from receipt, and loads it into an ImageView
+ * Asynchronously fetches a Bitmap from a receipt thumbnail, and loads it an ImageView
  * Based on code from https://developer.android.com/training/displaying-bitmaps/process-bitmap.html
  */
 

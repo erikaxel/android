@@ -13,10 +13,12 @@ import android.view.View;
 import com.autocounting.autocounting.activities.CameraActivity;
 import com.autocounting.autocounting.managers.PermissionManager;
 
+/*
+ * The camera button seen in MainActivity.
+ */
 public class CameraFab extends FloatingActionButton implements View.OnClickListener {
 
     private final static String TAG = "CameraButton";
-
     private Activity contextActivity;
 
     public CameraFab(Context context, AttributeSet attrs) {

@@ -11,47 +11,29 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Utility class used to scale, compress and manipulate images.
+ */
 public class ImageHandler {
 
     private final static int THUMBNAIL_SIZE = 100;
-    private final static int MEDIUM_SIZE = 300;
-    private final static int MAX_SIZE = 1000; // Not used
-
     public final static int JPEG_COMPRESSION_RATE = 80;
 
+    /**
+     * Scales an image to thumbnail size
+     */
     public static Bitmap makeThumbnail(Bitmap original) {
         return scaleDown(original, THUMBNAIL_SIZE, true);
     }
 
-    public static Bitmap makeMedium(Bitmap original) {
-        return scaleDown(original, MEDIUM_SIZE, true);
-    }
-
+    /**
+     * Rotates landscape images 90 degrees.
+     */
     public static Bitmap correctRotation(Bitmap image) throws IOException {
         if(image.getWidth() > image.getHeight())
             return rotateImage(image, 90);
         else
             return image;
-    }
-
-    public static Bitmap scaleOriginal(Bitmap original){
-        return scaleDown(original, MAX_SIZE, true);
-    }
-
-    public static byte[] makeByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        return baos.toByteArray();
-    }
-
-    public static Bitmap getBitmapFromFile(Context context, File file) {
-        try {
-            return MediaStore.Images.Media.getBitmap(context.getContentResolver(),
-                    Uri.fromFile(file));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     private static Bitmap rotateImage(Bitmap img, int degree) {

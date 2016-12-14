@@ -12,6 +12,10 @@
         <item name="android:actionOverflowButtonStyle">@style/ActionButtonLight</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.AppCompat.Light">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
     <style name="ActionButtonLight" parent="android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:icon">@android:color/white</item>
     </style>
