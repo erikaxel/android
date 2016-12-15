@@ -25,7 +25,6 @@
         android:orientation="vertical">
 
         <TextView
-            android:text="Example Receipt"
             android:id="@+id/receipt_text"
             android:layout_width="224dp"
             android:paddingEnd="8dp"
@@ -37,7 +36,6 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:text="29.09.1993"
             android:id="@+id/receipt_date"
             android:layout_width="224dp"
             android:paddingEnd="8dp"
@@ -50,7 +48,6 @@
     </LinearLayout>
 
     <TextView
-        android:text="99,99"
         android:id="@+id/receipt_price"
         android:textAlignment="textEnd"
         android:layout_width="59dp"

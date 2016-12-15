@@ -8,6 +8,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
+import android.widget.Toast;
 
 import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.managers.EnvironmentManager;
@@ -38,6 +40,11 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragment {
+        private PreferenceScreen preferenceScreen;
+        private PreferenceCategory debugCategory;
+
+        private int debugCounter = 0;
+        private final int DEBUG_COUNTER_LIMIT = 7;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -47,8 +54,25 @@ public class SettingsActivity extends PreferenceActivity {
             Preference versionDisplay = findPreference("version_number");
             versionDisplay.setSummary(getVersionName());
 
-            Preference emailDisplay = findPreference("user_email");
+            preferenceScreen = ((PreferenceScreen) findPreference("pref_screen"));
+            debugCategory = (PreferenceCategory) findPreference("debug_cat");
+            preferenceScreen.removePreference(debugCategory);
+
+            final Preference emailDisplay = findPreference("user_email");
             emailDisplay.setSummary(User.getCurrentUser().getEmail());
+            emailDisplay.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    debugCounter++;
+
+                    if(debugCounter > DEBUG_COUNTER_LIMIT) {
+                        showDebugInfo();
+                        emailDisplay.setOnPreferenceClickListener(null);
+                    }
+
+                    return true;
+                }
+            });
 
             Preference environmentPref = findPreference("environment_pref");
             environmentPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -63,10 +87,16 @@ public class SettingsActivity extends PreferenceActivity {
                 removeAdminSettings();
         }
 
+        private void showDebugInfo() {
+            Toast.makeText(this.getActivity(), "Displaying debug info", Toast.LENGTH_SHORT).show();
+            preferenceScreen.addPreference(debugCategory);
+
+            ((Preference) findPreference("uid")).setSummary(User.getCurrentUser().getUid());
+        }
+
         private void removeAdminSettings() {
             PreferenceCategory prefCategory = (PreferenceCategory) findPreference("advanced_cat");
-            Preference pref = findPreference("environment_pref");
-            prefCategory.removePreference(pref);
+            prefCategory.addPreference(findPreference("environment_pref"));
         }
 
         private String getVersionName() {

@@ -21,6 +21,7 @@
     <string name="images_category">Images</string>
     <string name="network_category">Network</string>
     <string name="advanced_category">Advanced</string>
+    <string name="debug_category">Debug</string>
 
     <string name="facebook_application_id" translatable="false">335970566774032</string>
 
