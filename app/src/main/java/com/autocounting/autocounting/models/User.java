@@ -3,6 +3,7 @@ package com.autocounting.autocounting.models;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,15 +35,6 @@ public class User {
 
     public static FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    public static void clearSavedData(Context context) {
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
-        editor.putString("token", null);
-        editor.putString("uid", null);
-        editor.putString("email", null);
-        editor.apply();
     }
 
     public String getSavedUid() {
@@ -104,10 +96,5 @@ public class User {
         return email.contains("@autocounting.com")
                 || email.contains("@lucalabs.io")
                 || email.contains("tmbv93@gmail.com");
-    }
-
-    public void logout(Context context) {
-        Receipt.deleteReceiptFolder();
-        clearSavedData(context);
     }
 }

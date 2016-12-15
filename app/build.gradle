@@ -8,8 +8,8 @@ android {
         applicationId "com.autocounting.autocounting"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 30
-        versionName "0.65-b30"
+        versionCode 31
+        versionName "0.66-b31"
         multiDexEnabled true
     }
 

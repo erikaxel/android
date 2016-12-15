@@ -15,6 +15,7 @@ import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.activities.firebase.FirebaseActivity;
 import com.autocounting.autocounting.managers.EnvironmentManager;
 import com.autocounting.autocounting.models.User;
+import com.autocounting.autocounting.network.NetworkStateReceiver;
 import com.autocounting.autocounting.network.NetworkStatus;
 import com.autocounting.autocounting.network.database.ReceiptDatabase;
 import com.autocounting.autocounting.network.upload.UploadService;
@@ -30,6 +31,7 @@ public class MainActivity extends FirebaseActivity {
 
     private static final String TAG = "MainActivity";
     private CoordinatorLayout coordinatorLayout;
+    private NetworkStateReceiver networkStateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,6 @@ public class MainActivity extends FirebaseActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
                                 // user is now signed out
-                                User.clearSavedData(MainActivity.this);
                                 // Deprecated, but available for API 19
                                 CookieManager.getInstance().removeAllCookie();
                                 FirebaseAuth.getInstance().signOut();

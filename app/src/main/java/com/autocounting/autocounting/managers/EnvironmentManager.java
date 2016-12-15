@@ -2,17 +2,18 @@ package com.autocounting.autocounting.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * Updates, reads storage environment (development, staging, production) to/from SharedPreferences
  */
 public class EnvironmentManager {
     private static String environment;
+    private static String TAG = "EnvironmentManager";
 
-    public static String currentEnvironment(Context context){
-        if(environment == null)
+    public static String currentEnvironment(Context context) {
+        if (environment == null)
             readEnvironment(context);
         return environment;
     }
@@ -21,7 +22,7 @@ public class EnvironmentManager {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String savedEnvironment = sharedPreferences.getString("environment_pref", "");
 
-        switch(savedEnvironment.toLowerCase()){
+        switch (savedEnvironment.toLowerCase()) {
             case "production":
                 environment = "production";
                 break;
@@ -34,9 +35,11 @@ public class EnvironmentManager {
             default:
                 environment = "production";
         }
+        Log.i(TAG, "Updated environment to " + environment);
     }
 
-    public static void reset(){
+    public static void reset() {
+        Log.i(TAG, "Resetting environment");
         environment = null;
     }
 }

@@ -23,7 +23,7 @@ import java.text.DecimalFormat;
 public class Receipt extends SugarRecord {
 
     @Ignore
-    public static final String TAG = "Receipt";
+    public static final String TAG = "ReceiptModel";
 
     @Ignore
     private String filename;
@@ -57,7 +57,6 @@ public class Receipt extends SugarRecord {
                 .newReceiptReference(User.getCurrentUser(),
                         EnvironmentManager.currentEnvironment(context));
         this.firebase_ref = dbRef.getKey();
-        Log.d(TAG, "Set to ref " + this.firebase_ref);
     }
 
     public Receipt(File folder, String filename) {

@@ -48,6 +48,7 @@ public class LoginActivity extends FragmentActivity {
                             .createSignInIntentBuilder()
                             .setProviders(
                                     PROVIDERS)
+                            .setLogo(R.mipmap.splash_icon)
                             .setTheme(R.style.AppTheme)
                             .build(), RC_SIGN_IN);
         }

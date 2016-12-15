@@ -73,13 +73,6 @@ public class UploadReceiptTask {
                 .child("0.original.jpg")
                 .putBytes(receipt.getImage());
 
-        Log.d(TAG, "Uploading to " + ReceiptStorage.getReceiptReference(
-                user,
-                EnvironmentManager.currentEnvironment(responseHandler.getContext()),
-                receipt.getFirebase_ref())
-                .child("pages")
-                .child("0.original.jpg").getPath());
-
         uploadOriginal.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -119,6 +112,7 @@ public class UploadReceiptTask {
                 .add("page_one_file_size", String.valueOf(receipt.getImage().length))
                 .build();
 
+        Log.i(TAG, "Posting receipt to " + Routes.receiptsUrl(responseHandler.getContext()));
         Request request = new Request.Builder()
                 .url(Routes.receiptsUrl(responseHandler.getContext()))
                 .post(form)
