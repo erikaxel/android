@@ -1,6 +1,5 @@
 package com.autocounting.autocounting.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -48,7 +47,7 @@ public class LoginActivity extends FragmentActivity {
                             .createSignInIntentBuilder()
                             .setProviders(
                                     PROVIDERS)
-                            .setLogo(R.mipmap.splash_icon)
+                            .setLogo(R.mipmap.login_logo)
                             .setTheme(R.style.AppTheme)
                             .build(), RC_SIGN_IN);
         }
