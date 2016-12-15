@@ -106,11 +106,11 @@ public class CameraActivity extends AppCompatActivity {
                     break;
                 case STATE_WAIT_LOCK:
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-
                     if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
                             afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                         new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
                         state = STATE_PREVIEW;
+                        Log.d(TAG, "afState is " + afState);
                         captureImage();
                     } else {
                         Log.i(TAG, "afState is " + afState);
@@ -135,6 +135,7 @@ public class CameraActivity extends AppCompatActivity {
                 public void onImageAvailable(ImageReader reader) {
                     Log.i(TAG, "Saving image");
                     handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage()));
+                    startActivity(new Intent(CameraActivity.this, MainActivity.class));
                 }
             };
 
@@ -401,11 +402,10 @@ public class CameraActivity extends AppCompatActivity {
             cameraCaptureSession.capture(
                     captureRequestBuilder.build(),
                     sessionCaptureCallback,
-                    handler
+                    uiHandler
             );
 
             Log.i(TAG, "Upload and go to main");
-            startActivity(new Intent(this, MainActivity.class));
 
         } catch (CameraAccessException e) {
             handleCameraAccessException(e);
@@ -413,6 +413,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void handleCameraAccessException(Exception e) {
+        Log.w(TAG, "Camera is not available");
         e.printStackTrace();
         startActivity(new Intent(this, MainActivity.class));
         Toast.makeText(getApplicationContext(), "Camera is not available", Toast.LENGTH_SHORT).show();
