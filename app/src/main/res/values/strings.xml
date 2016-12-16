@@ -27,5 +27,6 @@
 
     <string name="version">Version</string>
     <string name="email">Email</string>
+    <string name="corrupt_data_notice">Corrupt data</string>
 
 </resources>

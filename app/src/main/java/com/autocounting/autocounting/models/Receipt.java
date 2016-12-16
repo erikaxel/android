@@ -31,8 +31,11 @@ public class Receipt extends SugarRecord {
     @Ignore
     private File imageFile;
 
-    private boolean isUploaded; // column name = is_uploaded
+    @Ignore
+    private String status;
 
+    // Fields that are persisted to SQLite database
+    private boolean isUploaded; // column name = is_uploaded
     private byte[] image; // column name = image
 
     // Firebase attributes
@@ -105,13 +108,6 @@ public class Receipt extends SugarRecord {
         return imageFolder;
     }
 
-    public static void deleteReceiptFolder() {
-        File receiptFolder = getReceiptFolder();
-        for (File file : receiptFolder.listFiles())
-            file.delete();
-        receiptFolder.delete();
-    }
-
     public String getMerchant_name() {
         return merchant_name;
     }
@@ -144,7 +140,7 @@ public class Receipt extends SugarRecord {
 
     public String getMerchantString() {
         if (getMerchant_name() == null)
-            return "New receipt";
+            return getStatus();
         else return getMerchant_name();
     }
 
@@ -186,5 +182,15 @@ public class Receipt extends SugarRecord {
 
     public String getDateString(Context context) {
         return DateFormatter.formatToLocale(getUsed_date(), context);
+    }
+
+    public String getStatus() {
+        if(status == null)
+            return "Waiting to upload ...";
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
