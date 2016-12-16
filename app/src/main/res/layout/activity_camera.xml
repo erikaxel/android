@@ -5,7 +5,7 @@
     android:id="@+id/activity_camera"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.autocounting.autocounting.activities.CameraActivity">
+    tools:context="com.lucalabs.expenses.io.lucalabs.expenses.activities.CameraActivity">
 
     <TextureView
         android:id="@+id/camera_preview"

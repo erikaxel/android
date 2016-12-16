@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.autocounting.autocounting">
+    package="com.lucalabs.expenses">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -26,7 +26,7 @@
             android:value="@string/facebook_application_id" />
 
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="io.lucalabs.expenses.activities.LoginActivity"
             android:label="@string/title_activity_welcome"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
@@ -36,7 +36,7 @@
         </activity>
 
         <activity
-            android:name=".activities.SplashActivity"
+            android:name="io.lucalabs.expenses.activities.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -47,28 +47,27 @@
         </activity>
 
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name="io.lucalabs.expenses.activities.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
-            android:parentActivityName="activities.MainActivity" />
+            android:parentActivityName="io.lucalabs.expenses.activities.MainActivity" />
         <activity
-            android:name=".activities.CameraActivity"
+            android:name="io.lucalabs.expenses.activities.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".network.upload.UploadService"
+            android:name="io.lucalabs.expenses.network.upload.UploadService"
             android:exported="false" />
 
-        <receiver android:name=".network.NetworkStateReceiver">
+        <receiver android:name="io.lucalabs.expenses.network.NetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name="io.lucalabs.expenses.activities.MainActivity"
             android:screenOrientation="portrait"/>
     </application>
-
 </manifest>

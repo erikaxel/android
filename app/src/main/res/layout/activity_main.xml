@@ -12,7 +12,7 @@
         android:layout_height="match_parent" >
     </ListView>
 
-    <com.autocounting.autocounting.views.widgets.CameraFab
+    <io.lucalabs.expenses.views.widgets.CameraFab
         android:id="@+id/camera_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
