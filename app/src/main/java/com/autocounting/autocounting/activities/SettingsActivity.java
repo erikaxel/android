@@ -96,7 +96,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         private void removeAdminSettings() {
             PreferenceCategory prefCategory = (PreferenceCategory) findPreference("advanced_cat");
-            prefCategory.addPreference(findPreference("environment_pref"));
+            prefCategory.removePreference(findPreference("environment_pref"));
         }
 
         private String getVersionName() {
