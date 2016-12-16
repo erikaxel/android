@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Luca Reiseregning</string>
+    <string name="advanced_category">Avansert</string>
+    <string name="corrupt_data_notice">Ødelagte data</string>
+    <string name="debug_category">Utviklervalg</string>
+    <string name="disable_ocr_pref">Deaktiver OCR</string>
+    <string name="disable_ocr_summary">Ikke fyll inn kvitteringsfeltene automatisk</string>
+    <string name="email">Email</string>
+    <string name="images_category">Bilder</string>
+    <string name="login_text">Logg inn</string>
+    <string name="logout_text">Logg ut</string>
+    <string name="network_category">Nettverk</string>
+    <string name="receipt_thumbnail">Kvitteringsbilde</string>
+    <string name="save_to_album_pref">Lagre bilder til fotoalbum</string>
+    <string name="settings_text">Innstillinger</string>
+    <string name="title_activity_settings">Applikasjonsinnstillinger</string>
+    <string name="title_activity_welcome">Luca Reiseregning</string>
+    <string name="version">Versjon</string>
+    <string name="wifi_only_pref">Last opp kun over Wifi</string>
+</resources>

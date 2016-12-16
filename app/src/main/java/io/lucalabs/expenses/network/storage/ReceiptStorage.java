@@ -36,7 +36,6 @@ public class ReceiptStorage {
         return firebaseStorage.getReferenceFromUrl(Routes.FIREBASE_STORAGE_URL);
     }
 
-
     private static void setupFirebaseConnection() {
         firebaseStorage = FirebaseStorage.getInstance();
     }
