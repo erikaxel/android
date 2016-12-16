@@ -58,8 +58,8 @@ public class UploadReceiptTask {
                 .child(receipt.getFirebase_ref());
         dbRef.keepSynced(true);
 
-        if (!NetworkStatus.networkIsAvailable(responseHandler.getContext())){
-            Log.w(TAG, "No network detected");
+        if (!NetworkStatus.appropriateNetworkIsAvailable(responseHandler.getContext())){
+            Log.w(TAG, "No appropriate detected");
             return;
         }
 
