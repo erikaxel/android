@@ -15,7 +15,6 @@ import com.autocounting.autocounting.R;
 import com.autocounting.autocounting.activities.firebase.FirebaseActivity;
 import com.autocounting.autocounting.managers.EnvironmentManager;
 import com.autocounting.autocounting.models.User;
-import com.autocounting.autocounting.network.NetworkStateReceiver;
 import com.autocounting.autocounting.network.NetworkStatus;
 import com.autocounting.autocounting.network.database.ReceiptDatabase;
 import com.autocounting.autocounting.network.upload.UploadService;
@@ -25,23 +24,25 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 public class MainActivity extends FirebaseActivity {
 
     private static final String TAG = "MainActivity";
     private CoordinatorLayout coordinatorLayout;
-    private NetworkStateReceiver networkStateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DatabaseReference ref = ReceiptDatabase.getUserReference(
+        Query ref = ReceiptDatabase.getUserReference(
                 User.getCurrentUser(),
-                EnvironmentManager.currentEnvironment(this));
+                EnvironmentManager.currentEnvironment(this))
+                .orderByChild("expense_report_id")
+                .startAt(null)
+                .endAt(null);
 
-        setContentView(R.layout.activity_offline);
+        setContentView(R.layout.activity_main);
         ((ListView) findViewById(R.id.offline_list)).setAdapter(new ReceiptListAdapter(this, ref));
         ((CameraFab) findViewById(R.id.camera_button)).setup(this);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.offline_coordinator);
