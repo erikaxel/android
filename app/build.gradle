@@ -5,11 +5,11 @@ android {
     buildToolsVersion "25.0.0"
 
     defaultConfig {
-        applicationId "com.autocounting.autocounting"
+        applicationId "io.lucalabs.expenses"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 33
-        versionName "0.66-b33"
+        versionCode 34
+        versionName "0.66-b34"
         multiDexEnabled true
     }
 

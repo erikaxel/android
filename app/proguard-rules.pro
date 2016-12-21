@@ -10,7 +10,7 @@
 # Add any project specific keep options here:
 
 # Ensures entities remain un-obfuscated so table and columns are named correctly
--keep class com.autocounting.autocounting.models.** { *; }
+-keep class io.lucalabs.expenses.models.** { *; }
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface

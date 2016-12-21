@@ -1,4 +1,3 @@
-//package com.autocounting.autocounting.network.logging;
 //
 //import android.content.Context;
 //

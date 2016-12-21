@@ -52,6 +52,37 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886306381524:android:bbfd1a8c381b13fe",
+        "android_client_info": {
+          "package_name": "io.lucalabs.expenses"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886306381524-gmfin78adfhjmjq9sdsjepo3rldfmm3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGDoYDrnRfDiijdVm0O00vy4kw5W4avWw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"

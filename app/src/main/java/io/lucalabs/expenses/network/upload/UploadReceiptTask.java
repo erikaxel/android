@@ -26,8 +26,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-//import com.autocounting.autocounting.network.logging.FirebaseLogger;
-
 public class UploadReceiptTask {
 
     private static final String TAG = "UploadReceiptTask";

@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
-import com.lucalabs.expenses.R;
+import io.lucalabs.expenses.R;
 
 import java.util.List;
 

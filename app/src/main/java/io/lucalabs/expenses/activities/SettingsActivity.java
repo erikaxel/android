@@ -11,7 +11,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.widget.Toast;
 
-import com.lucalabs.expenses.R;
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.models.User;
 

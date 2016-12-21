@@ -11,7 +11,7 @@ import android.webkit.CookieManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.lucalabs.expenses.R;
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.models.User;

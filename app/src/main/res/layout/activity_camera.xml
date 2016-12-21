@@ -5,7 +5,7 @@
     android:id="@+id/activity_camera"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lucalabs.expenses.io.lucalabs.expenses.activities.CameraActivity">
+    tools:context="io.lucalabs.expenses.activities.CameraActivity">
 
     <TextureView
         android:id="@+id/camera_preview"
@@ -23,5 +23,4 @@
         app:backgroundTint="@android:color/white"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
-
 </RelativeLayout>

@@ -9,7 +9,7 @@ import android.widget.Toast;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lucalabs.expenses.R;
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.models.User;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;

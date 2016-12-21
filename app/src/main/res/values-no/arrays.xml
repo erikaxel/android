@@ -5,8 +5,4 @@
         <item>Staging</item>
         <item>Development</item>
     </string-array>
-    <string-array name="available_languages">
-        <item>Norwegian</item>
-        <item>English</item>
-    </string-array>
 </resources>

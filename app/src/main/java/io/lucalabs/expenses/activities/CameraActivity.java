@@ -32,7 +32,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.Toast;
 
-import com.lucalabs.expenses.R;
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.PermissionManager;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.utils.ImageHandler;
