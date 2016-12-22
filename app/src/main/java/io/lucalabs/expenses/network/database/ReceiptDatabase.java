@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import io.lucalabs.expenses.models.Receipt;
+
 /**
  * Handles connection to Firebase database.
  */

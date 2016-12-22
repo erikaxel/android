@@ -14,6 +14,7 @@ import android.widget.Toast;
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
 import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.User;
 import io.lucalabs.expenses.network.NetworkStatus;
 import io.lucalabs.expenses.network.database.ReceiptDatabase;
@@ -25,6 +26,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.Query;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends FirebaseActivity {
 
@@ -35,12 +40,19 @@ public class MainActivity extends FirebaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.w("Receipt", "---------------------------------");
+        Log.w("Receipt", Receipt.count(Receipt.class) + " number of receipts in DB");
+        Log.w("Receipt", Receipt.find(Receipt.class, "status = 'PENDING' OR status = 'UPLOADED'").size() + " receipts waiting for upload");
+
+        List<Receipt> receiptList = Receipt.listAll(Receipt.class);
+        for(Receipt rec : receiptList)
+            Log.w("Receipt", rec.getFirebase_ref() + " is " + rec.getStatus());
+        Log.w("Receipt", "---------------------------------");
         Query ref = ReceiptDatabase.getUserReference(
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(this))
                 .orderByChild("expense_report_id")
-                .startAt(null)
-                .endAt(null);
+                .equalTo(null);
 
         setContentView(R.layout.activity_main);
         ((ListView) findViewById(R.id.offline_list)).setAdapter(new ReceiptListAdapter(this, ref));

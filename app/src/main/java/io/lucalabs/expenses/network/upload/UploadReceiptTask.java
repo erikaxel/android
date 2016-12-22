@@ -5,13 +5,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import io.lucalabs.expenses.managers.EnvironmentManager;
-import io.lucalabs.expenses.models.Receipt;
-import io.lucalabs.expenses.models.User;
-import io.lucalabs.expenses.network.NetworkStatus;
-import io.lucalabs.expenses.network.Routes;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
-import io.lucalabs.expenses.network.storage.ReceiptStorage;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,6 +13,13 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
+import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.models.Receipt;
+import io.lucalabs.expenses.models.User;
+import io.lucalabs.expenses.network.NetworkStatus;
+import io.lucalabs.expenses.network.Routes;
+import io.lucalabs.expenses.network.database.ReceiptDatabase;
+import io.lucalabs.expenses.network.storage.ReceiptStorage;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,20 +43,22 @@ public class UploadReceiptTask {
 
     public void uploadReceipt(Receipt receipt) {
         this.receipt = receipt;
-//        startLogs();
-        start();
+        if (receipt.getStatus() == Receipt.Status.UPLOADED) {
+            Log.w("RPath", "Posting " + receipt.getFirebase_ref());
+            postReceipt();
+        } else start();
     }
 
     private void start() {
+        receipt.updateStatus(Receipt.Status.UPLOADING);
         responseHandler.onFileUploadStarted(receipt.getFilename());
 
         DatabaseReference dbRef = ReceiptDatabase
                 .getUserReference(user,
                         EnvironmentManager.currentEnvironment(responseHandler.getContext()))
                 .child(receipt.getFirebase_ref());
-        dbRef.keepSynced(true);
 
-        if (!NetworkStatus.appropriateNetworkIsAvailable(responseHandler.getContext())){
+        if (!NetworkStatus.appropriateNetworkIsAvailable(responseHandler.getContext())) {
             Log.w(TAG, "No appropriate detected");
             return;
         }
@@ -74,16 +76,16 @@ public class UploadReceiptTask {
         uploadOriginal.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "File upload failed");
+                receipt.updateStatus(Receipt.Status.PENDING);
                 responseHandler.onFileUploadFailed();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 //                    logger.onOriginalUploaded();
+                receipt.updateStatus(Receipt.Status.UPLOADED);
                 postReceipt();
-                receipt.setIsUploaded(true);
-                receipt.update();
-                Log.i(TAG, "receipt is uploaded: " + receipt.getIsUploaded());
                 responseHandler.onFileUploadFinished(taskSnapshot.getDownloadUrl().toString());
             }
         });
@@ -97,6 +99,7 @@ public class UploadReceiptTask {
 //    }
 
     private void postReceipt() {
+        receipt.updateStatus(Receipt.Status.POSTING);
         OkHttpClient client = new OkHttpClient();
 
         SharedPreferences prefs = PreferenceManager
@@ -119,7 +122,12 @@ public class UploadReceiptTask {
         try {
             Response response = client.newCall(request).execute();
             response.close();
+            if (response.isSuccessful())
+                receipt.updateStatus(Receipt.Status.POSTED);
+            else
+                receipt.updateStatus(Receipt.Status.UPLOADED);
         } catch (IOException e) {
+            receipt.updateStatus(Receipt.Status.UPLOADED);
             e.printStackTrace();
         }
     }

@@ -71,6 +71,9 @@ dependencies {
 
     // Database ORM
     compile 'com.github.satyan:sugar:1.5'
+    compile 'com.j256.ormlite:ormlite-core:5.0'
+    compile 'com.j256.ormlite:ormlite-android:5.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

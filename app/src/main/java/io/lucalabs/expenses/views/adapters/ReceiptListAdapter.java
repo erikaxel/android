@@ -1,10 +1,10 @@
 package io.lucalabs.expenses.views.adapters;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -13,10 +13,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
-import io.lucalabs.expenses.R;
 
 import java.util.List;
 
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.network.storage.ReceiptStorage;
@@ -29,25 +29,30 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     public ReceiptListAdapter(Activity activity, Query query) {
         super(activity, Receipt.class, R.layout.receipt_list_item, query);
         user = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG, "----------------------------------------------------------");
     }
 
     @Override
-    protected void populateView(View v, Receipt receipt, int position) {
-        if (receipt == null || receipt.getFirebase_ref() == null){
-            ((TextView) v.findViewById(R.id.receipt_text)).setText(R.string.corrupt_data_notice);
+    protected void populateView(View view, Receipt receipt, int position) {
+        Log.d(TAG, "Receipt firebase_ref: " + receipt.getFirebase_ref());
+        if (receipt == null) {
+            ((TextView) view.findViewById(R.id.receipt_text)).setText(R.string.corrupt_data_notice);
             return;
         }
         List<Receipt> cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());
+//        Log.i("ReceiptStatus", cachedReceipts.get(0).getFirebase_ref() + " listcheck " + cachedReceipts.get(0).getStatus());
 
-        if (cachedReceipts.isEmpty())
-            setThumbnailFromFirebase(v, receipt);
-        else
-            setThumbnailFromCache(v, cachedReceipts, receipt);
+        if (cachedReceipts.size() > 0) {
+            Log.d(TAG, "Setting thumbnail from cached receipt");
+            setThumbnailFromCache(view, cachedReceipts, receipt);
+        } else {
+            Log.d(TAG, "Setting thumbnail from firebase");
+            setThumbnailFromFirebase(view, receipt);
+        }
 
-        ((TextView) v.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString());
-        ((TextView) v.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
-        ((TextView) v.findViewById(R.id.receipt_date)).setText(receipt.getDateString(mActivity));
-
+        ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchant_name());
+        ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
+        ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getDateString(mActivity));
     }
 
     /**
@@ -74,19 +79,18 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
      * from Firebase is used instead.
      */
     private void setThumbnailFromCache(View v, List<Receipt> cachedReceipts, Receipt receipt) {
-        Log.i(TAG, "Setting thumbnail from cache. Interpreted? " + receipt.isInterpreted());
         Receipt cachedReceipt = cachedReceipts.get(0);
-        if(receipt.isInterpreted()){
-            setThumbnailFromFirebase(v, receipt);
-            cachedReceipt.delete();
-            return;
-        }
-
         new ImageFetcher((ImageView) v.findViewById(R.id.receipt_thumb)).execute(cachedReceipt);
+
+        if(receipt.isInterpreted()) {
+            cachedReceipt.updateStatus(Receipt.Status.PARSED);
+//            cachedReceipt.delete();
+        }
     }
 
     /**
      * Retrieves list items in reverse order (latest first).
+     *
      * @return null if object is not a Receipt.
      */
     @Override

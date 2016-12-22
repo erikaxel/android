@@ -28,7 +28,7 @@ public class UploadService extends Service implements UploadResponseHandler {
         @Override
         public void handleMessage(Message msg) {
             synchronized (UploadService.this) {
-                uploadQueue();
+                uploadReceipts();
             }
         }
     }
@@ -59,18 +59,11 @@ public class UploadService extends Service implements UploadResponseHandler {
         return null;
     }
 
-    private void uploadQueue() {
-        Log.i(TAG, "Running upload queue");
-        File receiptFolder = Receipt.getReceiptFolder();
-
-        Log.i(TAG, Receipt.find(Receipt.class, "is_uploaded = 0").size() + " receipts waiting for upload");
-        Log.i(TAG, Receipt.find(Receipt.class, "is_uploaded = 1").size() + " receipts cached, but uploaded");
-        for (Receipt receipt : Receipt.find(Receipt.class, "is_uploaded = 0")) {
-            Log.i(TAG, "Upoading receipt: " + receipt.getFirebase_ref());
+    private void uploadReceipts() {
+        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'PENDING' OR status = 'UPLOADED'")) {
+            Log.w("RPath", "called from upload service " + receipt.getFirebase_ref());
             new UploadReceiptTask(this).uploadReceipt(receipt);
         }
-
-        Log.i(TAG, "Queue uploaded");
     }
 
     // UploadResponseHandler

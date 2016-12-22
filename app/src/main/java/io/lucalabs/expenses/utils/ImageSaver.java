@@ -32,12 +32,9 @@ public class ImageSaver implements Runnable {
         byte[] bytes = new byte[byteBuffer.remaining()];
         byteBuffer.get(bytes);
         Receipt rec = new Receipt(bytes, context);
-        rec.save();
-        Log.i(TAG, "Receipt saved " + Receipt.count(Receipt.class));
 
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("save_to_album_pref", false)) {
-            try {
-                saveCopyToAlbum(bytes);
+            try {saveCopyToAlbum(bytes);
             } catch (IOException e) {
                 Log.w(TAG, "Couldn't save copy");
                 e.printStackTrace();
