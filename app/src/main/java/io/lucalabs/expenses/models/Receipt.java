@@ -6,26 +6,24 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
+import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.network.database.ReceiptDatabase;
+import io.lucalabs.expenses.utils.DateFormatter;
+import io.lucalabs.expenses.utils.ImageHandler;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.IgnoreExtraProperties;
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.List;
 
-import io.lucalabs.expenses.managers.EnvironmentManager;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
-import io.lucalabs.expenses.utils.DateFormatter;
-import io.lucalabs.expenses.utils.ImageHandler;
-
-@DatabaseTable(tableName = "receipts")
-public class Receipt {
+@IgnoreExtraProperties
+public class Receipt extends SugarRecord {
 
     @Ignore
     public static final String TAG = "ReceiptModel";
@@ -36,27 +34,33 @@ public class Receipt {
     @Ignore
     private File imageFile;
 
+    public String getStatusString(Context context) {
+        if(status == null)
+            return "";
+
+        switch(status){
+            case PENDING : context.getString(R.string.waiting_to_upload);
+            case UPLOADING : return context.getString(R.string.uploading);
+            case UPLOADED : return context.getString(R.string.uploading);
+            case POSTING : return context.getString(R.string.uploading);
+            case POSTED : return context.getString(R.string.interpreting);
+            default : return getMerchant_name();
+        }
+    }
+
     public enum Status {
         PENDING(0), UPLOADING(1), UPLOADED(2), POSTING(3), POSTED(4), PARSED(5);
 
         private int status;
 
-        private Status(int status) {
+        private Status(int status){
             this.status = status;
         }
     }
 
     // Fields that are persisted to SQLite database
-    @DatabaseField(generatedId = true)
-    private Long id;
-
-    @DatabaseField
     private Status status; // column name = status
-
-    @DatabaseField
     private byte[] image; // column name = image
-
-    @DatabaseField
     private String firebase_ref;  // column name = firebaseref
 
     // Firebase attributes
@@ -71,7 +75,7 @@ public class Receipt {
     @Ignore
     private String updated_at;
 
-    public Receipt() {
+    public Receipt(){
     }
 
     public Receipt(byte[] image, Context context) {
@@ -82,16 +86,8 @@ public class Receipt {
                         EnvironmentManager.currentEnvironment(context));
         this.setFirebase_ref(dbRef.getKey());
         this.save();
-        List<Receipt> recs = Receipt.find(Receipt.class, "firebaseref = ? ", firebase_ref);
+        this.setStatus(Status.PENDING);
 
-        if (recs.size() == 0) {
-            Log.e("ReceiptStatus", "Receipt not saved: " + firebase_ref);
-        } else {
-            Receipt rec = recs.get(0);
-            Log.i("ReceiptStatus", rec.getFirebase_ref() + " extra is now " + rec.getStatus());
-        }
-//
-        Log.i("ReceiptStatus", getFirebase_ref() + " is now " + getStatus());
     }
 
     public Receipt(File folder, String filename) {
@@ -157,9 +153,9 @@ public class Receipt {
         else return new DecimalFormat("#.00").format((double) getAmount_cents() / 100);
     }
 
-    public String getMerchantString() {
+    public String getMerchantString(Context context) {
         if (getMerchant_name() == null)
-            return "Hang on ...";
+            return getStatusString(context);
         else return getMerchant_name();
     }
 
@@ -179,7 +175,7 @@ public class Receipt {
         this.interpreted_at = interpreted_at;
     }
 
-    public boolean isInterpreted() {
+    public boolean isInterpreted(){
         return getInterpreted_at() != null;
     }
 
@@ -209,7 +205,7 @@ public class Receipt {
         Log.i("ReceiptStatus", firebase_ref + " is now " + status);
     }
 
-    public void setFirebase_ref(String firebase_ref) {
+    public void setFirebase_ref(String firebase_ref){
         this.firebase_ref = firebase_ref;
     }
 

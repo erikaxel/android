@@ -43,14 +43,16 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
 //        Log.i("ReceiptStatus", cachedReceipts.get(0).getFirebase_ref() + " listcheck " + cachedReceipts.get(0).getStatus());
 
         if (cachedReceipts.size() > 0) {
+            Receipt cachedReceipt = cachedReceipts.get(0);
             Log.d(TAG, "Setting thumbnail from cached receipt");
-            setThumbnailFromCache(view, cachedReceipts, receipt);
+            receipt.setStatus(cachedReceipt.getStatus());
+            setThumbnailFromCache(view, cachedReceipt, receipt);
         } else {
             Log.d(TAG, "Setting thumbnail from firebase");
             setThumbnailFromFirebase(view, receipt);
         }
 
-        ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchant_name());
+        ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString(mActivity));
         ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
         ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getDateString(mActivity));
     }
@@ -78,13 +80,12 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
      * If receipt has been interpreted on server, the cached receipt is deleted and the one
      * from Firebase is used instead.
      */
-    private void setThumbnailFromCache(View v, List<Receipt> cachedReceipts, Receipt receipt) {
-        Receipt cachedReceipt = cachedReceipts.get(0);
-        new ImageFetcher((ImageView) v.findViewById(R.id.receipt_thumb)).execute(cachedReceipt);
+    private void setThumbnailFromCache(View view, Receipt cachedReceipt, Receipt receipt) {
+        new ImageFetcher((ImageView) view.findViewById(R.id.receipt_thumb)).execute(cachedReceipt);
 
         if(receipt.isInterpreted()) {
             cachedReceipt.updateStatus(Receipt.Status.PARSED);
-//            cachedReceipt.delete();
+            cachedReceipt.delete();
         }
     }
 

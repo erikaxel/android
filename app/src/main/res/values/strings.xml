@@ -28,5 +28,7 @@
     <string name="version">Version</string>
     <string name="email">Email</string>
     <string name="corrupt_data_notice">Corrupt data</string>
-
+    <string name="waiting_to_upload">Waiting for a connection</string>
+    <string name="uploading">Uploading receipt</string>
+    <string name="interpreting">Interpreting receipt</string>
 </resources>

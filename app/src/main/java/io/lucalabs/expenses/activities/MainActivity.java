@@ -5,11 +5,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.Query;
+
+import java.util.List;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
@@ -21,15 +30,6 @@ import io.lucalabs.expenses.network.database.ReceiptDatabase;
 import io.lucalabs.expenses.network.upload.UploadService;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.Query;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends FirebaseActivity {
 
