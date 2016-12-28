@@ -46,7 +46,7 @@ public class MainActivity extends FirebaseActivity {
 
         List<Receipt> receiptList = Receipt.listAll(Receipt.class);
         for(Receipt rec : receiptList)
-            Log.w("Receipt", rec.getFirebase_ref() + " is " + rec.getStatus());
+            Log.w("Receipt", rec.getFirebase_ref() + " is " + rec.getStatus() + " with filename" + rec.getFilename());
         Log.w("Receipt", "---------------------------------");
         Query ref = ReceiptDatabase.getUserReference(
                 User.getCurrentUser(),

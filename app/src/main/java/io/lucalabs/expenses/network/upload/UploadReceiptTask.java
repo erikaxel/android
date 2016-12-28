@@ -71,7 +71,7 @@ public class UploadReceiptTask {
                 receipt.getFirebase_ref())
                 .child("pages")
                 .child("0.original.jpg")
-                .putBytes(receipt.getImage());
+                .putBytes(receipt.getImage(responseHandler.getContext()));
 
         uploadOriginal.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -110,7 +110,7 @@ public class UploadReceiptTask {
                 .add("page_one_file_name", "0.jpg")
                 .add("token", User.getToken(responseHandler.getContext()))
                 .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false) ? "0" : "1")
-                .add("page_one_file_size", String.valueOf(receipt.getImage().length))
+                .add("page_one_file_size", String.valueOf(receipt.getImage(responseHandler.getContext()).length))
                 .build();
 
         Log.i(TAG, "Posting receipt to " + Routes.receiptsUrl(responseHandler.getContext()));

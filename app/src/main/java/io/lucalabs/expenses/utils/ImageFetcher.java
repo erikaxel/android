@@ -1,5 +1,6 @@
 package io.lucalabs.expenses.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.widget.ImageView;
@@ -16,17 +17,19 @@ import java.lang.ref.WeakReference;
 public class ImageFetcher extends AsyncTask<Receipt, Void, Bitmap> {
     private final WeakReference<ImageView> imageViewReference;
     private Receipt receipt;
+    private Context context;
 
-    public ImageFetcher(ImageView imageView) {
+    public ImageFetcher(ImageView imageView, Context context) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
         imageViewReference = new WeakReference<ImageView>(imageView);
+        this.context = context;
     }
 
     // Get image in background.
     @Override
     protected Bitmap doInBackground(Receipt... params) {
         receipt = params[0];
-        return receipt.getThumbnail();
+        return receipt.getThumbnail(context);
     }
 
     // Once complete, check if ImageView is still around and set bitmap.

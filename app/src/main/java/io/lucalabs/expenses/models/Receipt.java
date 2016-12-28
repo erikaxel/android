@@ -4,35 +4,35 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.IgnoreExtraProperties;
+import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.network.database.ReceiptDatabase;
 import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.ImageHandler;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.IgnoreExtraProperties;
-import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.List;
 
 @IgnoreExtraProperties
 public class Receipt extends SugarRecord {
 
     @Ignore
     public static final String TAG = "ReceiptModel";
-
-    @Ignore
-    private String filename;
-
-    @Ignore
-    private File imageFile;
 
     public String getStatusString(Context context) {
         if(status == null)
@@ -60,7 +60,9 @@ public class Receipt extends SugarRecord {
 
     // Fields that are persisted to SQLite database
     private Status status; // column name = status
+    @Ignore
     private byte[] image; // column name = image
+    private String filename; // column name = filename
     private String firebase_ref;  // column name = firebaseref
 
     // Firebase attributes
@@ -79,8 +81,18 @@ public class Receipt extends SugarRecord {
     }
 
     public Receipt(byte[] image, Context context) {
-        this.image = image;
         this.setStatus(Status.PENDING);
+
+        filename = generateFilename();
+
+        try {
+            FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(image);
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         DatabaseReference dbRef = ReceiptDatabase
                 .newReceiptReference(User.getCurrentUser(),
                         EnvironmentManager.currentEnvironment(context));
@@ -90,14 +102,8 @@ public class Receipt extends SugarRecord {
 
     }
 
-    public Receipt(File folder, String filename) {
-        Log.i(TAG, "New receipt with filename" + filename);
-        this.filename = filename;
-        this.imageFile = new File(folder, filename);
-    }
-
     private static String generateFilename() {
-        return String.valueOf(System.currentTimeMillis() / 10L);
+        return String.valueOf(System.currentTimeMillis() / 10L) + ".jpg";
     }
 
     public File makeFile(File folder) throws IOException {
@@ -109,12 +115,16 @@ public class Receipt extends SugarRecord {
         return filename;
     }
 
-    public File getImageFile() {
-        return imageFile;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
-    public Bitmap getThumbnail() {
-        Bitmap bitmap = BitmapFactory.decodeByteArray(getImage(), 0, getImage().length);
+    public File getImageFile(Context context) {
+        return new File(context.getFilesDir().getAbsolutePath() + "/" + getFilename());
+    }
+
+    public Bitmap getThumbnail(Context context) {
+        Bitmap bitmap = BitmapFactory.decodeByteArray(getImage(context), 0, getImage(context).length);
         try {
             return ImageHandler.correctRotation((ImageHandler.makeThumbnail(bitmap)));
         } catch (IOException e) {
@@ -159,8 +169,19 @@ public class Receipt extends SugarRecord {
         else return getMerchant_name();
     }
 
-    public byte[] getImage() {
-        return image;
+    public byte[] getImage(Context context) {
+        File file = getImageFile(context);
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bytes;
     }
 
     public void setImage(byte[] image) {
@@ -211,6 +232,12 @@ public class Receipt extends SugarRecord {
 
     public String getFirebase_ref() {
         return firebase_ref;
+    }
+
+    @Override
+    public boolean delete(){
+
+        return super.delete();
     }
 
     public String getUpdated_at() {
