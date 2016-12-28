@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
@@ -12,12 +11,9 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -36,7 +32,7 @@ public class Receipt extends SugarRecord {
 
     public String getStatusString(Context context) {
         if(status == null)
-            return "";
+            return context.getString(R.string.name_not_found);
 
         switch(status){
             case PENDING : context.getString(R.string.waiting_to_upload);
@@ -60,8 +56,6 @@ public class Receipt extends SugarRecord {
 
     // Fields that are persisted to SQLite database
     private Status status; // column name = status
-    @Ignore
-    private byte[] image; // column name = image
     private String filename; // column name = filename
     private String firebase_ref;  // column name = firebaseref
 
@@ -98,8 +92,6 @@ public class Receipt extends SugarRecord {
                         EnvironmentManager.currentEnvironment(context));
         this.setFirebase_ref(dbRef.getKey());
         this.save();
-        this.setStatus(Status.PENDING);
-
     }
 
     private static String generateFilename() {
@@ -171,6 +163,10 @@ public class Receipt extends SugarRecord {
 
     public byte[] getImage(Context context) {
         File file = getImageFile(context);
+
+        if(file == null)
+            return null;
+
         int size = (int) file.length();
         byte[] bytes = new byte[size];
         try {
@@ -182,10 +178,6 @@ public class Receipt extends SugarRecord {
         }
 
         return bytes;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 
     public String getInterpreted_at() {
@@ -234,10 +226,8 @@ public class Receipt extends SugarRecord {
         return firebase_ref;
     }
 
-    @Override
-    public boolean delete(){
-
-        return super.delete();
+    public boolean delete(Context context){
+        return new File(context.getFilesDir().getAbsolutePath() + "/" + getFilename()).delete() && super.delete();
     }
 
     public String getUpdated_at() {

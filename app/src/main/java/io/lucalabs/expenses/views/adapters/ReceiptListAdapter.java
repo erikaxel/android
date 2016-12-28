@@ -83,9 +83,9 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     private void setThumbnailFromCache(View view, Receipt cachedReceipt, Receipt receipt) {
         new ImageFetcher((ImageView) view.findViewById(R.id.receipt_thumb), mActivity).execute(cachedReceipt);
 
-        if(receipt.isInterpreted()) {
+        if(receipt.isInterpreted() || cachedReceipt.getFilename() == null) {
             cachedReceipt.updateStatus(Receipt.Status.PARSED);
-            cachedReceipt.delete();
+            cachedReceipt.delete(mActivity);
         }
     }
 

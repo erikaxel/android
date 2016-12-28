@@ -50,7 +50,6 @@ public class UploadReceiptTask {
     }
 
     private void start() {
-        receipt.updateStatus(Receipt.Status.UPLOADING);
         responseHandler.onFileUploadStarted(receipt.getFilename());
 
         DatabaseReference dbRef = ReceiptDatabase
@@ -59,9 +58,11 @@ public class UploadReceiptTask {
                 .child(receipt.getFirebase_ref());
 
         if (!NetworkStatus.appropriateNetworkIsAvailable(responseHandler.getContext())) {
-            Log.w(TAG, "No appropriate detected");
+            Log.w(TAG, "No appropriate network detected");
             return;
         }
+
+        receipt.updateStatus(Receipt.Status.UPLOADING);
 
 //        logger.startUploadingOriginal();
 

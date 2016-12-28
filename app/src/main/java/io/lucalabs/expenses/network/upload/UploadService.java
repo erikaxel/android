@@ -60,7 +60,7 @@ public class UploadService extends Service implements UploadResponseHandler {
     }
 
     private void uploadReceipts() {
-        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'PENDING' OR status = 'UPLOADED'")) {
+        for (Receipt receipt : Receipt.find(Receipt.class, "(status = 'PENDING' OR status = 'UPLOADED') AND filename IS NOT NULL")) {
             Log.w("RPath", "called from upload service " + receipt.getFirebase_ref());
             new UploadReceiptTask(this).uploadReceipt(receipt);
         }

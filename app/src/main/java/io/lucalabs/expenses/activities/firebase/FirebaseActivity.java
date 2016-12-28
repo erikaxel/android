@@ -4,12 +4,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import io.lucalabs.expenses.models.User;
+import com.firebase.client.FirebaseException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+
+import io.lucalabs.expenses.models.User;
 
 public class FirebaseActivity extends AppCompatActivity {
 
@@ -29,34 +31,38 @@ public class FirebaseActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
-        if(authStateListener != null)
+        if (authStateListener != null)
             auth.removeAuthStateListener(authStateListener);
     }
 
-    private void setAuthStateListener(){
-        authStateListener = new FirebaseAuth.AuthStateListener() {
+    private void setAuthStateListener() {
+        try {
+            authStateListener = new FirebaseAuth.AuthStateListener() {
 
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth auth) {
-                FirebaseUser user = auth.getCurrentUser();
-                if (user != null) {
-                    Log.i(TAG, "User is not null");
-                    auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth auth) {
+                    FirebaseUser user = auth.getCurrentUser();
+                    if (user != null) {
+                        Log.i(TAG, "User is not null");
+                        auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
 
-                        @Override
-                        public void onComplete(@NonNull Task<GetTokenResult> task) {
-                            Log.i(TAG, "Setting token " + task.getResult().getToken());
-                            User.setToken(FirebaseActivity.this, task.getResult().getToken());
-                        }
-                    });
+                            @Override
+                            public void onComplete(@NonNull Task<GetTokenResult> task) {
+                                Log.i(TAG, "Setting token " + task.getResult().getToken());
+                                User.setToken(FirebaseActivity.this, task.getResult().getToken());
+                            }
+                        });
 
-                } else {
-                    Log.i(TAG, "Setting token to null");
-                    User.setToken(FirebaseActivity.this, null);
+                    } else {
+                        Log.i(TAG, "Setting token to null");
+                        User.setToken(FirebaseActivity.this, null);
+                    }
                 }
-            }
-        };
+            };
+        } catch (FirebaseException e){
+            e.printStackTrace();
+        }
     }
 }

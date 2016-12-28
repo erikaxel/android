@@ -31,4 +31,5 @@
     <string name="waiting_to_upload">Waiting for a connection</string>
     <string name="uploading">Uploading receipt</string>
     <string name="interpreting">Interpreting receipt</string>
+    <string name="name_not_found">Name not found</string>
 </resources>
