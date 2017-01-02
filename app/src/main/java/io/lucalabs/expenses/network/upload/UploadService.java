@@ -21,7 +21,7 @@ import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.User;
 import io.lucalabs.expenses.network.database.ReceiptDatabase;
 
-public class UploadService extends Service implements UploadResponseHandler {
+public class UploadService extends Service {
     private final static String TAG = "UploadService";
     private ServiceHandler serviceHandler;
     private Receipt nextReceipt;
@@ -106,25 +106,5 @@ public class UploadService extends Service implements UploadResponseHandler {
             Log.i(TAG, "Deleting " + receipt.getFirebase_ref());
             new DeleteReceiptTask(this, receipt).deleteReceipt();
         }
-    }
-
-    // UploadResponseHandler
-
-    @Override
-    public void onFileUploadStarted(String filename) {
-    }
-
-    @Override
-    public void onFileUploadFinished(String result) {
-
-    }
-
-    @Override
-    public void onFileUploadFailed() {
-    }
-
-    @Override
-    public Context getContext() {
-        return getApplicationContext();
     }
 }
