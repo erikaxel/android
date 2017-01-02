@@ -12,13 +12,19 @@ import android.os.Process;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import io.lucalabs.expenses.models.Receipt;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
-import java.io.File;
+import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.models.Receipt;
+import io.lucalabs.expenses.models.User;
+import io.lucalabs.expenses.network.database.ReceiptDatabase;
 
 public class UploadService extends Service implements UploadResponseHandler {
     private final static String TAG = "UploadService";
     private ServiceHandler serviceHandler;
+    private Receipt nextReceipt;
 
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
@@ -28,7 +34,7 @@ public class UploadService extends Service implements UploadResponseHandler {
         @Override
         public void handleMessage(Message msg) {
             synchronized (UploadService.this) {
-                uploadReceipts();
+                handleReceipts();
             }
         }
     }
@@ -59,10 +65,46 @@ public class UploadService extends Service implements UploadResponseHandler {
         return null;
     }
 
-    private void uploadReceipts() {
+    private void handleReceipts() {
+        // Upload receipts
         for (Receipt receipt : Receipt.find(Receipt.class, "(status = 'PENDING' OR status = 'UPLOADED') AND filename IS NOT NULL")) {
-            Log.w("RPath", "called from upload service " + receipt.getFirebase_ref());
             new UploadReceiptTask(this).uploadReceipt(receipt);
+        }
+
+        // Set interpreted receipt status to parsed
+        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'POSTED'")) {
+            nextReceipt = receipt;
+            ReceiptDatabase.getUserReference(User.getCurrentUser(),
+                    EnvironmentManager.currentEnvironment(this))
+                    .child(receipt.getFirebase_ref())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                                        @Override
+                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                            Receipt onlineReceipt = dataSnapshot.getValue(Receipt.class);
+
+                                                            if (onlineReceipt == null) {
+                                                                nextReceipt.delete(this);
+                                                                return;
+                                                            }
+
+                                                            if (onlineReceipt.isInterpreted())
+                                                                nextReceipt.updateStatus(Receipt.Status.PARSED);
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(DatabaseError databaseError) {
+                                                            // Do nothing
+                                                        }
+                                                    }
+
+                    );
+        }
+
+        // Delete interpreted (finished) receipts from cache
+        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'PARSED'")) {
+            Log.i(TAG, "Deleting " + receipt.getFirebase_ref());
+            new DeleteReceiptTask(this, receipt).deleteReceipt();
         }
     }
 

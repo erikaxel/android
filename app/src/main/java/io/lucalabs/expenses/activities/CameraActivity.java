@@ -109,7 +109,7 @@ public class CameraActivity extends AppCompatActivity {
                             afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
                         new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
                         state = STATE_PREVIEW;
-                        Log.d(TAG, "afState is " + afState);
+                        Log.i(TAG, "afState is " + afState);
                         captureImage();
                     } else {
                         Log.i(TAG, "afState is " + afState);

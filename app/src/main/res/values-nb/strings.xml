@@ -22,4 +22,5 @@
     <string name="uploading">Laster opp kvittering</string>
     <string name="interpreting">Tolker kvittering</string>
     <string name="name_not_found">Fant ikke navn</string>
+    <string name="uploading_external_receipt">Laster opp kvittering</string>
 </resources>

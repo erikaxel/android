@@ -16,17 +16,14 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.Query;
 
 import java.util.List;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
-import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
-import io.lucalabs.expenses.models.User;
 import io.lucalabs.expenses.network.NetworkStatus;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
 import io.lucalabs.expenses.network.upload.UploadService;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
@@ -40,22 +37,17 @@ public class MainActivity extends FirebaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.w("Receipt", "---------------------------------");
-        Log.w("Receipt", Receipt.count(Receipt.class) + " number of receipts in DB");
-        Log.w("Receipt", Receipt.find(Receipt.class, "status = 'PENDING' OR status = 'UPLOADED'").size() + " receipts waiting for upload");
+        Log.w("ReceiptsData", "---------------------------------");
+        Log.w("ReceiptsData", Receipt.count(Receipt.class) + " number of receipts in DB");
+        Log.w("ReceiptsData", Receipt.find(Receipt.class, "status = 'PENDING' OR status = 'UPLOADED'").size() + " receipts waiting for upload");
 
         List<Receipt> receiptList = Receipt.listAll(Receipt.class);
         for(Receipt rec : receiptList)
-            Log.w("Receipt", rec.getFirebase_ref() + " is " + rec.getStatus() + " with filename" + rec.getFilename());
-        Log.w("Receipt", "---------------------------------");
-        Query ref = ReceiptDatabase.getUserReference(
-                User.getCurrentUser(),
-                EnvironmentManager.currentEnvironment(this))
-                .orderByChild("expense_report_id")
-                .equalTo(null);
+            Log.w("ReceiptsData", rec.getFirebase_ref() + " is " + rec.getStatus() + " with filename " + rec.getFilename() + " and id " + rec.getId());
+        Log.w("ReceiptsData", "---------------------------------");
 
         setContentView(R.layout.activity_main);
-        ((ListView) findViewById(R.id.offline_list)).setAdapter(new ReceiptListAdapter(this, ref));
+        ((ListView) findViewById(R.id.offline_list)).setAdapter(new ReceiptListAdapter(this, Inbox.allReceipts(this)));
         ((CameraFab) findViewById(R.id.camera_button)).setup(this);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.offline_coordinator);
 

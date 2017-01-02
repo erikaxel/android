@@ -8,8 +8,8 @@ android {
         applicationId "io.lucalabs.expenses"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 37
-        versionName "0.69-b37"
+        versionCode 38
+        versionName "0.70-b38"
         multiDexEnabled true
     }
 
@@ -71,9 +71,6 @@ dependencies {
 
     // Database ORM
     compile 'com.github.satyan:sugar:1.5'
-    compile 'com.j256.ormlite:ormlite-core:5.0'
-    compile 'com.j256.ormlite:ormlite-android:5.0'
-
 }
 
 apply plugin: 'com.google.gms.google-services'

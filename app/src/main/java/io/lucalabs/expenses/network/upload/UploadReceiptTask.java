@@ -36,20 +36,20 @@ public class UploadReceiptTask {
     private Receipt receipt;
 
     public UploadReceiptTask(UploadResponseHandler responseHandler) {
-        Log.i(TAG, "Running upload task " + this.toString());
         this.responseHandler = responseHandler;
         user = User.getCurrentUser();
     }
 
     public void uploadReceipt(Receipt receipt) {
+        Log.i(TAG, "Initialising " + receipt.getFirebase_ref());
         this.receipt = receipt;
-        if (receipt.getStatus() == Receipt.Status.UPLOADED) {
-            Log.w("RPath", "Posting " + receipt.getFirebase_ref());
+        if (receipt.getStatus() == Receipt.Status.UPLOADED)
             postReceipt();
-        } else start();
+        else start();
     }
 
     private void start() {
+        Log.i(TAG, "Starting ..." + receipt.getFirebase_ref());
         responseHandler.onFileUploadStarted(receipt.getFilename());
 
         DatabaseReference dbRef = ReceiptDatabase
@@ -100,6 +100,7 @@ public class UploadReceiptTask {
 //    }
 
     private void postReceipt() {
+        Log.i(TAG, "Posting " + receipt.getFirebase_ref());
         receipt.updateStatus(Receipt.Status.POSTING);
         OkHttpClient client = new OkHttpClient();
 
@@ -114,7 +115,7 @@ public class UploadReceiptTask {
                 .add("page_one_file_size", String.valueOf(receipt.getImage(responseHandler.getContext()).length))
                 .build();
 
-        Log.i(TAG, "Posting receipt to " + Routes.receiptsUrl(responseHandler.getContext()));
+        Log.i(TAG, "Posting receipt " + receipt.getFirebase_ref() + " to " + Routes.receiptsUrl(responseHandler.getContext()));
         Request request = new Request.Builder()
                 .url(Routes.receiptsUrl(responseHandler.getContext()))
                 .post(form)
@@ -131,5 +132,7 @@ public class UploadReceiptTask {
             receipt.updateStatus(Receipt.Status.UPLOADED);
             e.printStackTrace();
         }
+        Log.i(TAG, "Finishing " + receipt.getFirebase_ref());
+
     }
 }
