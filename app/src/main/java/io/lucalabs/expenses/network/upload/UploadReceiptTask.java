@@ -43,6 +43,14 @@ public class UploadReceiptTask {
 
     public void uploadReceipt(Receipt receipt) {
         Log.i(TAG, "Initialising " + receipt.getFirebase_ref());
+
+        if (!NetworkStatus.appropriateNetworkIsAvailable(mContext)) {
+            Log.w(TAG, "No appropriate network detected");
+            return;
+        }
+
+        Log.i(TAG, "Yet we're all very much alive");
+
         mReceipt = receipt;
         if (receipt.getStatus() == Receipt.Status.UPLOADED)
             postReceipt();
@@ -56,11 +64,6 @@ public class UploadReceiptTask {
                 .getUserReference(mUser,
                         EnvironmentManager.currentEnvironment(mContext))
                 .child(mReceipt.getFirebase_ref());
-
-        if (!NetworkStatus.appropriateNetworkIsAvailable(mContext)) {
-            Log.w(TAG, "No appropriate network detected");
-            return;
-        }
 
         mReceipt.updateStatus(Receipt.Status.UPLOADING);
 

@@ -34,7 +34,7 @@ public class Receipt extends SugarRecord {
             return context.getString(R.string.name_not_found);
 
         switch(status){
-            case PENDING : context.getString(R.string.waiting_to_upload);
+            case PENDING : return context.getString(R.string.waiting_to_upload);
             case UPLOADING : return context.getString(R.string.uploading);
             case UPLOADED : return context.getString(R.string.uploading);
             case POSTING : return context.getString(R.string.uploading);

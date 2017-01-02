@@ -18,7 +18,7 @@
     <string name="title_activity_welcome">Luca Reiseregning</string>
     <string name="version">Versjon</string>
     <string name="wifi_only_pref">Last opp kun over Wifi</string>
-    <string name="waiting_to_upload">Venter på nett</string>
+    <string name="waiting_to_upload">Venter på nettilgang</string>
     <string name="uploading">Laster opp kvittering</string>
     <string name="interpreting">Tolker kvittering</string>
     <string name="name_not_found">Fant ikke navn</string>
