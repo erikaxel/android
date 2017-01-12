@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="available_environments">
+        <item>Production</item>
+        <item>Staging</item>
+        <item>Development</item>
+    </string-array>
+</resources>

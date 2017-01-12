@@ -1,9 +1,36 @@
 <resources>
-    <string name="app_name">Autocounting</string>
-    <string name="title_activity_welcome">Autocounting</string>
+    <string name="app_name">Luca expenses</string>
+
+    <!-- Activity names -->
+    <string name="title_activity_welcome">Luca Expenses</string>
+    <string name="title_activity_settings">Application Settings</string>
+
     <string name="login_text">Login</string>
     <string name="logout_text">Logout</string>
-    <string name="username_field_hint">Email</string>
-    <string name="password_field_hint">Passord</string>
-    <string name="subtitle">Swipe left to begin.</string>
+    <string name="settings_text">Settings</string>
+
+    <!-- Offline Activity -->
+    <string name="receipt_thumbnail">Receipt thumbnail</string>
+
+    <!-- Settings Activity -->
+    <string name="save_to_album_pref">Save images to album</string>
+    <string name="wifi_only_pref">Upload using Wifi only</string>
+    <string name="disable_ocr_pref">Disable OCR</string>
+    <string name="disable_ocr_summary">Don\'t parse receipt data automatically</string>
+
+    <string name="images_category">Images</string>
+    <string name="network_category">Network</string>
+    <string name="advanced_category">Advanced</string>
+    <string name="debug_category">Debug</string>
+
+    <string name="facebook_application_id" translatable="false">335970566774032</string>
+
+    <string name="version">Version</string>
+    <string name="email">Email</string>
+    <string name="corrupt_data_notice">Corrupt data</string>
+    <string name="waiting_to_upload">Waiting for a connection</string>
+    <string name="uploading">Uploading receipt</string>
+    <string name="interpreting">Interpreting receipt</string>
+    <string name="name_not_found">Name not found</string>
+    <string name="uploading_external_receipt">Upload receipt</string>
 </resources>
