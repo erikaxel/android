@@ -13,22 +13,23 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name="com.orm.SugarApp"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.orm.SugarApp"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <meta-data android:name="VERSION" android:value="14" />
+        <meta-data
+            android:name="VERSION"
+            android:value="16" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_application_id" />
 
         <activity
-            android:name="io.lucalabs.expenses.activities.LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/title_activity_welcome"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
@@ -36,9 +37,8 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="io.lucalabs.expenses.activities.SplashActivity"
+            android:name=".activities.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -47,29 +47,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="io.lucalabs.expenses.activities.SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait"
-            android:parentActivityName="io.lucalabs.expenses.activities.MainActivity" />
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="io.lucalabs.expenses.activities.CameraActivity"
+            android:name=".activities.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name="io.lucalabs.expenses.network.upload.UploadService"
+            android:name=".network.upload.UploadService"
             android:exported="false" />
 
-        <receiver android:name="io.lucalabs.expenses.network.NetworkStateReceiver">
+        <receiver android:name=".network.NetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
         <activity
-            android:name="io.lucalabs.expenses.activities.MainActivity"
-            android:screenOrientation="portrait"/>
+            android:name=".activities.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ExpenseReportActivity"
+            android:label="@string/title_activity_expense_report"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 </manifest>

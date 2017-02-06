@@ -5,10 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import io.lucalabs.expenses.activities.CameraActivity;
 import io.lucalabs.expenses.managers.PermissionManager;
@@ -18,8 +19,9 @@ import io.lucalabs.expenses.managers.PermissionManager;
  */
 public class CameraFab extends FloatingActionButton implements View.OnClickListener {
 
-    private final static String TAG = "CameraButton";
+    private final static String TAG = "CameraFab";
     private Activity contextActivity;
+    private String mExpenseReportRef;
 
     public CameraFab(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -28,6 +30,11 @@ public class CameraFab extends FloatingActionButton implements View.OnClickListe
     public void setup(Activity contextActivity) {
         this.contextActivity = contextActivity;
         setOnClickListener(this);
+    }
+
+    public void setupForExpenseReport(Activity contextActivity, String expenseReportRef){
+        mExpenseReportRef = expenseReportRef;
+        setup(contextActivity);
     }
 
     @Override
@@ -41,6 +48,7 @@ public class CameraFab extends FloatingActionButton implements View.OnClickListe
         }
 
         Intent toCameraIntent = new Intent(getContext(), CameraActivity.class);
+        toCameraIntent.putExtra("expense_report_ref", mExpenseReportRef);
         getContext().startActivity(toCameraIntent);
     }
 

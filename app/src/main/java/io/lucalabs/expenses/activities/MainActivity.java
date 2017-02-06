@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
@@ -17,19 +16,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.List;
-
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
 import io.lucalabs.expenses.models.Inbox;
-import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.network.NetworkStatus;
 import io.lucalabs.expenses.network.upload.UploadService;
-import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
+import io.lucalabs.expenses.views.adapters.ExpenseReportListAdapter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
 public class MainActivity extends FirebaseActivity {
-
     private static final String TAG = "MainActivity";
     private CoordinatorLayout coordinatorLayout;
 
@@ -37,18 +32,10 @@ public class MainActivity extends FirebaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.w("ReceiptsData", "---------------------------------");
-        Log.w("ReceiptsData", Receipt.count(Receipt.class) + " number of receipts in DB");
-        Log.w("ReceiptsData", Receipt.find(Receipt.class, "status = 'PENDING' OR status = 'UPLOADED'").size() + " receipts waiting for upload");
-
-        List<Receipt> receiptList = Receipt.listAll(Receipt.class);
-        for(Receipt rec : receiptList)
-            Log.w("ReceiptsData", rec.getFirebase_ref() + " is " + rec.getStatus() + " with filename " + rec.getFilename() + " and id " + rec.getId());
-        Log.w("ReceiptsData", "---------------------------------");
-
         setContentView(R.layout.activity_main);
-        ((ListView) findViewById(R.id.offline_list)).setAdapter(new ReceiptListAdapter(this, Inbox.allReceipts(this)));
-        ((CameraFab) findViewById(R.id.camera_button)).setup(this);
+        ((ListView) findViewById(R.id.offline_list)).setAdapter(new ExpenseReportListAdapter(this, Inbox.allExpenseReports(this)));
+        CameraFab cameraFab = ((CameraFab) findViewById(R.id.camera_button));
+        cameraFab.setup(this);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.offline_coordinator);
 
         displayErrorIfNecessary(getIntent().getIntExtra("networkStatus", NetworkStatus.OK));

@@ -47,6 +47,21 @@ public class Receipt extends SugarRecord {
         setStatus(cachedReceipt.getStatus());
     }
 
+    public String getExpenseReportRef() {
+        return expenseReportRef;
+    }
+
+    public void setExpenseReportRef(String expenseReportRef) {
+        this.expenseReportRef = expenseReportRef;
+    }
+
+    public void setExpenseReportRef(Context context, String expenseReportRef) {
+        if(expenseReportRef == null)
+            expenseReportRef = ReceiptDatabase.newReportReference(User.getCurrentUser(),
+                    EnvironmentManager.currentEnvironment(context)).getKey();
+        setExpenseReportRef(expenseReportRef);
+    }
+
     public enum Status {
         PENDING(0), UPLOADING(1), UPLOADED(2), POSTING(3), POSTED(4), PARSED(5);
 
@@ -60,6 +75,7 @@ public class Receipt extends SugarRecord {
     // Fields that are persisted to SQLite database
     private Status status; // column name = status
     private String filename; // column name = filename
+    private String expenseReportRef; // column name = expense_report_ref
     private String firebase_ref;  // column name = firebaseref
 
     // Firebase attributes
@@ -75,7 +91,7 @@ public class Receipt extends SugarRecord {
     public Receipt() {
     }
 
-    public Receipt(byte[] image, Context context) {
+    public Receipt(byte[] image, Context context, String expenseReportRef) {
         this.setStatus(Status.PENDING);
 
         filename = generateFilename();
@@ -92,6 +108,7 @@ public class Receipt extends SugarRecord {
                 .newReceiptReference(User.getCurrentUser(),
                         EnvironmentManager.currentEnvironment(context));
         this.firebase_ref = dbRef.getKey();
+        this.setExpenseReportRef(context, expenseReportRef);
         this.save();
     }
 

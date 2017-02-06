@@ -18,29 +18,31 @@ import java.nio.ByteBuffer;
 public class ImageSaver implements Runnable {
 
     private static final String TAG = "ImageSaver";
-    private final Context context;
-    private final Image image;
+    private final Context mContext;
+    private final Image mImage;
+    private final String mExpenseReportRef;
 
-    public ImageSaver(Context context, Image image) {
-        this.context = context;
-        this.image = image;
+    public ImageSaver(Context context, Image image, String expenseReportRef) {
+        mContext = context;
+        mImage = image;
+        mExpenseReportRef = expenseReportRef;
     }
 
     @Override
     public void run() {
-        ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
+        ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
         byte[] bytes = new byte[byteBuffer.remaining()];
         byteBuffer.get(bytes);
-        Receipt rec = new Receipt(bytes, context);
+        Receipt rec = new Receipt(bytes, mContext, mExpenseReportRef);
 
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("save_to_album_pref", false)) {
+        if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("save_to_album_pref", false)) {
             try {saveCopyToAlbum(bytes);
             } catch (IOException e) {
                 Log.w(TAG, "Couldn't save copy");
                 e.printStackTrace();
             }
         }
-        image.close();
+        mImage.close();
     }
 
     private void saveCopyToAlbum(byte[] bytes) throws IOException {
@@ -52,6 +54,6 @@ public class ImageSaver implements Runnable {
 
         Intent mediaStoreUpdateIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaStoreUpdateIntent.setData(Uri.fromFile(new File(imageFile.getAbsolutePath())));
-        context.sendBroadcast(mediaStoreUpdateIntent);
+        mContext.sendBroadcast(mediaStoreUpdateIntent);
     }
 }

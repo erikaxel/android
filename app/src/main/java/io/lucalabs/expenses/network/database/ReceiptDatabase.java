@@ -20,8 +20,7 @@ public class ReceiptDatabase {
     public static DatabaseReference getUserReference(FirebaseUser user, String environment){
         return getReference()
                 .child(environment)
-                .child(user.getUid())
-                .child("receipts");
+                .child(user.getUid());
     }
 
     /**
@@ -29,9 +28,17 @@ public class ReceiptDatabase {
      * @return a database reference to the new receipt
      */
     public static DatabaseReference newReceiptReference(FirebaseUser user, String environment) {
-        DatabaseReference ref = getUserReference(user, environment).push();
+        DatabaseReference ref = getUserReference(user, environment).child("receipts").push();
         ref.child("firebase_ref").setValue(ref.getKey());
         return ref;
+    }
+
+    /**
+     * Pushes a new expense report to the given user and application environment.
+     * @return a database reference to the new expense report
+     */
+    public static DatabaseReference newReportReference(FirebaseUser user, String environment) {
+        return getUserReference(user, environment).child("expense_reports").push();
     }
 
     private static DatabaseReference getReference(){
