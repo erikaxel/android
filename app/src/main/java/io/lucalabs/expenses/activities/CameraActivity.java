@@ -136,9 +136,9 @@ public class CameraActivity extends AppCompatActivity {
                     handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage(), mExpenseReportRef));
                     startActivity(new Intent(CameraActivity.this, MainActivity.class));
                     if (mExpenseReportRef != null) {
-                        Intent toExpenseReportActivity = new Intent();
+                        Intent toExpenseReportActivity = new Intent(CameraActivity.this, ExpenseReportActivity.class);
                         toExpenseReportActivity.putExtra("firebase_ref", mExpenseReportRef);
-                        startActivity(new Intent(CameraActivity.this, ExpenseReportActivity.class));
+                        startActivity(toExpenseReportActivity);
                     } else {
                         startActivity(new Intent(CameraActivity.this, MainActivity.class));
                     }

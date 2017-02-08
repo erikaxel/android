@@ -89,4 +89,11 @@ public class MainActivity extends FirebaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+        setIntent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(setIntent);
+    }
 }

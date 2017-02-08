@@ -84,6 +84,7 @@
         android:layout_height="wrap_content"
         android:inputType="date"
         android:ems="10"
+        android:focusable="false"
         android:id="@+id/edit_report_arrival_at"
         android:hint="@string/report_arrival_at_hint"/>
 
@@ -98,7 +99,4 @@
             android:ems="10"
             android:hint="@string/report_comment_hint" />
     </android.support.design.widget.TextInputLayout>
-
-
-
 </LinearLayout>

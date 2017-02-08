@@ -11,6 +11,7 @@ import android.widget.Toast;
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
+import io.lucalabs.expenses.views.widgets.CameraFab;
 
 /**
  * Fragment containing the expense report receipt list.

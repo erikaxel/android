@@ -21,7 +21,7 @@ public class ExpenseReport {
     public ExpenseReport(){}
 
     public String getNameString(){
-        if(name == null)
+        if(name == null || name.isEmpty())
             return reference;
         else return name;
     }

@@ -106,8 +106,6 @@ public class UploadReceiptTask {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(mContext);
 
-        Log.d("PostReceipt", "exp firebase ref: " + mReceipt.getExpenseReportRef());
-
         RequestBody form = new FormBody.Builder()
                 .add("receipt[firebase_ref]", mReceipt.getFirebase_ref())
                 .add("page_one_file_name", "0.jpg")

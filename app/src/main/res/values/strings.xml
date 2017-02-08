@@ -33,22 +33,24 @@
     <string name="interpreting">Interpreting receipt</string>
     <string name="name_not_found">Name not found</string>
     <string name="uploading_external_receipt">Upload receipt</string>
-    <string name="title_activity_receipt">ReceiptActivity</string>
-    <string name="title_activity_expense_report">ExpenseReportActivity</string>
+    <string name="title_activity_receipt" translatable="false">ReceiptActivity</string>
+    <string name="title_activity_expense_report" translatable="false">ExpenseReportActivity</string>
     <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="receipts">Receipts</string>
-    <string name="details">Details</string>
+    <string name="details">Report details</string>
     <string name="add_to_new">Add to new report</string>
     <string name="report_name_hint">Title</string>
     <string name="report_project_code_hint">Project code</string>
     <string name="report_billable_hint">Is billable?</string>
     <string name="report_travel_hint">Is travel?</string>
-    <string name="affirm_action">ok</string>
-    <string name="cancel_action">cancel</string>
+    <string name="affirm_action">Ok</string>
+    <string name="cancel_action">Cancel</string>
     <string name="report_departure_at">Departure date</string>
     <string name="report_arrival_at">Arrival date</string>
     <string name="report_destination_hint">Destination</string>
     <string name="report_source_hint">Travel source</string>
     <string name="report_comment_hint">Comment</string>
+    <string name="report_departure_at_hint">Departure at</string>
+    <string name="report_arrival_at_hint">Arrival date</string>
+    <string name="section_format">Section format</string>
 </resources>
