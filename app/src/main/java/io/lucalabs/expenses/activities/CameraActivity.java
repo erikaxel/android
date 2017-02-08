@@ -57,9 +57,9 @@ public class CameraActivity extends AppCompatActivity {
     private int state;
 
     private File imageFolder;
+    private String mExpenseReportRef;
 
     private FloatingActionButton cameraButton;
-
     private CameraDevice cameraDevice;
     private CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
@@ -133,8 +133,15 @@ public class CameraActivity extends AppCompatActivity {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
                     Log.i(TAG, "Saving image");
-                    handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage()));
+                    handler.post(new ImageSaver(CameraActivity.this, reader.acquireNextImage(), mExpenseReportRef));
                     startActivity(new Intent(CameraActivity.this, MainActivity.class));
+                    if (mExpenseReportRef != null) {
+                        Intent toExpenseReportActivity = new Intent(CameraActivity.this, ExpenseReportActivity.class);
+                        toExpenseReportActivity.putExtra("firebase_ref", mExpenseReportRef);
+                        startActivity(toExpenseReportActivity);
+                    } else {
+                        startActivity(new Intent(CameraActivity.this, MainActivity.class));
+                    }
                 }
             };
 
@@ -166,6 +173,8 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        mExpenseReportRef = getIntent().getStringExtra("expense_report_ref");
 
         createImageFolder();
 

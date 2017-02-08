@@ -23,4 +23,22 @@
     <string name="interpreting">Tolker kvittering</string>
     <string name="name_not_found">Fant ikke navn</string>
     <string name="uploading_external_receipt">Laster opp kvittering</string>
+    <string name="action_settings">Innstillinger</string>
+    <string name="add_to_new">Legg til ny rapport</string>
+    <string name="affirm_action">Ok</string>
+    <string name="cancel_action">Avbryt</string>
+    <string name="details">Rapportdetaljer</string>
+    <string name="receipts">Kvitteringer</string>
+    <string name="report_arrival_at">Ankomstdato</string>
+    <string name="report_arrival_at_hint">Ankomstdato</string>
+    <string name="report_billable_hint">Privat utlegg?</string>
+    <string name="report_comment_hint">Kommentar</string>
+    <string name="report_departure_at">Avreisedato</string>
+    <string name="report_departure_at_hint">Avreisedato</string>
+    <string name="report_destination_hint">Reisemål</string>
+    <string name="report_name_hint">Navn</string>
+    <string name="report_project_code_hint">Prosjektkode</string>
+    <string name="report_source_hint">Avreisested</string>
+    <string name="report_travel_hint">Gjelder reise?</string>
+    <string name="section_format">seksjonsformat</string>
 </resources>
