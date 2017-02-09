@@ -1,15 +1,19 @@
 package io.lucalabs.expenses.views.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.ReceiptActivity;
 import io.lucalabs.expenses.models.Inbox;
+import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
@@ -39,8 +43,17 @@ public class ReceiptsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_expense_report, container, false);
 
-        ((ListView) rootView.findViewById(R.id.offline_list))
-                .setAdapter(new ReceiptListAdapter(this.getActivity(), Inbox.receiptsForExpenseReport(this.getContext(), getArguments().getString(FIREBASE_REF))));
+        final ListView receiptList = (ListView) rootView.findViewById(R.id.offline_list);
+        receiptList.setAdapter(new ReceiptListAdapter(this.getActivity(), Inbox.receiptsForExpenseReport(this.getContext(), getArguments().getString(FIREBASE_REF))));
+        receiptList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Receipt receipt = (Receipt) receiptList.getItemAtPosition(position);
+                Intent toReceiptActivity = new Intent(ReceiptsFragment.this.getContext(), ReceiptActivity.class);
+                toReceiptActivity.putExtra("firebase_ref", receipt.getFirebase_ref());
+                startActivity(toReceiptActivity);
+            }
+        });
 
         return rootView;
     }

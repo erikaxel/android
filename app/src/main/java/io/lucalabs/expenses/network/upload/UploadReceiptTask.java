@@ -116,9 +116,9 @@ public class UploadReceiptTask {
                 .add("page_one_file_size", String.valueOf(mReceipt.getImage(mContext).length))
                 .build();
 
-        Log.i(TAG, "Posting receipt " + mReceipt.getFirebase_ref() + " to " + Routes.receiptsUrl(mContext));
+        Log.i(TAG, "Posting receipt " + mReceipt.getFirebase_ref() + " to " + Routes.receiptsUrl(mContext, null));
         Request request = new Request.Builder()
-                .url(Routes.receiptsUrl(mContext))
+                .url(Routes.receiptsUrl(mContext, null))
                 .post(form)
                 .build();
 

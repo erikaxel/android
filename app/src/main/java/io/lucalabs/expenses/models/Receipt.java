@@ -29,39 +29,6 @@ public class Receipt extends SugarRecord {
     @Ignore
     public static final String TAG = "ReceiptModel";
 
-    public String getStatusString(Context context) {
-        if (status == null)
-            return context.getString(R.string.name_not_found);
-
-        switch(status){
-            case PENDING : return context.getString(R.string.waiting_to_upload);
-            case UPLOADING : return context.getString(R.string.uploading);
-            case UPLOADED : return context.getString(R.string.uploading);
-            case POSTING : return context.getString(R.string.uploading);
-            case POSTED : return context.getString(R.string.interpreting);
-            default : return getMerchant_name();
-        }
-    }
-
-    public void updateFromCache(Receipt cachedReceipt) {
-        setStatus(cachedReceipt.getStatus());
-    }
-
-    public String getExpenseReportRef() {
-        return expenseReportRef;
-    }
-
-    public void setExpenseReportRef(String expenseReportRef) {
-        this.expenseReportRef = expenseReportRef;
-    }
-
-    public void setExpenseReportRef(Context context, String expenseReportRef) {
-        if(expenseReportRef == null)
-            expenseReportRef = ReceiptDatabase.newReportReference(User.getCurrentUser(),
-                    EnvironmentManager.currentEnvironment(context)).getKey();
-        setExpenseReportRef(expenseReportRef);
-    }
-
     public enum Status {
         PENDING(0), UPLOADING(1), UPLOADED(2), POSTING(3), POSTED(4), PARSED(5);
 
@@ -87,6 +54,14 @@ public class Receipt extends SugarRecord {
     private String interpreted_at;
     @Ignore
     private String used_date;
+    @Ignore
+    private String currency;
+    @Ignore
+    private boolean reimbursable;
+    @Ignore
+    private String comment;
+    @Ignore
+    private String expense_report_firebase_key;
 
     public Receipt() {
     }
@@ -110,6 +85,53 @@ public class Receipt extends SugarRecord {
         this.firebase_ref = dbRef.getKey();
         this.setExpenseReportRef(context, expenseReportRef);
         this.save();
+    }
+
+    public String getStatusString(Context context) {
+        if (status == null)
+            return context.getString(R.string.name_not_found);
+
+        switch (status) {
+            case PENDING:
+                return context.getString(R.string.waiting_to_upload);
+            case UPLOADING:
+                return context.getString(R.string.uploading);
+            case UPLOADED:
+                return context.getString(R.string.uploading);
+            case POSTING:
+                return context.getString(R.string.uploading);
+            case POSTED:
+                return context.getString(R.string.interpreting);
+            default:
+                return getMerchant_name();
+        }
+    }
+
+    public void updateFromCache(Receipt cachedReceipt) {
+        setStatus(cachedReceipt.getStatus());
+    }
+
+    public String getExpenseReportRef() {
+        return expenseReportRef;
+    }
+
+    public void setExpenseReportRef(String expenseReportRef) {
+        this.expenseReportRef = expenseReportRef;
+    }
+
+    public void setExpenseReportRef(Context context, String expenseReportRef) {
+        if (expenseReportRef == null)
+            expenseReportRef = ReceiptDatabase.newReportReference(User.getCurrentUser(),
+                    EnvironmentManager.currentEnvironment(context)).getKey();
+        setExpenseReportRef(expenseReportRef);
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     private static String generateFilename() {
@@ -211,12 +233,12 @@ public class Receipt extends SugarRecord {
         return used_date;
     }
 
-    public void setUsed_date(String used_date) {
-        this.used_date = used_date;
+    public String getUsedDateString(Context context) {
+        return DateFormatter.formatToLocale(context, used_date);
     }
 
-    public String getDateString(Context context) {
-        return DateFormatter.formatToLocale(getUsed_date(), context);
+    public void setUsed_date(String used_date) {
+        this.used_date = used_date;
     }
 
     public Status getStatus() {
@@ -237,8 +259,41 @@ public class Receipt extends SugarRecord {
         return firebase_ref;
     }
 
+    public void setFirebase_ref(String firebase_ref){
+        this.firebase_ref = firebase_ref;
+    }
+
+    public boolean isReimbursable() {
+        return reimbursable;
+    }
+
+    public void setReimbursable(boolean reimbursable) {
+        this.reimbursable = reimbursable;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getExpense_report_firebase_key() {
+        return expense_report_firebase_key;
+    }
+
+    public void setExpense_report_firebase_key(String expense_report_firebase_key) {
+        this.expense_report_firebase_key = expense_report_firebase_key;
+    }
+
+
     public boolean delete(Context context) {
         return Receipt.delete(this) &&
                 new File(context.getFilesDir().getAbsolutePath() + "/" + getFilename()).delete();
+    }
+
+    public boolean equals(Receipt other){
+        return false;
     }
 }

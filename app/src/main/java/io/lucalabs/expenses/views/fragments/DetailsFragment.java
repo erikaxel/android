@@ -88,8 +88,8 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
                 mEditDestination.setText(mExpenseReport.getDestination());
                 mDepartureAtStamp = mExpenseReport.getDeparture_at();
                 mArrivalAtStamp = mExpenseReport.getArrival_at();
-                mEditDepartureAt.setText(DateFormatter.formatToLocale(mDepartureAtStamp, getContext()));
-                mEditArrivalAt.setText(DateFormatter.formatToLocale(mArrivalAtStamp, getContext()));
+                mEditDepartureAt.setText(DateFormatter.formatToLocale(getContext(), mDepartureAtStamp));
+                mEditArrivalAt.setText(DateFormatter.formatToLocale(getContext(), mArrivalAtStamp));
                 mEditComment.setText(mExpenseReport.getComment());
             }
 
@@ -108,8 +108,8 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
 
         if (mExpenseReport != null && !formExpenseReport.equals(mExpenseReport)) {
             Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).setValue(formExpenseReport);
-            formExpenseReport.setFirebase_ref(getArguments().getString(FIREBASE_REF));
             new PostExpenseReportTask(getContext(), formExpenseReport).execute();
+            formExpenseReport.setFirebase_ref(getArguments().getString(FIREBASE_REF));
         }
 
         super.onDestroyView();
@@ -133,10 +133,10 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
     public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int month, int day) {
         if (dialog.getTag() == DEPARTURE_PICKER_TAG) {
             mDepartureAtStamp = DateFormatter.toDateString(year, month, day);
-            mEditDepartureAt.setText(DateFormatter.formatToLocale(mDepartureAtStamp, getContext()));
+            mEditDepartureAt.setText(DateFormatter.formatToLocale(getContext(), mDepartureAtStamp));
         } else {
             mArrivalAtStamp = DateFormatter.toDateString(year, month, day);
-            mEditArrivalAt.setText(DateFormatter.formatToLocale(mArrivalAtStamp, getContext()));
+            mEditArrivalAt.setText(DateFormatter.formatToLocale(getContext(), mArrivalAtStamp));
         }
     }
 

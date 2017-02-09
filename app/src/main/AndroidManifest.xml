@@ -74,7 +74,10 @@
             android:name=".activities.ExpenseReportActivity"
             android:label="@string/title_activity_expense_report"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activities.ReceiptActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
+
 </manifest>

@@ -1,6 +1,7 @@
 package io.lucalabs.expenses.views.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.List;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.ReceiptActivity;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 
@@ -30,7 +32,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     }
 
     @Override
-    protected void populateView(View view, Receipt receipt, int position) {
+    protected void populateView(View view, final Receipt receipt, int position) {
         if (receipt == null) {
             ((TextView) view.findViewById(R.id.receipt_text)).setText(R.string.corrupt_data_notice);
             return;
@@ -56,7 +58,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
 
         ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString(mActivity));
         ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
-        ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getDateString(mActivity));
+        ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getUsedDateString(mActivity));
     }
 
     /*

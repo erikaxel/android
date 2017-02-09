@@ -41,4 +41,13 @@
     <string name="report_travel_hint">Gjelder reise?</string>
     <string name="details">Rapportdetaljer</string>
     <string name="section_format">seksjonsformat</string>
+    <string name="receipt_amount_hint">Beløp</string>
+    <string name="receipt_category_hint">Kategori</string>
+    <string name="receipt_comment_hint">Kommentar</string>
+    <string name="receipt_currency_hint">Valuta</string>
+    <string name="receipt_merchant_name_hint">Forhandler</string>
+    <string name="receipt_reimbursable_hint">Privat utlegg</string>
+    <string name="receipt_used_date_hint">Bruksdato</string>
+    <string name="title_activity_receipt">Kvittering</string>
+    <string name="title_activity_expense_report">Reiseregning</string>
 </resources>

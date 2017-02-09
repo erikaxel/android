@@ -31,6 +31,10 @@ public class Inbox {
         return queryDb(context).child("expense_reports").child(firebaseRef);
     }
 
+    public static DatabaseReference findReceipt(Context context, String firebaseRef){
+        return queryDb(context).child("receipts").child(firebaseRef);
+    }
+
     public static StorageReference receiptThumbnail(Context context, Receipt receipt) {
         return  queryStorage(context)
                 .child(receipt.getFirebase_ref())

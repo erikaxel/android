@@ -37,6 +37,8 @@ public class PostExpenseReportTask extends AsyncTask<Void, Void, Void> {
         smartAdd(formBuilder, "expense_report[name]", mExpenseReport.getName());
         smartAdd(formBuilder, "expense_report[comment]", mExpenseReport.getComment());
         smartAdd(formBuilder, "expense_report[source]", mExpenseReport.getSource());
+        smartAdd(formBuilder, "expense_report[billable]", mExpenseReport.isBillable() ? "true" : "false");
+        smartAdd(formBuilder, "expense_report[travel]", mExpenseReport.isTravel() ? "true" : "false");
         smartAdd(formBuilder, "expense_report[destination]", mExpenseReport.getDestination());
         smartAdd(formBuilder, "expense_report[departure_at]", mExpenseReport.getDeparture_at());
         smartAdd(formBuilder, "expense_report[arrival_at]", mExpenseReport.getArrival_at());
