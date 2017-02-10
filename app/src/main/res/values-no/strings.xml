@@ -50,4 +50,6 @@
     <string name="receipt_used_date_hint">Bruksdato</string>
     <string name="title_activity_receipt">Kvittering</string>
     <string name="title_activity_expense_report">Reiseregning</string>
+    <string name="no_expense_reports_notice">Velkommen til Luca Reiseregning! Ta et bilde av en kvittering for å starte.</string>
+    <string name="empty_expense_report_notice">Du har ikke lagt til noen kvitteringer enda.</string>
 </resources>

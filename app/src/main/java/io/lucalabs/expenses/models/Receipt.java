@@ -187,6 +187,10 @@ public class Receipt extends SugarRecord {
         else return new DecimalFormat("#.00").format((double) getAmount_cents() / 100);
     }
 
+    public String getPrettyAmountString(){
+        return getAmountString().replaceAll("([.]00)", ".-").replaceAll("([,]00)", ",-");
+    }
+
     public String getMerchantString(Context context) {
         if (getMerchant_name() == null)
             return getStatusString(context);

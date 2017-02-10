@@ -2,6 +2,7 @@ package io.lucalabs.expenses.views.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,7 +58,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
         }
 
         ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString(mActivity));
-        ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
+        ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getPrettyAmountString());
         ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getUsedDateString(mActivity));
     }
 

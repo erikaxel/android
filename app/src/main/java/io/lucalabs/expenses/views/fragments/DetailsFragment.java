@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
@@ -44,6 +45,8 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
     private EditText mEditArrivalAt;
     private TextInputEditText mEditComment;
 
+    private LinearLayout mTravelLayout;
+
     private String mDepartureAtStamp;
     private String mArrivalAtStamp;
 
@@ -73,8 +76,21 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
         mEditArrivalAt = (EditText) rootView.findViewById(R.id.edit_report_arrival_at);
         mEditComment = (TextInputEditText) rootView.findViewById(R.id.edit_report_comment);
 
+        mTravelLayout = (LinearLayout) rootView.findViewById(R.id.travel_layout);
+
         mEditDepartureAt.setOnClickListener(this);
         mEditArrivalAt.setOnClickListener(this);
+
+        mEditTravel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(((CheckBox) view).isChecked()){
+                    mTravelLayout.setVisibility(View.VISIBLE);
+                } else {
+                    mTravelLayout.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -91,6 +107,9 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
                 mEditDepartureAt.setText(DateFormatter.formatToLocale(getContext(), mDepartureAtStamp));
                 mEditArrivalAt.setText(DateFormatter.formatToLocale(getContext(), mArrivalAtStamp));
                 mEditComment.setText(mExpenseReport.getComment());
+
+                if(!mExpenseReport.isTravel())
+                    mTravelLayout.setVisibility(View.INVISIBLE);
             }
 
             @Override

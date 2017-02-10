@@ -60,4 +60,6 @@
     <string name="receipt_category_hint">Category</string>
     <string name="receipt_reimbursable_hint">Reimbursable?</string>
     <string name="receipt_comment_hint">Comment</string>
+    <string name="empty_expense_report_notice">You haven\'t added any receipts to this report yet.</string>
+    <string name="no_expense_reports_notice">Welcome to Luca Expenses! Take a photo of a receipt and add it by clicking the Plus-button.</string>
 </resources>

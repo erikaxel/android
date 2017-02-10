@@ -4,13 +4,17 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.CameraActivity;
 import io.lucalabs.expenses.managers.PermissionManager;
 
