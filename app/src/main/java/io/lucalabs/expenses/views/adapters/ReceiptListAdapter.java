@@ -30,10 +30,13 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     public ReceiptListAdapter(Activity activity, Query query) {
         super(activity, Receipt.class, R.layout.receipt_list_item, query);
         user = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG, "------------------- INSTANCE -------------------");
     }
 
     @Override
     protected void populateView(View view, final Receipt receipt, int position) {
+        Log.d(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
+
         if (receipt == null) {
             ((TextView) view.findViewById(R.id.receipt_text)).setText(R.string.corrupt_data_notice);
             return;
@@ -50,6 +53,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
         }
 
         if(cachedReceipts.size() > 0) {
+            Log.d(TAG, "cached receipt present");
             Receipt cachedReceipt = cachedReceipts.get(0);
             setThumbnailFromCache(view, cachedReceipt, receipt);
             receipt.updateFromCache(cachedReceipt);

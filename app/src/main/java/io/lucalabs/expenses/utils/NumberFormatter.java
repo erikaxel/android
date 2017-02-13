@@ -9,6 +9,6 @@ public class NumberFormatter {
     public static long getLongFromString(String s){
         if(s.equals(""))
             return 0;
-        else return Long.valueOf(s.replaceAll( "[^\\d]", ""));
+        else return (long) (Double.parseDouble(s.replace(",", ".")) * 100);
     }
 }

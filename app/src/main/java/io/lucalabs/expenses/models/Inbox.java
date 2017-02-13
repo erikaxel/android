@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
+import android.util.Log;
 
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.network.database.ReceiptDatabase;
@@ -36,6 +37,7 @@ public class Inbox {
     }
 
     public static StorageReference receiptThumbnail(Context context, Receipt receipt) {
+        Log.d("ReceiptListAdapter", "ref is " + queryStorage(context).getPath() + "/" + receipt.getFirebase_ref() + "/pages/0.thumbnail.jpg");
         return  queryStorage(context)
                 .child(receipt.getFirebase_ref())
                 .child("pages")
@@ -43,9 +45,11 @@ public class Inbox {
     }
 
     private static DatabaseReference queryDb(Context context) {
-        return ReceiptDatabase.getUserReference(
+        DatabaseReference dbRef = ReceiptDatabase.getUserReference(
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(context));
+        dbRef.keepSynced(true);
+        return dbRef;
     }
 
     private static StorageReference queryStorage(Context context){

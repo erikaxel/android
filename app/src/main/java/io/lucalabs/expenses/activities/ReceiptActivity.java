@@ -39,6 +39,8 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getIntent().getStringExtra("exp_name"));
+
         setContentView(R.layout.activity_receipt);
 
         mEditMerchantName = (TextInputEditText) findViewById(R.id.edit_receipt_merchant_name);

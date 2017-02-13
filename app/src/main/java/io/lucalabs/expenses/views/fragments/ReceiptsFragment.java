@@ -44,7 +44,7 @@ public class ReceiptsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_expense_report, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_receipt_list, container, false);
 
         Query receiptsForReport = Inbox.receiptsForExpenseReport(getContext(), getArguments().getString(FIREBASE_REF));
 
@@ -56,6 +56,7 @@ public class ReceiptsFragment extends Fragment {
                 Receipt receipt = (Receipt) receiptList.getItemAtPosition(position);
                 Intent toReceiptActivity = new Intent(ReceiptsFragment.this.getContext(), ReceiptActivity.class);
                 toReceiptActivity.putExtra("firebase_ref", receipt.getFirebase_ref());
+                toReceiptActivity.putExtra("exp_name", getActivity().getIntent().getStringExtra("exp_name"));
                 startActivity(toReceiptActivity);
             }
         });

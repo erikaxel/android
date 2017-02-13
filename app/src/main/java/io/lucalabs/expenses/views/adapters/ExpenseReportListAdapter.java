@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import io.lucalabs.expenses.R;
@@ -21,16 +22,5 @@ public class ExpenseReportListAdapter extends FirebaseListAdapter<ExpenseReport>
     @Override
     protected void populateView(View view, final ExpenseReport expenseReport, int position) {
         ((TextView) view.findViewById(R.id.expense_report_text)).setText(expenseReport.getNameString());
-
-        final int pos = position;
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent toExpenseReportIntent = new Intent(mActivity, ExpenseReportActivity.class);
-                toExpenseReportIntent.putExtra("firebase_ref", getRef(pos).getKey());
-                mActivity.startActivity(toExpenseReportIntent);
-            }
-        });
     }
 }

@@ -27,9 +27,11 @@ public class ReceiptDatabase {
      * Pushes a new receipt to the given user and application environment.
      * @return a database reference to the new receipt
      */
-    public static DatabaseReference newReceiptReference(FirebaseUser user, String environment) {
+    public static DatabaseReference newReceiptReference(FirebaseUser user, String environment, String expenseReportRef) {
         DatabaseReference ref = getUserReference(user, environment).child("receipts").push();
         ref.child("firebase_ref").setValue(ref.getKey());
+        if(expenseReportRef != null)
+            ref.child("expense_report_firebase_key").setValue(expenseReportRef);
         return ref;
     }
 

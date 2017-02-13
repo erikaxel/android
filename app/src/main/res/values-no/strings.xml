@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Luca Reiseregning</string>
+    <string name="app_name">Luca reiseregning</string>
     <string name="advanced_category">Avansert</string>
     <string name="corrupt_data_notice">Ødelagte data</string>
     <string name="debug_category">Utviklervalg</string>

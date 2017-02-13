@@ -42,7 +42,7 @@ public class Receipt extends SugarRecord {
     // Fields that are persisted to SQLite database
     private Status status; // column name = status
     private String filename; // column name = filename
-    private String expenseReportRef; // column name = expense_report_ref
+    private String expense_report_firebase_key;; // column name = expensereportfirebasekey
     private String firebase_ref;  // column name = firebaseref
 
     // Firebase attributes
@@ -60,8 +60,6 @@ public class Receipt extends SugarRecord {
     private boolean reimbursable;
     @Ignore
     private String comment;
-    @Ignore
-    private String expense_report_firebase_key;
 
     public Receipt() {
     }
@@ -81,9 +79,10 @@ public class Receipt extends SugarRecord {
 
         DatabaseReference dbRef = ReceiptDatabase
                 .newReceiptReference(User.getCurrentUser(),
-                        EnvironmentManager.currentEnvironment(context));
+                        EnvironmentManager.currentEnvironment(context), expenseReportRef);
+        Log.d("ReceiptListAdapter", "Should instantiate");
         this.firebase_ref = dbRef.getKey();
-        this.setExpenseReportRef(context, expenseReportRef);
+        this.setExpense_report_firebase_key(context, expenseReportRef);
         this.save();
     }
 
@@ -111,19 +110,11 @@ public class Receipt extends SugarRecord {
         setStatus(cachedReceipt.getStatus());
     }
 
-    public String getExpenseReportRef() {
-        return expenseReportRef;
-    }
-
-    public void setExpenseReportRef(String expenseReportRef) {
-        this.expenseReportRef = expenseReportRef;
-    }
-
-    public void setExpenseReportRef(Context context, String expenseReportRef) {
+    public void setExpense_report_firebase_key(Context context, String expenseReportRef) {
         if (expenseReportRef == null)
             expenseReportRef = ReceiptDatabase.newReportReference(User.getCurrentUser(),
                     EnvironmentManager.currentEnvironment(context)).getKey();
-        setExpenseReportRef(expenseReportRef);
+        setExpense_report_firebase_key(expenseReportRef);
     }
 
     public String getCurrency() {

@@ -6,6 +6,7 @@
     <color name="white">#FFF</color>
     <color name="grey">#888</color>
     <color name="darkgrey">#333</color>
+    <color name="lightgrey">#F8F8F8</color>
     <color name="black">#000</color>
 
     <!-- New styles -->
