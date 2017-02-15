@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
@@ -17,13 +18,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
+import io.lucalabs.expenses.models.ApiRequestObject;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
-import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.network.NetworkStatus;
+import io.lucalabs.expenses.network.Routes;
 import io.lucalabs.expenses.network.upload.UploadService;
+import io.lucalabs.expenses.network.webapi.ApiRequestTask;
 import io.lucalabs.expenses.views.adapters.ExpenseReportListAdapter;
-import io.lucalabs.expenses.views.widgets.CameraFab;
 
 public class MainActivity extends FirebaseActivity {
     private static final String TAG = "MainActivity";
@@ -43,7 +45,6 @@ public class MainActivity extends FirebaseActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 ExpenseReport expenseReport = (ExpenseReport) expenseReportList.getItemAtPosition(position);
-
                 Intent toExpenseReportIntent = new Intent(MainActivity.this, ExpenseReportActivity.class);
                 toExpenseReportIntent.putExtra("firebase_ref", expListAdapter.getRef(position).getKey());
                 toExpenseReportIntent.putExtra("exp_name", expenseReport.getNameString());
@@ -51,8 +52,18 @@ public class MainActivity extends FirebaseActivity {
             }
         });
 
-        CameraFab cameraFab = ((CameraFab) findViewById(R.id.camera_button));
-        cameraFab.setup(this);
+        final FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.create_expense_report);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ExpenseReport expenseReport = Inbox.createExpenseReport(MainActivity.this);
+                new ApiRequestTask(MainActivity.this, "POST", new ApiRequestObject(expenseReport), Routes.expenseReportsUrl(MainActivity.this, null)).execute();
+                FloatingActionsMenu floatingActionsMenu = (FloatingActionsMenu) MainActivity.this.findViewById(R.id.expense_report_menu);
+                floatingActionsMenu.collapse();
+                Snackbar.make(((CoordinatorLayout) MainActivity.this.findViewById(R.id.offline_coordinator)), R.string.expense_report_created_notice, Snackbar.LENGTH_SHORT);
+            }
+        });
+
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.offline_coordinator);
 
         displayErrorIfNecessary(getIntent().getIntExtra("networkStatus", NetworkStatus.OK));
@@ -64,12 +75,10 @@ public class MainActivity extends FirebaseActivity {
                     ((CardView) findViewById(R.id.no_expenses_card)).setVisibility(View.INVISIBLE);
                 else
                     ((CardView) findViewById(R.id.no_expenses_card)).setVisibility(View.VISIBLE);
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }

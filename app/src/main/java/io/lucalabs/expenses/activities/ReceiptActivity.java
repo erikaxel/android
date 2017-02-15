@@ -15,8 +15,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Calendar;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.models.ApiRequestObject;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
+import io.lucalabs.expenses.network.Routes;
+import io.lucalabs.expenses.network.webapi.ApiRequestTask;
 import io.lucalabs.expenses.network.webapi.PatchReceiptTask;
 import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.NumberFormatter;
@@ -96,7 +99,7 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
         Receipt formReceipt = getReceiptFromForm();
 
         if (mReceipt != null && !mReceipt.equals(formReceipt)) {
-            new PatchReceiptTask(this, formReceipt).execute();
+            new ApiRequestTask(this, "POST", new ApiRequestObject(formReceipt), Routes.receiptsUrl(this, formReceipt)).execute();
             Inbox.findReceipt(this, mFirebaseRef).setValue(formReceipt);
         }
 

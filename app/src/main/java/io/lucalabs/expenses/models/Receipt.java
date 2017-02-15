@@ -19,7 +19,8 @@ import java.text.DecimalFormat;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.EnvironmentManager;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
+import io.lucalabs.expenses.models.annotations.Arg;
+import io.lucalabs.expenses.network.database.UserDatabase;
 import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.ImageHandler;
 
@@ -42,23 +43,24 @@ public class Receipt extends SugarRecord {
     // Fields that are persisted to SQLite database
     private Status status; // column name = status
     private String filename; // column name = filename
-    private String expense_report_firebase_key;; // column name = expensereportfirebasekey
+    @Arg(name="expense_report[firebase_key]")
+    private String expense_report_firebase_key; // column name = expensereportfirebasekey
     private String firebase_ref;  // column name = firebaseref
 
     // Firebase attributes
-    @Ignore
+    @Ignore @Arg(name="receipt[merchant_name]")
     private String merchant_name;
-    @Ignore
+    @Ignore @Arg(name="receipt[amount]")
     private long amount_cents;
     @Ignore
     private String interpreted_at;
-    @Ignore
+    @Ignore @Arg(name="receipt[used_date]")
     private String used_date;
-    @Ignore
+    @Ignore @Arg(name="receipt[currency]")
     private String currency;
-    @Ignore
+    @Ignore @Arg(name="receipt[reimbursable]")
     private boolean reimbursable;
-    @Ignore
+    @Ignore @Arg(name="receipt[comment]")
     private String comment;
 
     public Receipt() {
@@ -77,7 +79,7 @@ public class Receipt extends SugarRecord {
             e.printStackTrace();
         }
 
-        DatabaseReference dbRef = ReceiptDatabase
+        DatabaseReference dbRef = UserDatabase
                 .newReceiptReference(User.getCurrentUser(),
                         EnvironmentManager.currentEnvironment(context), expenseReportRef);
         Log.d("ReceiptListAdapter", "Should instantiate");
@@ -112,7 +114,7 @@ public class Receipt extends SugarRecord {
 
     public void setExpense_report_firebase_key(Context context, String expenseReportRef) {
         if (expenseReportRef == null)
-            expenseReportRef = ReceiptDatabase.newReportReference(User.getCurrentUser(),
+            expenseReportRef = UserDatabase.newReportReference(User.getCurrentUser(),
                     EnvironmentManager.currentEnvironment(context)).getKey();
         setExpense_report_firebase_key(expenseReportRef);
     }
@@ -178,7 +180,7 @@ public class Receipt extends SugarRecord {
         else return new DecimalFormat("#.00").format((double) getAmount_cents() / 100);
     }
 
-    public String getPrettyAmountString(){
+    public String getPrettyAmountString() {
         return getAmountString().replaceAll("([.]00)", ".-").replaceAll("([,]00)", ",-");
     }
 
@@ -254,7 +256,7 @@ public class Receipt extends SugarRecord {
         return firebase_ref;
     }
 
-    public void setFirebase_ref(String firebase_ref){
+    public void setFirebase_ref(String firebase_ref) {
         this.firebase_ref = firebase_ref;
     }
 
@@ -288,7 +290,7 @@ public class Receipt extends SugarRecord {
                 new File(context.getFilesDir().getAbsolutePath() + "/" + getFilename()).delete();
     }
 
-    public boolean equals(Receipt other){
+    public boolean equals(Receipt other) {
         return false;
     }
 }

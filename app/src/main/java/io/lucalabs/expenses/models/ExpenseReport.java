@@ -2,14 +2,20 @@ package io.lucalabs.expenses.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import io.lucalabs.expenses.models.annotations.Arg;
+
 @IgnoreExtraProperties
 public class ExpenseReport {
+
     private String name;
     private String reference;
+    @Arg(name="expense_report[firebase_ref]")
     private String firebase_ref;
     private String project_code;
     private boolean billable;
     private String comment;
+    @Arg(name="expense_report[finalized]")
+    private boolean finalized;
 
     // Travel specific attributes
     private boolean travel;
@@ -24,6 +30,12 @@ public class ExpenseReport {
         if(name == null || name.isEmpty())
             return reference;
         else return name;
+    }
+
+    public String getSubtitleString() {
+        if(name == null)
+            return "";
+        else return reference;
     }
 
     public String getName() {
@@ -112,6 +124,14 @@ public class ExpenseReport {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public boolean isFinalized(){
+        return finalized;
+    }
+
+    public void setFinalized(boolean finalized) {
+        this.finalized = finalized;
     }
 
     public boolean equals(ExpenseReport other){

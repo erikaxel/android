@@ -52,4 +52,9 @@
     <string name="title_activity_expense_report">Reiseregning</string>
     <string name="empty_expense_report_notice">Du har ikke lagt til noen kvitteringer enda.</string>
     <string name="no_expense_reports_notice">Velkommen til Luca Reiseregning! Ta et bilde av en kvittering for å starte.</string>
+    <string name="create_expense_report">Ny reiseregning</string>
+    <string name="expense_report_created_notice">Lagde ny reiseregning</string>
+    <string name="new_report">Ny reiseregning</string>
+    <string name="submit_expense_report">Send inn</string>
+    <string name="submitted_report_notice">Reiseregningen ble sendt inn</string>
 </resources>

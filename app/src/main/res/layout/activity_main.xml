@@ -43,15 +43,15 @@
         app:layout_anchor="@id/offline_list"
         app:layout_anchorGravity="bottom|right|end">
 
-        <io.lucalabs.expenses.views.widgets.CameraFab
-            android:id="@+id/camera_button"
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/create_expense_report"
             app:fab_colorNormal="@color/colorAccent"
             app:fab_colorPressed="@color/colorAccent"
             app:fab_icon="@drawable/ic_white_camera"
             app:theme="@style/AppTheme.CameraFab"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            app:fab_title="@string/add_to_new" />
+            app:fab_title="@string/create_expense_report" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </android.support.design.widget.CoordinatorLayout>

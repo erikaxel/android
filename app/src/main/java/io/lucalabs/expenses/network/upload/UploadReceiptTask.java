@@ -19,7 +19,7 @@ import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.User;
 import io.lucalabs.expenses.network.NetworkStatus;
 import io.lucalabs.expenses.network.Routes;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
+import io.lucalabs.expenses.network.database.UserDatabase;
 import io.lucalabs.expenses.network.storage.ReceiptStorage;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -58,7 +58,7 @@ public class UploadReceiptTask {
     private void start() {
         Log.i(TAG, "Starting ..." + mReceipt.getFirebase_ref());
 
-        DatabaseReference dbRef = ReceiptDatabase
+        DatabaseReference dbRef = UserDatabase
                 .getUserReference(mUser,
                         EnvironmentManager.currentEnvironment(mContext))
                 .child(mReceipt.getFirebase_ref());
@@ -115,7 +115,6 @@ public class UploadReceiptTask {
                 .add("create_expense_report", "true") // Creates expense report if it doesn't exist
                 .add("page_one_file_size", String.valueOf(mReceipt.getImage(mContext).length))
                 .build();
-
         Log.i(TAG, "Posting receipt " + mReceipt.getFirebase_ref() + " to " + Routes.receiptsUrl(mContext, null));
         Request request = new Request.Builder()
                 .url(Routes.receiptsUrl(mContext, null))

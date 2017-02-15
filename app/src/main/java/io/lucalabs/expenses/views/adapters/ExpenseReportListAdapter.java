@@ -22,5 +22,6 @@ public class ExpenseReportListAdapter extends FirebaseListAdapter<ExpenseReport>
     @Override
     protected void populateView(View view, final ExpenseReport expenseReport, int position) {
         ((TextView) view.findViewById(R.id.expense_report_text)).setText(expenseReport.getNameString());
+        ((TextView) view.findViewById(R.id.expense_report_subtitle)).setText(expenseReport.getSubtitleString());
     }
 }

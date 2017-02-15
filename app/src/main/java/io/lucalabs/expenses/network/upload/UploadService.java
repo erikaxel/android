@@ -1,7 +1,6 @@
 package io.lucalabs.expenses.network.upload;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -19,7 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.User;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
+import io.lucalabs.expenses.network.database.UserDatabase;
 
 public class UploadService extends Service {
     private final static String TAG = "UploadService";
@@ -74,7 +73,7 @@ public class UploadService extends Service {
         // Set interpreted receipt status to parsed
         for (Receipt receipt : Receipt.find(Receipt.class, "status = 'POSTED'")) {
             nextReceipt = receipt;
-            ReceiptDatabase.getUserReference(User.getCurrentUser(),
+            UserDatabase.getUserReference(User.getCurrentUser(),
                     EnvironmentManager.currentEnvironment(this))
                     .child(receipt.getFirebase_ref())
                     .addListenerForSingleValueEvent(new ValueEventListener() {

@@ -10,7 +10,7 @@ import io.lucalabs.expenses.models.Receipt;
  * Handles connection to Firebase database.
  */
 
-public class ReceiptDatabase {
+public class UserDatabase {
 
     private static FirebaseDatabase firebaseDatabase;
 
@@ -34,6 +34,15 @@ public class ReceiptDatabase {
             ref.child("expense_report_firebase_key").setValue(expenseReportRef);
         return ref;
     }
+
+    /**
+     * Pushes new task to task queue
+     */
+//
+//    public static DatabaseReference newTaskReference(FirebaseUser user, String environment){
+//        DatabaseReference ref = getUserReference(user, environment).child("receipts").push();
+//        ref.getKey();
+//    }
 
     /**
      * Pushes a new expense report to the given user and application environment.

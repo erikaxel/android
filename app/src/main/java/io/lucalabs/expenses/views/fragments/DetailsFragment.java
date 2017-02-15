@@ -1,15 +1,18 @@
 package io.lucalabs.expenses.views.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.util.Log;
 
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
 import com.google.firebase.database.DataSnapshot;
@@ -19,9 +22,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Calendar;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.MainActivity;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
-import io.lucalabs.expenses.network.webapi.PostExpenseReportTask;
+import io.lucalabs.expenses.network.webapi.PatchExpenseReportTask;
 import io.lucalabs.expenses.utils.DateFormatter;
 
 /**
@@ -92,6 +96,18 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
             }
         });
 
+        Button submitButton = (Button) rootView.findViewById(R.id.submit_button);
+        submitButton.setVisibility(View.VISIBLE);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mExpenseReport.setFinalized(true);
+                Toast.makeText(getContext(), R.string.submitted_report_notice, Toast.LENGTH_SHORT).show();
+                updateExpenseReport();
+                startActivity(new Intent(getActivity(), MainActivity.class));
+            }
+        });
+
         Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -123,15 +139,20 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
 
     @Override
     public void onDestroyView() {
+        updateExpenseReport();
+        super.onDestroyView();
+    }
+
+    private void updateExpenseReport() {
         ExpenseReport formExpenseReport = getExpenseReportFromForm();
 
         if (mExpenseReport != null && !formExpenseReport.equals(mExpenseReport)) {
             Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).setValue(formExpenseReport);
-            new PostExpenseReportTask(getContext(), formExpenseReport).execute();
+            Log.d("PatchExpenseReportTask", "Doing stuff");
+            new PatchExpenseReportTask(getContext(), formExpenseReport).execute();
+            Log.d("PatchExpenseReportTask", "Doing more stuff");
             formExpenseReport.setFirebase_ref(getArguments().getString(FIREBASE_REF));
         }
-
-        super.onDestroyView();
     }
 
     @Override
@@ -170,6 +191,7 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
         formExpenseReport.setDeparture_at(mDepartureAtStamp);
         formExpenseReport.setArrival_at(mArrivalAtStamp);
         formExpenseReport.setComment(mEditComment.getText().toString());
+        formExpenseReport.setFinalized(mExpenseReport.isFinalized());
         return formExpenseReport;
     }
 }

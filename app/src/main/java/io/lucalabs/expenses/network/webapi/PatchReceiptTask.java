@@ -18,7 +18,7 @@ public class PatchReceiptTask extends AsyncTask<Void, Void, Void> {
     private Context mContext;
     private Receipt mReceipt;
 
-    private static final String TAG = "PostExpenseReportTask";
+    private static final String TAG = "PatchExpenseReportTask";
 
     public PatchReceiptTask(Context context, Receipt expenseReport) {
         mContext = context;

@@ -7,8 +7,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
 import android.util.Log;
 
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.EnvironmentManager;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
+import io.lucalabs.expenses.network.database.UserDatabase;
 import io.lucalabs.expenses.network.storage.ReceiptStorage;
 
 /*
@@ -28,6 +29,17 @@ public class Inbox {
                 .equalTo(key);
     }
 
+    public static ExpenseReport createExpenseReport(Context context){
+        DatabaseReference ref = UserDatabase.newReportReference(
+                User.getCurrentUser(),
+                EnvironmentManager.currentEnvironment(context));
+        ExpenseReport expenseReport = new ExpenseReport();
+        expenseReport.setFirebase_ref(ref.getKey());
+        ref.child("name").setValue(expenseReport.getName());
+        ref.push();
+        return expenseReport;
+    }
+
     public static DatabaseReference findExpenseReport(Context context, String firebaseRef) {
         return queryDb(context).child("expense_reports").child(firebaseRef);
     }
@@ -45,7 +57,7 @@ public class Inbox {
     }
 
     private static DatabaseReference queryDb(Context context) {
-        DatabaseReference dbRef = ReceiptDatabase.getUserReference(
+        DatabaseReference dbRef = UserDatabase.getUserReference(
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(context));
         dbRef.keepSynced(true);
