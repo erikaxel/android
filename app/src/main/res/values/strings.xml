@@ -65,6 +65,6 @@
     <string name="create_expense_report">New expense report</string>
     <string name="new_report">New report</string>
     <string name="expense_report_created_notice">Created new expense report</string>
-    <string name="submit_expense_report">Submit</string>
+    <string name="submit_expense_report">Finalize and submit</string>
     <string name="submitted_report_notice">Submitted expense report</string>
 </resources>

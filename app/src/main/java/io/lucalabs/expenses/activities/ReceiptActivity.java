@@ -1,16 +1,22 @@
 package io.lucalabs.expenses.activities;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Calendar;
 
@@ -20,10 +26,11 @@ import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.network.Routes;
 import io.lucalabs.expenses.network.webapi.ApiRequestTask;
-import io.lucalabs.expenses.network.webapi.PatchReceiptTask;
+import io.lucalabs.expenses.utils.ArgumentComparator;
 import io.lucalabs.expenses.utils.DateFormatter;
+import io.lucalabs.expenses.network.storage.FetchImageTask;
 import io.lucalabs.expenses.utils.NumberFormatter;
-import io.lucalabs.expenses.views.fragments.DetailsFragment;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class ReceiptActivity extends AppCompatActivity implements CalendarDatePickerDialogFragment.OnDateSetListener, View.OnClickListener {
 
@@ -42,7 +49,7 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(getIntent().getStringExtra("exp_name"));
+        setTitle(R.id.receipt_activity_title);
 
         setContentView(R.layout.activity_receipt);
 
@@ -72,6 +79,17 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
                 mUsedDateStamp = mReceipt.getUsed_date();
                 mEditReimbursable.setChecked(mReceipt.isReimbursable());
                 mEditComment.setText(mReceipt.getComment());
+
+                StorageReference ref = Inbox.receiptImage(ReceiptActivity.this, mReceipt, "original");
+
+                final ImageView imageView = (ImageView) findViewById(R.id.receipt_image);
+
+                Glide.with(ReceiptActivity.this)
+                        .using(new FirebaseImageLoader())
+                        .load(ref)
+                        .into(imageView);
+
+                PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(imageView);
             }
 
             @Override
@@ -98,7 +116,7 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
     protected void onDestroy() {
         Receipt formReceipt = getReceiptFromForm();
 
-        if (mReceipt != null && !mReceipt.equals(formReceipt)) {
+        if (!ArgumentComparator.haveEqualArgs(formReceipt, mReceipt)) {
             new ApiRequestTask(this, "POST", new ApiRequestObject(formReceipt), Routes.receiptsUrl(this, formReceipt)).execute();
             Inbox.findReceipt(this, mFirebaseRef).setValue(formReceipt);
         }

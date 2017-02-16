@@ -44,9 +44,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        app:fab_icon="@drawable/ic_white_camera"
+        android:src="@drawable/ic_white_camera"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorAccent"
-        app:layout_anchorGravity="bottom|right|end"
+        app:layout_anchorGravity="bottom|right"
         app:fabSize="normal"/>
 </android.support.design.widget.CoordinatorLayout>

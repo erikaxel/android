@@ -55,6 +55,6 @@
     <string name="create_expense_report">Ny reiseregning</string>
     <string name="expense_report_created_notice">Lagde ny reiseregning</string>
     <string name="new_report">Ny reiseregning</string>
-    <string name="submit_expense_report">Send inn</string>
+    <string name="submit_expense_report">Ferdigstill og send inn</string>
     <string name="submitted_report_notice">Reiseregningen ble sendt inn</string>
 </resources>

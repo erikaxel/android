@@ -80,7 +80,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
      * Caches it in memory with Glide.
      */
     private void setThumbnailFromFirebase(View view, Receipt receipt) {
-        StorageReference ref = Inbox.receiptThumbnail(mActivity, receipt);
+        StorageReference ref = Inbox.receiptImage(mActivity, receipt, "thumbnail");
 
         Glide.with(mActivity)
                 .using(new FirebaseImageLoader())

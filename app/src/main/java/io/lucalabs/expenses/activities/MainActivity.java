@@ -3,14 +3,13 @@ package io.lucalabs.expenses.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
@@ -37,17 +36,17 @@ public class MainActivity extends FirebaseActivity {
 
         setContentView(R.layout.activity_main);
 
-        Query allExpenseReports = Inbox.allExpenseReports(this);
+        Query allExpenseReports = Inbox.allExpenseReports(this).orderByChild("finalized");
         final ListView expenseReportList = (ListView) findViewById(R.id.offline_list);
         final ExpenseReportListAdapter expListAdapter = new ExpenseReportListAdapter(this, allExpenseReports);
         expenseReportList.setAdapter(expListAdapter);
         expenseReportList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                ExpenseReport expenseReport = (ExpenseReport) expenseReportList.getItemAtPosition(position);
+                ExpenseReport expenseReport = expListAdapter.getItem(position);
                 Intent toExpenseReportIntent = new Intent(MainActivity.this, ExpenseReportActivity.class);
                 toExpenseReportIntent.putExtra("firebase_ref", expListAdapter.getRef(position).getKey());
-                toExpenseReportIntent.putExtra("exp_name", expenseReport.getNameString());
+                toExpenseReportIntent.putExtra("exp_name", expenseReport.getNameString(MainActivity.this));
                 MainActivity.this.startActivity(toExpenseReportIntent);
             }
         });
@@ -58,9 +57,7 @@ public class MainActivity extends FirebaseActivity {
             public void onClick(View view) {
                 ExpenseReport expenseReport = Inbox.createExpenseReport(MainActivity.this);
                 new ApiRequestTask(MainActivity.this, "POST", new ApiRequestObject(expenseReport), Routes.expenseReportsUrl(MainActivity.this, null)).execute();
-                FloatingActionsMenu floatingActionsMenu = (FloatingActionsMenu) MainActivity.this.findViewById(R.id.expense_report_menu);
-                floatingActionsMenu.collapse();
-                Snackbar.make(((CoordinatorLayout) MainActivity.this.findViewById(R.id.offline_coordinator)), R.string.expense_report_created_notice, Snackbar.LENGTH_SHORT);
+                Snackbar.make(((CoordinatorLayout) MainActivity.this.findViewById(R.id.offline_coordinator)), R.string.expense_report_created_notice, Snackbar.LENGTH_SHORT).show();
             }
         });
 

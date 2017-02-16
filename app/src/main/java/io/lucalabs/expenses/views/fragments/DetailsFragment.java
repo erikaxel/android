@@ -26,6 +26,7 @@ import io.lucalabs.expenses.activities.MainActivity;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.network.webapi.PatchExpenseReportTask;
+import io.lucalabs.expenses.utils.ArgumentComparator;
 import io.lucalabs.expenses.utils.DateFormatter;
 
 /**
@@ -146,11 +147,9 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
     private void updateExpenseReport() {
         ExpenseReport formExpenseReport = getExpenseReportFromForm();
 
-        if (mExpenseReport != null && !formExpenseReport.equals(mExpenseReport)) {
+        if (!ArgumentComparator.haveEqualArgs(formExpenseReport, mExpenseReport)) {
             Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).setValue(formExpenseReport);
-            Log.d("PatchExpenseReportTask", "Doing stuff");
             new PatchExpenseReportTask(getContext(), formExpenseReport).execute();
-            Log.d("PatchExpenseReportTask", "Doing more stuff");
             formExpenseReport.setFirebase_ref(getArguments().getString(FIREBASE_REF));
         }
     }
@@ -192,6 +191,8 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
         formExpenseReport.setArrival_at(mArrivalAtStamp);
         formExpenseReport.setComment(mEditComment.getText().toString());
         formExpenseReport.setFinalized(mExpenseReport.isFinalized());
+        formExpenseReport.setFirebase_ref(mExpenseReport.getFirebase_ref());
+        formExpenseReport.setReference(mExpenseReport.getReference());
         return formExpenseReport;
     }
 }

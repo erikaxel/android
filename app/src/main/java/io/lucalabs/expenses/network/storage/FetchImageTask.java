@@ -1,4 +1,4 @@
-package io.lucalabs.expenses.utils;
+package io.lucalabs.expenses.network.storage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,12 +14,12 @@ import java.lang.ref.WeakReference;
  * Based on code from https://developer.android.com/training/displaying-bitmaps/process-bitmap.html
  */
 
-public class ImageFetcher extends AsyncTask<Receipt, Void, Bitmap> {
+public class FetchImageTask extends AsyncTask<Receipt, Void, Bitmap> {
     private final WeakReference<ImageView> imageViewReference;
     private Receipt receipt;
     private Context context;
 
-    public ImageFetcher(ImageView imageView, Context context) {
+    public FetchImageTask(ImageView imageView, Context context) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
         imageViewReference = new WeakReference<ImageView>(imageView);
         this.context = context;

@@ -4,54 +4,40 @@
     android:id="@+id/offline_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/offline_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/lightgrey"/>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/no_expenses_card"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:backgroundTint="@color/colorAccent"
-        android:visibility="gone"
-        app:cardCornerRadius="2dp">
-
-        <TextView
+        <ListView
+            android:id="@+id/offline_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp"
-            android:text="@string/no_expense_reports_notice"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-    </android.support.v7.widget.CardView>
+            android:background="@color/lightgrey"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin" />
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/expense_report_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:fab_addButtonColorNormal="@color/colorAccent"
-        app:fab_addButtonColorPressed="@color/colorAccent"
-        app:fab_labelStyle="@style/ActionButtonLight"
-        app:fabSize="normal"
-        app:layout_anchor="@id/offline_list"
-        app:layout_anchorGravity="bottom|right|end">
+        <android.support.v7.widget.CardView
+            android:id="@+id/no_expenses_card"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:backgroundTint="@color/colorAccent"
+            android:visibility="gone"
+            app:cardCornerRadius="2dp">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:text="@string/no_expense_reports_notice"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+        </android.support.v7.widget.CardView>
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/create_expense_report"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorAccent"
-            app:fab_icon="@drawable/ic_white_camera"
-            app:theme="@style/AppTheme.CameraFab"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            app:fab_title="@string/create_expense_report" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_note_add"
+            app:elevation="4dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|end" />
 
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </android.support.design.widget.CoordinatorLayout>

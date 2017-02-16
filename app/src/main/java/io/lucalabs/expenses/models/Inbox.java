@@ -35,8 +35,7 @@ public class Inbox {
                 EnvironmentManager.currentEnvironment(context));
         ExpenseReport expenseReport = new ExpenseReport();
         expenseReport.setFirebase_ref(ref.getKey());
-        ref.child("name").setValue(expenseReport.getName());
-        ref.push();
+        ref.setValue(expenseReport);
         return expenseReport;
     }
 
@@ -48,12 +47,16 @@ public class Inbox {
         return queryDb(context).child("receipts").child(firebaseRef);
     }
 
-    public static StorageReference receiptThumbnail(Context context, Receipt receipt) {
+    /**
+     * Fetches a storage reference to a receipt image.
+     * @param type is the image size/type to be loaded (e.g. "original", "medium", "thumbnail")
+     */
+    public static StorageReference receiptImage(Context context, Receipt receipt, String type) {
         Log.d("ReceiptListAdapter", "ref is " + queryStorage(context).getPath() + "/" + receipt.getFirebase_ref() + "/pages/0.thumbnail.jpg");
         return  queryStorage(context)
                 .child(receipt.getFirebase_ref())
                 .child("pages")
-                .child("0.thumbnail.jpg");
+                .child("0." + type + ".jpg");
     }
 
     private static DatabaseReference queryDb(Context context) {
