@@ -37,11 +37,6 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     protected void populateView(View view, final Receipt receipt, int position) {
         Log.d(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
 
-        if (receipt == null) {
-            ((TextView) view.findViewById(R.id.receipt_text)).setText(R.string.corrupt_data_notice);
-            return;
-        }
-
         List<Receipt> cachedReceipts;
         if(receipt.getFirebase_ref() != null)
             cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());

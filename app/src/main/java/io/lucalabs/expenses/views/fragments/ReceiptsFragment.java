@@ -56,7 +56,7 @@ public class ReceiptsFragment extends Fragment {
                 Receipt receipt = (Receipt) receiptList.getItemAtPosition(position);
                 Intent toReceiptActivity = new Intent(ReceiptsFragment.this.getContext(), ReceiptActivity.class);
                 toReceiptActivity.putExtra("firebase_ref", receipt.getFirebase_ref());
-                toReceiptActivity.putExtra("exp_name", getActivity().getIntent().getStringExtra("exp_name"));
+                toReceiptActivity.putExtra("expense_report_ref", getActivity().getIntent().getStringExtra("firebase_ref"));
                 startActivity(toReceiptActivity);
             }
         });

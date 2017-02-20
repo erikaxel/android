@@ -3,6 +3,7 @@ package io.lucalabs.expenses.network.database;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import android.util.Log;
 
 import io.lucalabs.expenses.models.Receipt;
 
@@ -11,8 +12,8 @@ import io.lucalabs.expenses.models.Receipt;
  */
 
 public class UserDatabase {
-
     private static FirebaseDatabase firebaseDatabase;
+    private final static String TAG = UserDatabase.class.getSimpleName();
 
     /**
      * @return a database reference for the given user and application environment
@@ -60,6 +61,7 @@ public class UserDatabase {
     }
 
     private static void setupFirebaseConnection() {
+        Log.i(TAG, "setting up firebase db connection");
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.setPersistenceEnabled(true);
     }

@@ -8,11 +8,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
+import io.lucalabs.expenses.models.ExpenseReport;
+import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.network.upload.UploadService;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
 import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
@@ -39,13 +45,12 @@ public class ExpenseReportActivity extends FirebaseActivity {
      * Firebase reference for the Expense Report
      */
     private String mFirebaseRef;
+    private CameraFab mCameraFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expense_report);
-        setTitle(getIntent().getStringExtra("exp_name"));
-
         mFirebaseRef = getIntent().getStringExtra("firebase_ref");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -61,18 +66,36 @@ public class ExpenseReportActivity extends FirebaseActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        ((CameraFab) findViewById(R.id.camera_button)).setupForExpenseReport(this, mFirebaseRef);
+        mCameraFab = (CameraFab) findViewById(R.id.camera_button);
+        mCameraFab.setupForExpenseReport(this, mFirebaseRef);
+
+        Inbox.findExpenseReport(this, mFirebaseRef).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ExpenseReport expenseReport = (ExpenseReport) dataSnapshot.getValue(ExpenseReport.class);
+                        setTitle(expenseReport.getNameString(ExpenseReportActivity.this));
+                        if(expenseReport.isFinalized())
+                            mCameraFab.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(ExpenseReportActivity.this, "Couldn't fetch expense report", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        overridePendingTransition(0,0);
+        overridePendingTransition(0, 0);
         startService(new Intent(this, UploadService.class));
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         overridePendingTransition(0, 0);
     }

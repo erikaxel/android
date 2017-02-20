@@ -17,7 +17,6 @@ import io.lucalabs.expenses.managers.PermissionManager;
  * The camera button seen in MainActivity.
  */
 public class CameraFab extends FloatingActionButton implements View.OnClickListener {
-
     private final static String TAG = "CameraFab";
     private Activity contextActivity;
     private String mExpenseReportRef;

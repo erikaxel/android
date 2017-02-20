@@ -31,7 +31,7 @@ public class ApiRequestObject {
                 Object value = f.get(object);
                 if(value instanceof Long) {
                     // We convert long to double by default. Perhaps this should be done somewhere else?
-                    Long l = new Long((long) value);
+                    Long l = (long) value;
                     String text = "" + l.doubleValue() / 100;
                     params.add(new String[]{f.getAnnotation(Arg.class).name(), text});
                 }

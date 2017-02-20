@@ -21,11 +21,8 @@ public class ArgumentComparator {
         for(Field f : getAnnotatedFields(o1.getClass())) {
             f.setAccessible(true);
             try {
-                Log.d("ArgumentComparator", "Compared " + f.getName() + ": " + f.get(o1) + " vs " + f.get(o2));
-                if (!Objects.equals(f.get(o1), f.get(o2))) {
-                    Log.d("ArgumentComparator", "Not equal");
+                if (!Objects.equals(f.get(o1), f.get(o2)))
                     return false;
-                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

@@ -15,7 +15,7 @@ public class Routes {
     // Website URLs
     private static final String DEVELOPMENT_BASE_URL = "http://10.10.10.193:3000"; // ip addr show
     private static final String STAGING_BASE_URL = "https://staging.lucalabs.io";
-    private static final String PRODUCTION_BASE_URL = "https://expenses.lucalabs.io";
+    private static final String PRODUCTION_BASE_URL = "https://staging.lucalabs.io"; // TODO: RESET
 
     private static final String RECEIPT_PATH = "/api/v1/receipts";
     private static final String EXPENSE_REPORT_PATH = "/api/v1/expense_reports";
