@@ -112,7 +112,6 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.submit_report_confirmation_title)
                         .setMessage(R.string.submit_report_confirmation_message)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -186,11 +185,8 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
             formExpenseReport.setFinalized(true);
 
         if (!ArgumentComparator.haveEqualArgs(formExpenseReport, mExpenseReport)) {
-//            Toast.makeText(this.getActivity(), "Updating...", Toast.LENGTH_SHORT).show();
             Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).setValue(formExpenseReport);
-            Log.d("PatchExpenseReportTask", "Doing stuff");
             new PatchExpenseReportTask(getContext(), formExpenseReport).execute();
-            Log.d("PatchExpenseReportTask", "Doing more stuff");
             formExpenseReport.setFirebase_ref(getArguments().getString(FIREBASE_REF));
         }
     }

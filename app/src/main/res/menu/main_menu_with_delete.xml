@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/delete_option"
+        android:icon="@drawable/ic_trash"
+        app:showAsAction="ifRoom"
+        android:title="@string/action_delete"/>
+
+    <item android:id="@+id/settings_option"
+        android:title="@string/settings_text"/>
+
+    <item android:id="@+id/logout_option"
+        android:title="@string/logout_text"/>
+</menu>

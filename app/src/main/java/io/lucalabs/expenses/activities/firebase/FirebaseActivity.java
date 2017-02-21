@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.widget.Toast;
 
@@ -24,37 +25,46 @@ import io.lucalabs.expenses.models.User;
 
 public abstract class FirebaseActivity extends AppCompatActivity {
 
-    private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseAuth mAuth;
     private static final String TAG = "FirebaseActivity";
+    private boolean displayDeleteIcon;
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        if (authStateListener == null)
+        if (mAuthStateListener == null)
             setAuthStateListener();
 
-        auth = FirebaseAuth.getInstance();
-        auth.addAuthStateListener(authStateListener);
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (authStateListener != null)
-            auth.removeAuthStateListener(authStateListener);
+        if (mAuthStateListener != null)
+            mAuth.removeAuthStateListener(mAuthStateListener);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        if(displayDeleteIcon)
+            getMenuInflater().inflate(R.menu.main_menu_with_delete, menu);
+        else
+            getMenuInflater().inflate(R.menu.main_menu, menu);
+
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.delete_option:
+                onDeleteAction();
+                break;
             case R.id.logout_option:
                 AuthUI.getInstance()
                         .signOut(this)
@@ -78,9 +88,19 @@ public abstract class FirebaseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    // ActionBar item actions
+    protected void onDeleteAction(){
+        // Do nothing unless overridden
+    };
+
+    protected void displayDeleteIcon(){
+        displayDeleteIcon = true;
+    }
+
     private void setAuthStateListener() {
         try {
-            authStateListener = new FirebaseAuth.AuthStateListener() {
+            mAuthStateListener = new FirebaseAuth.AuthStateListener() {
 
                 @Override
                 public void onAuthStateChanged(@NonNull FirebaseAuth auth) {

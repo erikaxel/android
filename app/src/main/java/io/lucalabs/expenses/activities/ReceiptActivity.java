@@ -1,9 +1,11 @@
 package io.lucalabs.expenses.activities;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -21,6 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
 import io.lucalabs.expenses.models.ApiRequestObject;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
@@ -32,7 +35,7 @@ import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.NumberFormatter;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class ReceiptActivity extends AppCompatActivity implements CalendarDatePickerDialogFragment.OnDateSetListener, View.OnClickListener {
+public class ReceiptActivity extends FirebaseActivity implements CalendarDatePickerDialogFragment.OnDateSetListener, View.OnClickListener {
 
     private TextInputEditText mEditMerchantName;
     private TextInputEditText mEditAmount;
@@ -46,10 +49,12 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
     private String mFirebaseRef;
     private String mExpenseReportRef;
     private Receipt mReceipt;
+    private ExpenseReport mExpenseReport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        displayDeleteIcon();
         setTitle(R.id.receipt_activity_title);
 
         setContentView(R.layout.activity_receipt);
@@ -68,11 +73,16 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
         setExpenseReport();
     }
 
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
+    }
+
     private void setReceipt() {
         Inbox.findReceipt(this, mFirebaseRef).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mReceipt = (Receipt) dataSnapshot.getValue(Receipt.class);
+                mReceipt = dataSnapshot.getValue(Receipt.class);
 
                 mEditMerchantName.setText(mReceipt.getMerchant_name());
                 mEditAmount.setText(mReceipt.getAmountString());
@@ -109,13 +119,13 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
         });
     }
 
-    private void setExpenseReport(){
+    private void setExpenseReport() {
         Inbox.findExpenseReport(this, mExpenseReportRef).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ExpenseReport expenseReport = dataSnapshot.getValue(ExpenseReport.class);
+                mExpenseReport = dataSnapshot.getValue(ExpenseReport.class);
 
-                if(expenseReport.isFinalized()) {
+                if (mExpenseReport.isFinalized()) {
                     setTitle(R.string.title_activity_receipt_finalized);
                     findViewById(R.id.edit_receipt_name_wrapper).setEnabled(false);
                     mEditMerchantName.setEnabled(false);
@@ -129,7 +139,6 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
@@ -173,5 +182,26 @@ public class ReceiptActivity extends AppCompatActivity implements CalendarDatePi
                 .setDoneText(getString(R.string.affirm_action))
                 .setCancelText(getString(R.string.cancel_action));
         cdp.show(getSupportFragmentManager(), "tag");
+    }
+
+    @Override
+    protected void onDeleteAction() {
+        if (mExpenseReport.isFinalized())
+            Snackbar.make(findViewById(R.id.receipt_coordinator), R.string.deleted_finalized_receipt_notice, Snackbar.LENGTH_SHORT).show();
+        else
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.delete_receipt_confirmation_title)
+                    .setMessage(R.string.delete_receipt_confirmation_message)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            new ApiRequestTask(ReceiptActivity.this, "DELETE", new ApiRequestObject(mReceipt), Routes.receiptsUrl(ReceiptActivity.this, mReceipt)).execute();
+                            Inbox.findReceipt(ReceiptActivity.this, mReceipt.getFirebase_ref()).removeValue();
+                            Intent toExpenseReportActivity = new Intent(ReceiptActivity.this, ExpenseReportActivity.class);
+                            toExpenseReportActivity.putExtra("status", "deleted");
+                            toExpenseReportActivity.putExtra("firebase_ref", mExpenseReportRef);
+                            startActivity(toExpenseReportActivity);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
     }
 }

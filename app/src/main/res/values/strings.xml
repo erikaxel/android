@@ -71,4 +71,15 @@
     <string name="finalized_and_submitted">Finalized and submitted</string>
     <string name="submit_report_confirmation_message">Do you really want to finalize and submit this report?</string>
     <string name="submit_report_confirmation_title">All set?</string>
+    <string name="action_delete">Delete</string>
+    <string name="expense_report_menu_title">Expense report</string>
+    <string name="action_open">Open</string>
+    <string name="expense_report_deleted_notice">Deleted expense report</string>
+    <string name="delete_report_confirmation_title">Delete report?</string>
+    <string name="delete_report_confirmation_message">Do you really want to delete this report?</string>
+    <string name="receipt_deleted_notice">Deleted receipt</string>
+    <string name="delete_receipt_confirmation_message">Do you really want to delete this receipt?</string>
+    <string name="delete_receipt_confirmation_title">Delete receipt?</string>
+    <string name="delete_finalized_report_notice">Can\'t delete a finalized expense report</string>
+    <string name="deleted_finalized_receipt_notice">Can\'t delete receipt on finalized expense report</string>
 </resources>

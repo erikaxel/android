@@ -61,4 +61,15 @@
     <string name="submit_report_confirmation_message">Er du sikker på at du vil sende inn denne reiseregningen?</string>
     <string name="submit_report_confirmation_title">Send?</string>
     <string name="title_activity_receipt_finalized">Kvittering</string>
+    <string name="action_delete">Slett</string>
+    <string name="action_open">Åpne</string>
+    <string name="delete_finalized_report_notice">Kan ikke slette en ferdigstilt reiseregning</string>
+    <string name="delete_receipt_confirmation_message">Er du sikker på at du vil slette denne kvitteringen?</string>
+    <string name="delete_receipt_confirmation_title">Slett kvittering?</string>
+    <string name="delete_report_confirmation_message">Er du sikker på at du vil slette denne reiseregningen?</string>
+    <string name="delete_report_confirmation_title">Slette reiseregning?</string>
+    <string name="deleted_finalized_receipt_notice">Kan ikke endre en ferdigstilt reiseregning</string>
+    <string name="expense_report_deleted_notice">Slettet reiseregning</string>
+    <string name="expense_report_menu_title">Reiseregning</string>
+    <string name="receipt_deleted_notice">Slettet kvittering</string>
 </resources>
