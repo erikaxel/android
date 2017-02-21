@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Luca Reiseregning</string>
+    <string name="app_name">Luca reiseregning</string>
     <string name="advanced_category">Avansert</string>
     <string name="corrupt_data_notice">Ødelagte data</string>
     <string name="debug_category">Utviklervalg</string>
-    <string name="disable_ocr_pref">Deaktiver OCR</string>
+    <string name="disable_ocr_pref">Deaktiver kvitteringsscan</string>
     <string name="disable_ocr_summary">Ikke fyll inn kvitteringsfeltene automatisk</string>
     <string name="email">Email</string>
     <string name="images_category">Bilder</string>
@@ -41,4 +41,35 @@
     <string name="report_source_hint">Avreisested</string>
     <string name="report_travel_hint">Gjelder reise?</string>
     <string name="section_format">seksjonsformat</string>
+    <string name="receipt_amount_hint">Beløp</string>
+    <string name="receipt_category_hint">Kategori</string>
+    <string name="receipt_comment_hint">Kommentar</string>
+    <string name="receipt_currency_hint">Valuta</string>
+    <string name="receipt_merchant_name_hint">Forhandler</string>
+    <string name="receipt_reimbursable_hint">Privat utlegg</string>
+    <string name="receipt_used_date_hint">Bruksdato</string>
+    <string name="title_activity_receipt">Kvittering</string>
+    <string name="title_activity_expense_report">Reiseregning</string>
+    <string name="empty_expense_report_notice">Du har ikke lagt til noen kvitteringer enda.</string>
+    <string name="no_expense_reports_notice">Velkommen til Luca Reiseregning! Legg til en ny reiseregning for komme i gang.</string>
+    <string name="create_expense_report">Ny reiseregning</string>
+    <string name="expense_report_created_notice">La til ny reiseregning</string>
+    <string name="new_report">Ny reiseregning</string>
+    <string name="submit_expense_report">Ferdigstill og send inn</string>
+    <string name="submitted_report_notice">Reiseregningen ble sendt inn</string>
+    <string name="finalized_and_submitted">Ferdigstilt og innsendt</string>
+    <string name="submit_report_confirmation_message">Er du sikker på at du vil sende inn denne reiseregningen?</string>
+    <string name="submit_report_confirmation_title">Send?</string>
+    <string name="title_activity_receipt_finalized">Kvittering</string>
+    <string name="action_delete">Slett</string>
+    <string name="action_open">Åpne</string>
+    <string name="delete_finalized_report_notice">Kan ikke slette en ferdigstilt reiseregning</string>
+    <string name="delete_receipt_confirmation_message">Er du sikker på at du vil slette denne kvitteringen?</string>
+    <string name="delete_receipt_confirmation_title">Slett kvittering?</string>
+    <string name="delete_report_confirmation_message">Er du sikker på at du vil slette denne reiseregningen?</string>
+    <string name="delete_report_confirmation_title">Slette reiseregning?</string>
+    <string name="deleted_finalized_receipt_notice">Kan ikke endre en ferdigstilt reiseregning</string>
+    <string name="expense_report_deleted_notice">Slettet reiseregning</string>
+    <string name="expense_report_menu_title">Reiseregning</string>
+    <string name="receipt_deleted_notice">Slettet kvittering</string>
 </resources>

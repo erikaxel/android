@@ -2,7 +2,7 @@
     <string name="app_name">Luca expenses</string>
 
     <!-- Activity names -->
-    <string name="title_activity_welcome">Luca Expenses</string>
+    <string name="title_activity_welcome">Expense reports</string>
     <string name="title_activity_settings">Application Settings</string>
 
     <string name="login_text">Login</string>
@@ -15,7 +15,7 @@
     <!-- Settings Activity -->
     <string name="save_to_album_pref">Save images to album</string>
     <string name="wifi_only_pref">Upload using Wifi only</string>
-    <string name="disable_ocr_pref">Disable OCR</string>
+    <string name="disable_ocr_pref">Disable receipt scan</string>
     <string name="disable_ocr_summary">Don\'t parse receipt data automatically</string>
 
     <string name="images_category">Images</string>
@@ -33,8 +33,9 @@
     <string name="interpreting">Interpreting receipt</string>
     <string name="name_not_found">Name not found</string>
     <string name="uploading_external_receipt">Upload receipt</string>
-    <string name="title_activity_receipt" translatable="false">ReceiptActivity</string>
-    <string name="title_activity_expense_report" translatable="false">ExpenseReportActivity</string>
+    <string name="title_activity_receipt">Edit receipt</string>
+    <string name="title_activity_receipt_finalized">View receipt</string>
+    <string name="title_activity_expense_report">Expense report</string>
     <string name="action_settings">Settings</string>
     <string name="receipts">Receipts</string>
     <string name="details">Report details</string>
@@ -48,9 +49,37 @@
     <string name="report_departure_at">Departure date</string>
     <string name="report_arrival_at">Arrival date</string>
     <string name="report_destination_hint">Destination</string>
-    <string name="report_source_hint">Travel source</string>
+    <string name="report_source_hint">Departure from</string>
     <string name="report_comment_hint">Comment</string>
     <string name="report_departure_at_hint">Departure at</string>
     <string name="report_arrival_at_hint">Arrival date</string>
     <string name="section_format">Section format</string>
+    <string name="receipt_merchant_name_hint">Merchant</string>
+    <string name="receipt_amount_hint">Amount</string>
+    <string name="receipt_currency_hint">Currency</string>
+    <string name="receipt_used_date_hint">Used date</string>
+    <string name="receipt_category_hint">Category</string>
+    <string name="receipt_reimbursable_hint">Reimbursable?</string>
+    <string name="receipt_comment_hint">Comment</string>
+    <string name="empty_expense_report_notice">You haven\'t added any receipts to this report yet.</string>
+    <string name="no_expense_reports_notice">Welcome to Luca Expenses! Add a new expense report to get started</string>
+    <string name="create_expense_report">New expense report</string>
+    <string name="new_report">New report</string>
+    <string name="expense_report_created_notice">Created new expense report</string>
+    <string name="submit_expense_report">Finalize and submit</string>
+    <string name="submitted_report_notice">Submitted expense report</string>
+    <string name="finalized_and_submitted">Finalized and submitted</string>
+    <string name="submit_report_confirmation_message">Do you really want to finalize and submit this report?</string>
+    <string name="submit_report_confirmation_title">All set?</string>
+    <string name="action_delete">Delete</string>
+    <string name="expense_report_menu_title">Expense report</string>
+    <string name="action_open">Open</string>
+    <string name="expense_report_deleted_notice">Deleted expense report</string>
+    <string name="delete_report_confirmation_title">Delete report?</string>
+    <string name="delete_report_confirmation_message">Do you really want to delete this report?</string>
+    <string name="receipt_deleted_notice">Deleted receipt</string>
+    <string name="delete_receipt_confirmation_message">Do you really want to delete this receipt?</string>
+    <string name="delete_receipt_confirmation_title">Delete receipt?</string>
+    <string name="delete_finalized_report_notice">Can\'t delete a finalized expense report</string>
+    <string name="deleted_finalized_receipt_notice">Can\'t delete receipt on finalized expense report</string>
 </resources>

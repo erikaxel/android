@@ -1,6 +1,8 @@
 package io.lucalabs.expenses.views.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,6 +19,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.List;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.ReceiptActivity;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 
@@ -27,14 +30,12 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     public ReceiptListAdapter(Activity activity, Query query) {
         super(activity, Receipt.class, R.layout.receipt_list_item, query);
         user = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG, "------------------- INSTANCE -------------------");
     }
 
     @Override
-    protected void populateView(View view, Receipt receipt, int position) {
-        if (receipt == null) {
-            ((TextView) view.findViewById(R.id.receipt_text)).setText(R.string.corrupt_data_notice);
-            return;
-        }
+    protected void populateView(View view, final Receipt receipt, int position) {
+        Log.d(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
 
         List<Receipt> cachedReceipts;
         if(receipt.getFirebase_ref() != null)
@@ -47,6 +48,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
         }
 
         if(cachedReceipts.size() > 0) {
+            Log.d(TAG, "cached receipt present");
             Receipt cachedReceipt = cachedReceipts.get(0);
             setThumbnailFromCache(view, cachedReceipt, receipt);
             receipt.updateFromCache(cachedReceipt);
@@ -55,8 +57,8 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
         }
 
         ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString(mActivity));
-        ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getAmountString());
-        ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getDateString(mActivity));
+        ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getPrettyAmountString());
+        ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getUsedDateString(mActivity));
     }
 
     /*
@@ -73,7 +75,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
      * Caches it in memory with Glide.
      */
     private void setThumbnailFromFirebase(View view, Receipt receipt) {
-        StorageReference ref = Inbox.receiptThumbnail(mActivity, receipt);
+        StorageReference ref = Inbox.receiptImage(mActivity, receipt, "thumbnail");
 
         Glide.with(mActivity)
                 .using(new FirebaseImageLoader())

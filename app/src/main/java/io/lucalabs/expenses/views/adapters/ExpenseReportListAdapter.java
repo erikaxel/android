@@ -1,16 +1,17 @@
 package io.lucalabs.expenses.views.adapters;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import io.lucalabs.expenses.R;
-import io.lucalabs.expenses.activities.ExpenseReportActivity;
 import io.lucalabs.expenses.models.ExpenseReport;
+import io.lucalabs.expenses.models.Inbox;
 
 public class ExpenseReportListAdapter extends FirebaseListAdapter<ExpenseReport> {
 
@@ -20,17 +21,20 @@ public class ExpenseReportListAdapter extends FirebaseListAdapter<ExpenseReport>
 
     @Override
     protected void populateView(View view, final ExpenseReport expenseReport, int position) {
-        ((TextView) view.findViewById(R.id.expense_report_text)).setText(expenseReport.getNameString());
+        ((TextView) view.findViewById(R.id.expense_report_text)).setText(expenseReport.getNameString(mActivity));
+        ((TextView) view.findViewById(R.id.expense_report_subtitle)).setText(expenseReport.getSubtitleString());
 
-        final int pos = position;
+        if(expenseReport.isFinalized())
+            ((ImageView) view.findViewById(R.id.expense_report_icon)).setImageResource(R.drawable.ic_lock);
+    }
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent toExpenseReportIntent = new Intent(mActivity, ExpenseReportActivity.class);
-                toExpenseReportIntent.putExtra("firebase_ref", getRef(pos).getKey());
-                mActivity.startActivity(toExpenseReportIntent);
-            }
-        });
+    @Override
+    public ExpenseReport getItem(int position) {
+        return super.getItem(super.getCount() - position - 1);
+    }
+
+    @Override
+    public DatabaseReference getRef(int position) {
+        return super.getRef(super.getCount() - position - 1);
     }
 }

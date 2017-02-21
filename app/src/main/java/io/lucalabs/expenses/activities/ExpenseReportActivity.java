@@ -1,25 +1,36 @@
 package io.lucalabs.expenses.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
+import io.lucalabs.expenses.models.ApiRequestObject;
+import io.lucalabs.expenses.models.ExpenseReport;
+import io.lucalabs.expenses.models.Inbox;
+import io.lucalabs.expenses.network.Routes;
 import io.lucalabs.expenses.network.upload.UploadService;
+import io.lucalabs.expenses.network.webapi.ApiRequestTask;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
 import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
-public class ExpenseReportActivity extends AppCompatActivity {
+public class ExpenseReportActivity extends FirebaseActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -40,12 +51,16 @@ public class ExpenseReportActivity extends AppCompatActivity {
      * Firebase reference for the Expense Report
      */
     private String mFirebaseRef;
+    private CameraFab mCameraFab;
+    private ExpenseReport mExpenseReport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        displayDeleteIcon();
         setContentView(R.layout.activity_expense_report);
-        ;
+
+        displaySnackBarIfNecessary();
         mFirebaseRef = getIntent().getStringExtra("firebase_ref");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -61,37 +76,50 @@ public class ExpenseReportActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        ((CameraFab) findViewById(R.id.camera_button)).setupForExpenseReport(this, mFirebaseRef);
+        mCameraFab = (CameraFab) findViewById(R.id.camera_button);
+        mCameraFab.setupForExpenseReport(this, mFirebaseRef);
+
+        Inbox.findExpenseReport(this, mFirebaseRef).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        mExpenseReport = (ExpenseReport) dataSnapshot.getValue(ExpenseReport.class);
+                        setTitle(mExpenseReport.getNameString(ExpenseReportActivity.this));
+                        if (mExpenseReport.isFinalized())
+                            mCameraFab.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(ExpenseReportActivity.this, "Couldn't fetch expense report", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    private void displaySnackBarIfNecessary() {
+        if (getIntent().getStringExtra("status") != null)
+            switch (getIntent().getStringExtra("status")) {
+                case "created":
+                    Snackbar.make(findViewById(R.id.expense_report_coordinator), R.string.expense_report_created_notice, Snackbar.LENGTH_SHORT).show();
+                    break;
+                case "deleted":
+                    Snackbar.make(findViewById(R.id.expense_report_coordinator), R.string.receipt_deleted_notice, Snackbar.LENGTH_SHORT).show();
+            }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        overridePendingTransition(0, 0);
         startService(new Intent(this, UploadService.class));
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_expense_report, menu);
-        return true;
+    protected void onDestroy() {
+        super.onDestroy();
+        overridePendingTransition(0, 0);
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -105,7 +133,7 @@ public class ExpenseReportActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            switch(position){
+            switch (position) {
                 case 0:
                     return ReceiptsFragment.newInstance(mFirebaseRef);
                 default:
@@ -128,5 +156,30 @@ public class ExpenseReportActivity extends AppCompatActivity {
                     return getString(R.string.details);
             }
         }
+    }
+
+    @Override
+    protected void onDeleteAction() {
+        if (mExpenseReport.isFinalized())
+            Snackbar.make(findViewById(R.id.expense_report_coordinator), R.string.delete_finalized_report_notice, Snackbar.LENGTH_SHORT).show();
+        else
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.delete_report_confirmation_title)
+                    .setMessage(R.string.delete_report_confirmation_message)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            new ApiRequestTask(ExpenseReportActivity.this, "DELETE", new ApiRequestObject(mExpenseReport), Routes.expenseReportsUrl(ExpenseReportActivity.this, mExpenseReport)).execute();
+                            Inbox.findReceipt(ExpenseReportActivity.this, mExpenseReport.getFirebase_ref()).removeValue();
+                            Intent toMainActivity = new Intent(ExpenseReportActivity.this, MainActivity.class);
+                            toMainActivity.putExtra("status", "deleted");
+                            startActivity(new Intent(ExpenseReportActivity.this, MainActivity.class));
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, MainActivity.class));
     }
 }

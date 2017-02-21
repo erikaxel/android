@@ -7,6 +7,9 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import io.lucalabs.expenses.R;
 
+/**
+ * This is unused, for now
+ */
 public class ExpenseReportFabMenu extends FloatingActionsMenu {
     private Activity mActivity;
 
@@ -16,8 +19,8 @@ public class ExpenseReportFabMenu extends FloatingActionsMenu {
 
     public void setup(Activity activity){
         mActivity = activity;
-        CameraFab cameraFab = (CameraFab) findViewById(R.id.camera_button);
-        addButton(cameraFab);
+//        CameraFab cameraFab = (CameraFab) findViewById(R.id.camera_button);
+//        addButton(cameraFab);
     }
 }
 

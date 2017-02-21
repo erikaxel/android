@@ -20,7 +20,7 @@ public class DateFormatter {
      * @param dateString: A firebase-friendly datestring
      * @return Locale-specific, human-readable datestring
      */
-    public static String formatToLocale(String dateString, Context context) {
+    public static String formatToLocale(Context context, String dateString) {
         if (dateString == null) {
             Log.i(TAG, "Datestring was null");
             return "";

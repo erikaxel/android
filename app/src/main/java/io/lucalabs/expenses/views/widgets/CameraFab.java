@@ -5,11 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import io.lucalabs.expenses.activities.CameraActivity;
 import io.lucalabs.expenses.managers.PermissionManager;
@@ -18,7 +17,6 @@ import io.lucalabs.expenses.managers.PermissionManager;
  * The camera button seen in MainActivity.
  */
 public class CameraFab extends FloatingActionButton implements View.OnClickListener {
-
     private final static String TAG = "CameraFab";
     private Activity contextActivity;
     private String mExpenseReportRef;
@@ -32,7 +30,7 @@ public class CameraFab extends FloatingActionButton implements View.OnClickListe
         setOnClickListener(this);
     }
 
-    public void setupForExpenseReport(Activity contextActivity, String expenseReportRef){
+    public void setupForExpenseReport(Activity contextActivity, String expenseReportRef) {
         mExpenseReportRef = expenseReportRef;
         setup(contextActivity);
     }

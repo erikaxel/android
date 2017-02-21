@@ -27,7 +27,7 @@ public class DeleteReceiptTask {
      * If so, deletes receipt.
      */
     public void deleteReceipt() {
-        Inbox.receiptThumbnail(mContext, mReceipt).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+        Inbox.receiptImage(mContext, mReceipt, "thumbnail").getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {

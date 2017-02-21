@@ -5,9 +5,11 @@ import android.content.Context;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
+import android.util.Log;
 
+import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.EnvironmentManager;
-import io.lucalabs.expenses.network.database.ReceiptDatabase;
+import io.lucalabs.expenses.network.database.UserDatabase;
 import io.lucalabs.expenses.network.storage.ReceiptStorage;
 
 /*
@@ -27,21 +29,42 @@ public class Inbox {
                 .equalTo(key);
     }
 
+    public static ExpenseReport createExpenseReport(Context context){
+        DatabaseReference ref = UserDatabase.newReportReference(
+                User.getCurrentUser(),
+                EnvironmentManager.currentEnvironment(context));
+        ExpenseReport expenseReport = new ExpenseReport();
+        expenseReport.setFirebase_ref(ref.getKey());
+        ref.setValue(expenseReport);
+        return expenseReport;
+    }
+
     public static DatabaseReference findExpenseReport(Context context, String firebaseRef) {
         return queryDb(context).child("expense_reports").child(firebaseRef);
     }
 
-    public static StorageReference receiptThumbnail(Context context, Receipt receipt) {
+    public static DatabaseReference findReceipt(Context context, String firebaseRef){
+        return queryDb(context).child("receipts").child(firebaseRef);
+    }
+
+    /**
+     * Fetches a storage reference to a receipt image.
+     * @param type is the image size/type to be loaded (e.g. "original", "medium", "thumbnail")
+     */
+    public static StorageReference receiptImage(Context context, Receipt receipt, String type) {
+        Log.d("ReceiptListAdapter", "ref is " + queryStorage(context).getPath() + "/" + receipt.getFirebase_ref() + "/pages/0.thumbnail.jpg");
         return  queryStorage(context)
                 .child(receipt.getFirebase_ref())
                 .child("pages")
-                .child("0.thumbnail.jpg");
+                .child("0." + type + ".jpg");
     }
 
     private static DatabaseReference queryDb(Context context) {
-        return ReceiptDatabase.getUserReference(
+        DatabaseReference dbRef = UserDatabase.getUserReference(
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(context));
+        dbRef.keepSynced(true);
+        return dbRef;
     }
 
     private static StorageReference queryStorage(Context context){

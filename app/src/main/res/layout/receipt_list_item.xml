@@ -3,18 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="78dp"
     android:paddingBottom="8dp"
-    android:paddingEnd="8dp"
-    android:paddingStart="8dp"
     android:paddingTop="8dp"
     android:weightSum="1">
 
     <ImageView
         android:id="@+id/receipt_thumb"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_gravity="center"
-        android:paddingEnd="4dp"
-        android:paddingStart="4dp"
         android:contentDescription="@string/receipt_thumbnail"
         android:scaleType="fitXY"/>
 
@@ -26,23 +22,23 @@
 
         <TextView
             android:id="@+id/receipt_text"
-            android:layout_width="224dp"
+            android:layout_width="200dp"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:textColor="@color/darkgrey"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:maxLines="1"/>
 
         <TextView
             android:id="@+id/receipt_date"
-            android:layout_width="224dp"
+            android:layout_width="200dp"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
-            android:textColor="@color/darkgrey"
+            android:textColor="@color/grey"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -50,10 +46,10 @@
     <TextView
         android:id="@+id/receipt_price"
         android:textAlignment="textEnd"
-        android:layout_width="59dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/darkgrey"
+        android:textColor="@color/colorAccent"
         android:textSize="18sp"
-        android:textAllCaps="false"
-        android:textStyle="bold"/>
+        android:maxLines="1"
+        android:textAllCaps="false" />
 </LinearLayout>
