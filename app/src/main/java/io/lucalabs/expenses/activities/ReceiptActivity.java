@@ -24,12 +24,10 @@ import java.util.List;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
-import io.lucalabs.expenses.models.ApiRequestObject;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
-import io.lucalabs.expenses.network.Routes;
-import io.lucalabs.expenses.network.webapi.ApiRequestTask;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.utils.ArgumentComparator;
 import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.NumberFormatter;
@@ -93,11 +91,9 @@ public class ReceiptActivity extends FirebaseActivity implements CalendarDatePic
                 mEditComment.setText(mReceipt.getComment());
 
                 final ImageView imageView = (ImageView) findViewById(R.id.receipt_image);
-                List<Receipt> cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", mFirebaseRef);
-
-                if (cachedReceipts.size() > 0) {
+                if (mReceipt.getFilename() != null) {
                     Glide.with(ReceiptActivity.this)
-                            .load(cachedReceipts.get(0).getImage(ReceiptActivity.this))
+                            .load(mReceipt.getImage(ReceiptActivity.this))
                             .asBitmap()
                             .into(imageView);
                 } else {
@@ -106,7 +102,6 @@ public class ReceiptActivity extends FirebaseActivity implements CalendarDatePic
                             .using(new FirebaseImageLoader())
                             .load(ref)
                             .into(imageView);
-
                 }
 
                 new PhotoViewAttacher(imageView);
@@ -161,8 +156,8 @@ public class ReceiptActivity extends FirebaseActivity implements CalendarDatePic
         Receipt formReceipt = getReceiptFromForm();
 
         if (!ArgumentComparator.haveEqualArgs(formReceipt, mReceipt)) {
-            new ApiRequestTask(this, "POST", new ApiRequestObject(formReceipt), Routes.receiptsUrl(this, formReceipt)).execute();
             Inbox.findReceipt(this, mFirebaseRef).setValue(formReceipt);
+            new Task(this, "PATCH", formReceipt).performAsync();
         }
 
         super.onDestroy();
@@ -194,8 +189,9 @@ public class ReceiptActivity extends FirebaseActivity implements CalendarDatePic
                     .setMessage(R.string.delete_receipt_confirmation_message)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            new ApiRequestTask(ReceiptActivity.this, "DELETE", new ApiRequestObject(mReceipt), Routes.receiptsUrl(ReceiptActivity.this, mReceipt)).execute();
                             Inbox.findReceipt(ReceiptActivity.this, mReceipt.getFirebase_ref()).removeValue();
+                            new Task(ReceiptActivity.this, "DELETE", mReceipt).performAsync();
+
                             Intent toExpenseReportActivity = new Intent(ReceiptActivity.this, ExpenseReportActivity.class);
                             toExpenseReportActivity.putExtra("status", "deleted");
                             toExpenseReportActivity.putExtra("firebase_ref", mExpenseReportRef);

@@ -13,17 +13,16 @@ import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
-import io.lucalabs.expenses.models.User;
-import io.lucalabs.expenses.network.database.UserDatabase;
+import io.lucalabs.expenses.models.Task;
 
 public class UploadService extends Service {
     private final static String TAG = "UploadService";
     private ServiceHandler serviceHandler;
-    private Receipt nextReceipt;
 
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
@@ -33,9 +32,35 @@ public class UploadService extends Service {
         @Override
         public void handleMessage(Message msg) {
             synchronized (UploadService.this) {
+                handleTasks();
                 handleReceipts();
             }
         }
+    }
+
+    private void handleTasks() {
+        Query query = Inbox.all(getBaseContext());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (DataSnapshot taskSnapshot : dataSnapshot.child("tasks").getChildren()) {
+                            Task task = taskSnapshot.getValue(Task.class);
+                            boolean success = task.perform();
+
+                            if (!success)
+                                break;
+                        }
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     @Override
@@ -65,45 +90,72 @@ public class UploadService extends Service {
     }
 
     private void handleReceipts() {
-        // Upload receipts
-        for (Receipt receipt : Receipt.find(Receipt.class, "(status = 'PENDING' OR status = 'UPLOADED') AND filename IS NOT NULL")) {
-            new UploadReceiptTask(this).uploadReceipt(receipt);
-        }
+        Query pendingReceipts = Inbox.receiptsByStatus(getBaseContext(), "UPLOADED");
+        pendingReceipts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (DataSnapshot receiptSnapshot : dataSnapshot.getChildren())
+                            new UploadReceiptTask(getBaseContext()).uploadReceipt(receiptSnapshot.getValue(Receipt.class));
+                    }
+                }).start();
+            }
 
-        // Set interpreted receipt status to parsed
-        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'POSTED'")) {
-            nextReceipt = receipt;
-            UserDatabase.getUserReference(User.getCurrentUser(),
-                    EnvironmentManager.currentEnvironment(this))
-                    .child(receipt.getFirebase_ref())
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                                                        @Override
-                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                            Receipt onlineReceipt = dataSnapshot.getValue(Receipt.class);
+            }
+        });
 
-                                                            if (onlineReceipt == null) {
-                                                                nextReceipt.delete(this);
-                                                                return;
-                                                            }
+        Query uploadedReceipts = Inbox.receiptsByStatus(getBaseContext(), "PENDING");
+        uploadedReceipts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (DataSnapshot receiptSnapshot : dataSnapshot.getChildren())
+                            new UploadReceiptTask(getBaseContext()).uploadReceipt(receiptSnapshot.getValue(Receipt.class));
+                    }
+                }).start();
+            }
 
-                                                            if (onlineReceipt.isInterpreted())
-                                                                nextReceipt.updateStatus(Receipt.Status.PARSED);
-                                                        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                                                        @Override
-                                                        public void onCancelled(DatabaseError databaseError) {
-                                                            // Do nothing
-                                                        }
-                                                    }
-
-                    );
-        }
-
-        // Delete interpreted (finished) receipts from cache
-        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'PARSED'")) {
-            Log.i(TAG, "Deleting " + receipt.getFirebase_ref());
-            new DeleteReceiptTask(this, receipt).deleteReceipt();
-        }
+            }
+        });
+//
+//        // Set interpreted receipt status to parsed
+//        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'POSTED'")) {
+//            nextReceipt = receipt;
+//            UserDatabase.getUserReference(User.getCurrentUser(),
+//                    EnvironmentManager.currentEnvironment(this))
+//                    .child(receipt.getFirebase_ref())
+//                    .addListenerForSingleValueEvent(new ValueEventListener() {
+//
+//                                                        @Override
+//                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                                                            Receipt onlineReceipt = dataSnapshot.getValue(Receipt.class);
+//
+//                                                            if (onlineReceipt == null) {
+//                                                                nextReceipt.delete(this);
+//                                                                return;
+//                                                            }
+//
+//                                                            if (onlineReceipt.isInterpreted())
+//                                                                nextReceipt.updateStatus(Receipt.Status.PARSED);
+//                                                        }
+//
+//                                                        @Override
+//                                                        public void onCancelled(DatabaseError databaseError) {
+//                                                            // Do nothing
+//                                                        }
+//                                                    }
+//
+//                    );
+//        }
     }
 }

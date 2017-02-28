@@ -37,21 +37,10 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     protected void populateView(View view, final Receipt receipt, int position) {
         Log.d(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
 
-        List<Receipt> cachedReceipts;
-        if(receipt.getFirebase_ref() != null)
-            cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());
-        else cachedReceipts = null;
-
-        if(cachedReceipts == null){
-            handleReceiptFromOtherDevice(view);
-            return;
-        }
-
-        if(cachedReceipts.size() > 0) {
+        if(receipt.getFilename() != null) {
             Log.d(TAG, "cached receipt present");
-            Receipt cachedReceipt = cachedReceipts.get(0);
-            setThumbnailFromCache(view, cachedReceipt, receipt);
-            receipt.updateFromCache(cachedReceipt);
+            setThumbnailFromCache(view, receipt);
+            receipt.updateFromCache(receipt);
         } else {
             setThumbnailFromFirebase(view, receipt);
         }
@@ -86,9 +75,9 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     /**
      * Sets receipt thumbnail and merchant name (status) from SQLite database.
      */
-    private void setThumbnailFromCache(View view, Receipt cachedReceipt, Receipt receipt) {
+    private void setThumbnailFromCache(View view, Receipt receipt) {
         Glide.with(mActivity)
-                .load(cachedReceipt.getImage(mActivity))
+                .load(receipt.getImage(mActivity))
                 .asBitmap()
                 .into((ImageView) view.findViewById(R.id.receipt_thumb));
     }

@@ -50,7 +50,7 @@ public class UploadReceiptTask {
         }
 
         mReceipt = receipt;
-        if (receipt.getStatus() == Receipt.Status.UPLOADED)
+        if (receipt.getInternal_status() == Receipt.Status.UPLOADED)
             postReceipt();
         else start();
     }
@@ -63,7 +63,7 @@ public class UploadReceiptTask {
                         EnvironmentManager.currentEnvironment(mContext))
                 .child(mReceipt.getFirebase_ref());
 
-        mReceipt.updateStatus(Receipt.Status.UPLOADING);
+        mReceipt.updateStatus(mContext, Receipt.Status.UPLOADING);
 
 //        logger.startUploadingOriginal();
 
@@ -79,13 +79,13 @@ public class UploadReceiptTask {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 Log.e(TAG, "File upload failed");
-                mReceipt.updateStatus(Receipt.Status.PENDING);
+                mReceipt.updateStatus(mContext, Receipt.Status.PENDING);
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 //                    logger.onOriginalUploaded();
-                mReceipt.updateStatus(Receipt.Status.UPLOADED);
+                mReceipt.updateStatus(mContext, Receipt.Status.UPLOADED);
                 postReceipt();
             }
         });
@@ -100,7 +100,7 @@ public class UploadReceiptTask {
 
     private void postReceipt() {
         Log.i(TAG, "Posting " + mReceipt.getFirebase_ref());
-        mReceipt.updateStatus(Receipt.Status.POSTING);
+        mReceipt.updateStatus(mContext, Receipt.Status.POSTING);
         OkHttpClient client = new OkHttpClient();
 
         SharedPreferences prefs = PreferenceManager
@@ -125,11 +125,11 @@ public class UploadReceiptTask {
             Response response = client.newCall(request).execute();
             response.close();
             if (response.isSuccessful())
-                mReceipt.updateStatus(Receipt.Status.POSTED);
+                mReceipt.updateStatus(mContext, Receipt.Status.POSTED);
             else
-                mReceipt.updateStatus(Receipt.Status.UPLOADED);
+                mReceipt.updateStatus(mContext, Receipt.Status.UPLOADED);
         } catch (IOException e) {
-            mReceipt.updateStatus(Receipt.Status.UPLOADED);
+            mReceipt.updateStatus(mContext, Receipt.Status.UPLOADED);
             e.printStackTrace();
         }
         Log.i(TAG, "Finishing " + mReceipt.getFirebase_ref());

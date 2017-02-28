@@ -20,12 +20,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
-import io.lucalabs.expenses.models.ApiRequestObject;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
-import io.lucalabs.expenses.network.Routes;
 import io.lucalabs.expenses.network.upload.UploadService;
-import io.lucalabs.expenses.network.webapi.ApiRequestTask;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
 import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
 import io.lucalabs.expenses.views.widgets.CameraFab;
@@ -168,11 +166,11 @@ public class ExpenseReportActivity extends FirebaseActivity {
                     .setMessage(R.string.delete_report_confirmation_message)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            new ApiRequestTask(ExpenseReportActivity.this, "DELETE", new ApiRequestObject(mExpenseReport), Routes.expenseReportsUrl(ExpenseReportActivity.this, mExpenseReport)).execute();
-                            Inbox.findReceipt(ExpenseReportActivity.this, mExpenseReport.getFirebase_ref()).removeValue();
+                            Inbox.findExpenseReport(ExpenseReportActivity.this, mExpenseReport.getFirebase_ref()).removeValue();
+                            new Task(ExpenseReportActivity.this, "DELETE", mExpenseReport).performAsync();
                             Intent toMainActivity = new Intent(ExpenseReportActivity.this, MainActivity.class);
                             toMainActivity.putExtra("status", "deleted");
-                            startActivity(new Intent(ExpenseReportActivity.this, MainActivity.class));
+                            startActivity(toMainActivity);
                         }
                     })
                     .setNegativeButton(android.R.string.no, null).show();

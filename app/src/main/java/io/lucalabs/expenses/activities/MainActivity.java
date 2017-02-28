@@ -7,6 +7,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,17 +15,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
-import io.lucalabs.expenses.models.ApiRequestObject;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.network.NetworkStatus;
-import io.lucalabs.expenses.network.Routes;
 import io.lucalabs.expenses.network.upload.UploadService;
-import io.lucalabs.expenses.network.webapi.ApiRequestTask;
 import io.lucalabs.expenses.views.adapters.ExpenseReportListAdapter;
 
 public class MainActivity extends FirebaseActivity {
@@ -58,8 +58,9 @@ public class MainActivity extends FirebaseActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 ExpenseReport expenseReport = Inbox.createExpenseReport(MainActivity.this);
-                new ApiRequestTask(MainActivity.this, "POST", new ApiRequestObject(expenseReport), Routes.expenseReportsUrl(MainActivity.this, null)).execute();
+                new Task(MainActivity.this, "POST", expenseReport);
                 Intent toExpenseReportIntent = new Intent(MainActivity.this, ExpenseReportActivity.class);
                 toExpenseReportIntent.putExtra("firebase_ref", expenseReport.getFirebase_ref());
                 toExpenseReportIntent.putExtra("status", "created");
@@ -91,6 +92,8 @@ public class MainActivity extends FirebaseActivity {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         final ExpenseReport expenseReport = mListAdapter.getItem(info.position);
+        expenseReport.setFirebase_ref(mListAdapter.getRef(info.position).getKey());
+        DatabaseReference key = mListAdapter.getRef(info.position);
         switch (item.getItemId()) {
             case R.id.open_expense_report:
                 Intent toExpenseReportIntent = new Intent(MainActivity.this, ExpenseReportActivity.class);
@@ -106,8 +109,8 @@ public class MainActivity extends FirebaseActivity {
                             .setMessage(R.string.delete_report_confirmation_message)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    new ApiRequestTask(MainActivity.this, "DELETE", new ApiRequestObject(expenseReport), Routes.expenseReportsUrl(MainActivity.this, expenseReport)).execute();
                                     Inbox.findExpenseReport(MainActivity.this, expenseReport.getFirebase_ref()).removeValue();
+                                    new Task(MainActivity.this, "DELETE", expenseReport).performAsync();
                                     Snackbar.make(findViewById(R.id.main_coordinator), R.string.expense_report_deleted_notice, Snackbar.LENGTH_SHORT).show();
                                 }
                             })
@@ -130,8 +133,9 @@ public class MainActivity extends FirebaseActivity {
     }
 
     private void displaySnackBarIfNecessary() {
-        if (getIntent().getStringExtra("status") != null)
-            switch (getIntent().getStringExtra("status")) {
+        String status = getIntent().getStringExtra("status");
+        if (status != null)
+            switch (status) {
                 case "deleted":
                     Snackbar.make(findViewById(R.id.main_coordinator), R.string.expense_report_deleted_notice, Snackbar.LENGTH_SHORT).show();
             }

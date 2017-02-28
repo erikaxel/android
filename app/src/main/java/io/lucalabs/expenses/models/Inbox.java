@@ -1,13 +1,12 @@
 package io.lucalabs.expenses.models;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
-import android.util.Log;
 
-import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.network.database.UserDatabase;
 import io.lucalabs.expenses.network.storage.ReceiptStorage;
@@ -22,6 +21,14 @@ public class Inbox {
         return queryDb(context).child("expense_reports");
     }
 
+    public static Query all(Context context){
+        return queryDb(context);
+    }
+
+    public static Query allTasks(Context context) {
+        return queryDb(context).child("tasks");
+    }
+
     public static Query receiptsForExpenseReport(Context context, String key) {
         return queryDb(context)
                 .child("receipts")
@@ -29,7 +36,14 @@ public class Inbox {
                 .equalTo(key);
     }
 
-    public static ExpenseReport createExpenseReport(Context context){
+    public static Query receiptsByStatus(Context context, String status){
+        return queryDb(context)
+                .child("receipts")
+                .orderByChild("internal_status")
+                .equalTo(status);
+    }
+
+    public static ExpenseReport createExpenseReport(Context context) {
         DatabaseReference ref = UserDatabase.newReportReference(
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(context));
@@ -39,21 +53,32 @@ public class Inbox {
         return expenseReport;
     }
 
+    public static DatabaseReference findObject(Context context, String className, String firebaseRef) {
+        switch (className) {
+            case "ExpenseReport":
+                return findExpenseReport(context, firebaseRef);
+            case "Receipt":
+                return findReceipt(context, firebaseRef);
+            default:
+                return null;
+        }
+    }
+
     public static DatabaseReference findExpenseReport(Context context, String firebaseRef) {
         return queryDb(context).child("expense_reports").child(firebaseRef);
     }
 
-    public static DatabaseReference findReceipt(Context context, String firebaseRef){
+    public static DatabaseReference findReceipt(Context context, String firebaseRef) {
         return queryDb(context).child("receipts").child(firebaseRef);
     }
 
     /**
      * Fetches a storage reference to a receipt image.
+     *
      * @param type is the image size/type to be loaded (e.g. "original", "medium", "thumbnail")
      */
     public static StorageReference receiptImage(Context context, Receipt receipt, String type) {
-        Log.d("ReceiptListAdapter", "ref is " + queryStorage(context).getPath() + "/" + receipt.getFirebase_ref() + "/pages/0.thumbnail.jpg");
-        return  queryStorage(context)
+        return queryStorage(context)
                 .child(receipt.getFirebase_ref())
                 .child("pages")
                 .child("0." + type + ".jpg");
@@ -67,7 +92,7 @@ public class Inbox {
         return dbRef;
     }
 
-    private static StorageReference queryStorage(Context context){
+    private static StorageReference queryStorage(Context context) {
         return ReceiptStorage.getUserReference(
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(context));
