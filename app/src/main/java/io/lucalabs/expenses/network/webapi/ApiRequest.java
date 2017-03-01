@@ -58,7 +58,6 @@ public class ApiRequest {
                 .method(mTask.getRequestMethod(), form)
                 .build();
 
-        Log.i(TAG, Routes.getFullPath(mContext, mTask.getUrl()));
         for (int i = 0; i < form.size(); i++)
             Log.i(TAG, "name: " + form.name(i) + ", value " + form.value(i));
 
@@ -68,8 +67,8 @@ public class ApiRequest {
             if (response.isSuccessful()) {
                 return true;
             } else {
-                Log.i(TAG, "Did not succeed. Response: " + response.code());
-                return false;
+                Log.w(TAG, "Did not succeed. Response: " + response.code());
+                return true; // Unsuccessful tasks are also removed from queue
             }
         } catch (IOException e) {
             Log.i(TAG, "Couldn't send request (" + e.getMessage() + ")");

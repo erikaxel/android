@@ -8,8 +8,8 @@ android {
         applicationId "io.lucalabs.expenses"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 48
-        versionName "1.0.4"
+        versionCode 49
+        versionName "1.0.5"
         multiDexEnabled true
     }
 
@@ -78,9 +78,6 @@ dependencies {
 
     // For HTTP-requests
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-
-    // Database ORM
-    compile 'com.github.satyan:sugar:1.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

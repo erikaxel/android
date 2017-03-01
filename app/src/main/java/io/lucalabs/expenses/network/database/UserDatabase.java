@@ -36,6 +36,13 @@ public class UserDatabase {
         return ref;
     }
 
+    public static DatabaseReference newReceiptImageReference(FirebaseUser user, String environment, String receiptRef, String filename){
+        DatabaseReference receiptImagesRef = getUserReference(user, environment).child("receipt_images");
+        DatabaseReference receiptImageRef = receiptImagesRef.child(receiptRef);
+        receiptImageRef.setValue(filename);
+        return receiptImageRef;
+    }
+
     /**
      * Pushes new task to task queue
      */

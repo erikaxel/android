@@ -87,8 +87,8 @@ public class Receipt implements FirebaseObject  {
         DatabaseReference dbRef = UserDatabase
                 .newReceiptReference(User.getCurrentUser(),
                         EnvironmentManager.currentEnvironment(context), expenseReportRef);
-        Log.d("ReceiptListAdapter", "Should instantiate");
         firebase_ref = dbRef.getKey();
+        Inbox.createReceiptImage(context, getFirebase_ref(), filename);
         setExpense_report_firebase_key(context, expenseReportRef);
         save(context);
     }
@@ -111,10 +111,6 @@ public class Receipt implements FirebaseObject  {
             default:
                 return getMerchant_name();
         }
-    }
-
-    public void updateFromCache(Receipt cachedReceipt) {
-        setInternal_status(cachedReceipt.getInternal_status());
     }
 
     public void setExpense_report_firebase_key(Context context, String expenseReportRef) {
@@ -289,7 +285,7 @@ public class Receipt implements FirebaseObject  {
         this.expense_report_firebase_key = expense_report_firebase_key;
     }
 
-    public void save(Context context){
+    private void save(Context context){
         DatabaseReference reference = Inbox.findReceipt(context, getFirebase_ref());
         reference.setValue(this);
     }

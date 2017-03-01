@@ -39,8 +39,8 @@ public class Task {
 
     public Task(Context context, String requestMethod, FirebaseObject object) {
         this.context = context;
-        setUrl(Routes.objectsPath(object));
         setRequestMethod(requestMethod);
+        setUrl(Routes.objectsPath(object, requestMethod.equals("POST")));
         setObjectRef(object.getFirebase_ref());
         setClassName(object.getClass().getSimpleName());
         setClassLongName(object.getClass().getName());
@@ -131,11 +131,11 @@ public class Task {
         return requestMethod;
     }
 
-    public void setFirebaseRef(String firebaseRef){
+    public void setFirebaseRef(String firebaseRef) {
         this.firebaseRef = firebaseRef;
     }
 
-    public String getFirebaseRef(){
+    public String getFirebaseRef() {
         return firebaseRef;
     }
 

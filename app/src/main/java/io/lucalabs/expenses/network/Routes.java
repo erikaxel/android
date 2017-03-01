@@ -25,12 +25,14 @@ public class Routes {
 
     private static final String TAG = "Routes";
 
-    public static String objectsPath(Object object) {
+    public static String objectsPath(Object object, boolean isPostRequest) {
+        Object pathArg = isPostRequest ? null : object;
+
         switch(object.getClass().getSimpleName()){
             case "ExpenseReport" :
-                return expenseReportsPath((ExpenseReport) object);
+                return expenseReportsPath((ExpenseReport) pathArg);
             case "Receipt" :
-                return receiptsPath((Receipt) object);
+                return receiptsPath((Receipt) pathArg);
             default :
                 return null;
         }

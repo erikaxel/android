@@ -53,6 +53,14 @@ public class Inbox {
         return expenseReport;
     }
 
+    public static DatabaseReference createReceiptImage(Context context, String receiptRef, String filename) {
+        return UserDatabase.newReceiptImageReference(
+                User.getCurrentUser(),
+                EnvironmentManager.currentEnvironment(context),
+                receiptRef,
+                filename);
+    }
+
     public static DatabaseReference findObject(Context context, String className, String firebaseRef) {
         switch (className) {
             case "ExpenseReport":
@@ -70,6 +78,10 @@ public class Inbox {
 
     public static DatabaseReference findReceipt(Context context, String firebaseRef) {
         return queryDb(context).child("receipts").child(firebaseRef);
+    }
+
+    public static DatabaseReference cachedReceiptImage(Context context, String receiptRef){
+        return queryDb(context).child("receipt_images").child(receiptRef);
     }
 
     /**
@@ -97,6 +109,5 @@ public class Inbox {
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(context));
     }
-
 }
 

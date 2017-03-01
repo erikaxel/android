@@ -60,7 +60,7 @@ public class MainActivity extends FirebaseActivity {
             public void onClick(View view) {
 
                 ExpenseReport expenseReport = Inbox.createExpenseReport(MainActivity.this);
-                new Task(MainActivity.this, "POST", expenseReport);
+                new Task(MainActivity.this, "POST", expenseReport).performAsync();
                 Intent toExpenseReportIntent = new Intent(MainActivity.this, ExpenseReportActivity.class);
                 toExpenseReportIntent.putExtra("firebase_ref", expenseReport.getFirebase_ref());
                 toExpenseReportIntent.putExtra("status", "created");
