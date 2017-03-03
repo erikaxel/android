@@ -247,7 +247,7 @@ public class Receipt implements FirebaseObject  {
         this.internal_status = internal_status;
     }
 
-    public void updateStatus(Context context, Status internal_status) {
+    public void updateInternalStatus(Context context, Status internal_status) {
         setInternal_status(internal_status);
         save(context);
         Log.i("ReceiptStatus", firebase_ref + " is now " + internal_status);

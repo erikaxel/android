@@ -31,7 +31,7 @@
     <string name="report_arrival_at">Rapportdetaljer</string>
     <string name="report_arrival_at_hint">Ankomstdato</string>
     <string name="report_billable_hint">Privat utlegg?</string>
-    <string name="report_comment_hint">Kommentar</string>
+    <string name="report_comment_hint">Formål</string>
     <string name="report_departure_at">Avreisedato</string>
     <string name="report_departure_at_hint">Avreisedato</string>
     <string name="report_destination_hint">Reisemål</string>
@@ -72,4 +72,6 @@
     <string name="expense_report_deleted_notice">Slettet reiseregning</string>
     <string name="expense_report_menu_title">Reiseregning</string>
     <string name="receipt_deleted_notice">Slettet kvittering</string>
+    <string name="photo_preview">forhåndsvisning av bilde</string>
+    <string name="login_please_connect_prompt">Trenger nettilgang for å logge inn</string>
 </resources>

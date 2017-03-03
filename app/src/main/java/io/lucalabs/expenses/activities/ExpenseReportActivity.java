@@ -166,6 +166,7 @@ public class ExpenseReportActivity extends FirebaseActivity {
                     .setMessage(R.string.delete_report_confirmation_message)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
+                            mExpenseReport.setFirebase_ref(mFirebaseRef);
                             Inbox.findExpenseReport(ExpenseReportActivity.this, mExpenseReport.getFirebase_ref()).removeValue();
                             new Task(ExpenseReportActivity.this, "DELETE", mExpenseReport).performAsync();
                             Intent toMainActivity = new Intent(ExpenseReportActivity.this, MainActivity.class);

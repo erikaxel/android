@@ -67,7 +67,7 @@ public class LoginActivity extends FragmentActivity {
                     }
                 });
             } else {
-                Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.login_please_connect_prompt, Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "Login failed (RESULT_CANCELLED)");
             }
         }

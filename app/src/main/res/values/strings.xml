@@ -50,7 +50,7 @@
     <string name="report_arrival_at">Arrival date</string>
     <string name="report_destination_hint">Destination</string>
     <string name="report_source_hint">Departure from</string>
-    <string name="report_comment_hint">Comment</string>
+    <string name="report_comment_hint">Purpose</string>
     <string name="report_departure_at_hint">Departure at</string>
     <string name="report_arrival_at_hint">Arrival date</string>
     <string name="section_format">Section format</string>
@@ -82,4 +82,6 @@
     <string name="delete_receipt_confirmation_title">Delete receipt?</string>
     <string name="delete_finalized_report_notice">Can\'t delete a finalized expense report</string>
     <string name="deleted_finalized_receipt_notice">Can\'t delete receipt on finalized expense report</string>
+    <string name="login_please_connect_prompt">Couldn\'t sign in. Please connect to the Internet.</string>
+    <string name="photo_preview">photo preview</string>
 </resources>

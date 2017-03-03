@@ -90,26 +90,7 @@ public class UploadService extends Service {
     }
 
     private void handleReceipts() {
-        Query pendingReceipts = Inbox.receiptsByStatus(getBaseContext(), "UPLOADED");
-        pendingReceipts.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(final DataSnapshot dataSnapshot) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (DataSnapshot receiptSnapshot : dataSnapshot.getChildren())
-                            new UploadReceiptTask(getBaseContext()).uploadReceipt(receiptSnapshot.getValue(Receipt.class));
-                    }
-                }).start();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        Query uploadedReceipts = Inbox.receiptsByStatus(getBaseContext(), "PENDING");
+        Query uploadedReceipts = Inbox.receiptsByStatus(getBaseContext(), "UPLOADED");
         uploadedReceipts.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot dataSnapshot) {
@@ -127,35 +108,24 @@ public class UploadService extends Service {
 
             }
         });
-//
-//        // Set interpreted receipt status to parsed
-//        for (Receipt receipt : Receipt.find(Receipt.class, "status = 'POSTED'")) {
-//            nextReceipt = receipt;
-//            UserDatabase.getUserReference(User.getCurrentUser(),
-//                    EnvironmentManager.currentEnvironment(this))
-//                    .child(receipt.getFirebase_ref())
-//                    .addListenerForSingleValueEvent(new ValueEventListener() {
-//
-//                                                        @Override
-//                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                                                            Receipt onlineReceipt = dataSnapshot.getValue(Receipt.class);
-//
-//                                                            if (onlineReceipt == null) {
-//                                                                nextReceipt.delete(this);
-//                                                                return;
-//                                                            }
-//
-//                                                            if (onlineReceipt.isInterpreted())
-//                                                                nextReceipt.updateStatus(Receipt.Status.PARSED);
-//                                                        }
-//
-//                                                        @Override
-//                                                        public void onCancelled(DatabaseError databaseError) {
-//                                                            // Do nothing
-//                                                        }
-//                                                    }
-//
-//                    );
-//        }
+
+        Query pendingReceipts = Inbox.receiptsByStatus(getBaseContext(), "PENDING");
+        pendingReceipts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (DataSnapshot receiptSnapshot : dataSnapshot.getChildren())
+                            new UploadReceiptTask(getBaseContext()).uploadReceipt(receiptSnapshot.getValue(Receipt.class));
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

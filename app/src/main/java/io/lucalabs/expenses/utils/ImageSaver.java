@@ -19,10 +19,10 @@ public class ImageSaver implements Runnable {
 
     private static final String TAG = "ImageSaver";
     private final Context mContext;
-    private final Image mImage;
+    private final byte[] mImage;
     private final String mExpenseReportRef;
 
-    public ImageSaver(Context context, Image image, String expenseReportRef) {
+    public ImageSaver(Context context, byte[] image, String expenseReportRef) {
         mContext = context;
         mImage = image;
         mExpenseReportRef = expenseReportRef;
@@ -30,19 +30,15 @@ public class ImageSaver implements Runnable {
 
     @Override
     public void run() {
-        ByteBuffer byteBuffer = mImage.getPlanes()[0].getBuffer();
-        byte[] bytes = new byte[byteBuffer.remaining()];
-        byteBuffer.get(bytes);
-        Receipt rec = new Receipt(bytes, mContext, mExpenseReportRef);
+        Receipt rec = new Receipt(mImage, mContext, mExpenseReportRef);
 
         if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("save_to_album_pref", false)) {
-            try {saveCopyToAlbum(bytes);
+            try {saveCopyToAlbum(mImage);
             } catch (IOException e) {
                 Log.w(TAG, "Couldn't save copy");
                 e.printStackTrace();
             }
         }
-        mImage.close();
     }
 
     private void saveCopyToAlbum(byte[] bytes) throws IOException {
