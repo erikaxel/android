@@ -1,6 +1,7 @@
 package io.lucalabs.expenses.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
 import android.util.Log;
 import com.google.firebase.storage.StorageReference;
@@ -13,6 +14,7 @@ import io.lucalabs.expenses.views.fragments.ReceiptFormFragment;
 public class ReceiptActivity extends FirebaseActivity {
     private ReceiptFormFragment mFormFragment;
     private boolean mShowingPreview;
+    private CoordinatorLayout mCoordinatorLayout;
 
     private static final String TAG = ReceiptActivity.class.getSimpleName();
 
@@ -22,6 +24,8 @@ public class ReceiptActivity extends FirebaseActivity {
         displayDeleteIcon();
         setTitle(R.id.receipt_activity_title);
         setContentView(R.layout.activity_receipt);
+
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.container);
 
         mFormFragment = ReceiptFormFragment.newInstance();
 
@@ -56,6 +60,7 @@ public class ReceiptActivity extends FirebaseActivity {
     }
 
     private void enterFullscreen() {
+        mCoordinatorLayout.setFitsSystemWindows(false);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -63,6 +68,7 @@ public class ReceiptActivity extends FirebaseActivity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
     private void exitFullscreen(){
+        mCoordinatorLayout.setFitsSystemWindows(true);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
