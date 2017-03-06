@@ -51,7 +51,7 @@
     <string name="report_destination_hint">Destination</string>
     <string name="report_source_hint">Departure from</string>
     <string name="report_comment_hint">Purpose</string>
-    <string name="report_departure_at_hint" translatable="false">Departure at</string>
+    <string name="report_departure_at_hint">Departure at</string>
     <string name="report_arrival_at_hint">Arrival date</string>
     <string name="section_format">Section format</string>
     <string name="receipt_merchant_name_hint">Merchant</string>
