@@ -42,6 +42,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaActionSound;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -549,15 +550,6 @@ public class CameraFragment extends Fragment
                     continue;
                 }
 
-                // For still image captures, we use the largest available size.
-                Size largest = Collections.max(
-                        Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
-                        new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
-                        ImageFormat.JPEG, /*maxImages*/1);
-                mImageReader.setOnImageAvailableListener(
-                        mOnImageAvailableListener, mBackgroundHandler);
-
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
                 int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -603,12 +595,23 @@ public class CameraFragment extends Fragment
                     maxPreviewHeight = MAX_PREVIEW_HEIGHT;
                 }
 
+                // For still image captures, we use the largest available size.
+                Size largest = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
+                        rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
+                        maxPreviewHeight, new Size(16, 9));
+
+                mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
+                        ImageFormat.JPEG, /*maxImages*/2);
+                mImageReader.setOnImageAvailableListener(
+                        mOnImageAvailableListener, mBackgroundHandler);
+
                 // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                 // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                 // garbage capture data.
-                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
-                        rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
-                        maxPreviewHeight, largest);
+                mPreviewSize = largest;
+//                mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
+//                        rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
+//                        maxPreviewHeight, largest);
 
                 // Check if the flash is supported.
                 Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
@@ -798,6 +801,7 @@ public class CameraFragment extends Fragment
      */
     private void takePicture() {
         lockFocus();
+        new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
     }
 
     /**
@@ -852,7 +856,7 @@ public class CameraFragment extends Fragment
             captureBuilder.addTarget(mImageReader.getSurface());
 
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_EDOF);
+                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             setAutoFlash(captureBuilder);
 
             // Orientation
