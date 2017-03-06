@@ -74,4 +74,5 @@
     <string name="receipt_deleted_notice">Slettet kvittering</string>
     <string name="photo_preview">forhåndsvisning av bilde</string>
     <string name="login_please_connect_prompt">Trenger nettilgang for å logge inn</string>
+    <string name="receipt_image">Bilde av kvittering</string>
 </resources>

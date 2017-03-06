@@ -70,7 +70,6 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import bolts.Capture;
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.CameraActivity;
 import io.lucalabs.expenses.views.widgets.AutoFitTextureView;
@@ -467,7 +466,7 @@ public class CameraFragment extends Fragment
     private void focusOnDoubleTap() {
         long currentTime = Calendar.getInstance().getTimeInMillis();
 
-        if(currentTime - 600 < mLastTapTime)
+        if (currentTime - 600 < mLastTapTime)
             unlockFocus();
 
         mLastTapTime = currentTime;
@@ -852,9 +851,8 @@ public class CameraFragment extends Fragment
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureBuilder.addTarget(mImageReader.getSurface());
 
-            // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                    CaptureRequest.CONTROL_AF_MODE_EDOF);
             setAutoFlash(captureBuilder);
 
             // Orientation

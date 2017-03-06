@@ -55,12 +55,10 @@ public class Task {
     }
 
     private void delete(Context context) {
-//        Log.i(TAG, "Delete called");
-//
-//        DatabaseReference ref = UserDatabase.getUserReference(
-//                User.getCurrentUser(),
-//                EnvironmentManager.currentEnvironment(context)).child("tasks").child(firebaseRef);
-//        ref.removeValue();
+        DatabaseReference ref = UserDatabase.getUserReference(
+                User.getCurrentUser(),
+                EnvironmentManager.currentEnvironment(context)).child("tasks").child(firebaseRef);
+        ref.removeValue();
     }
 
     public void performAsync() {

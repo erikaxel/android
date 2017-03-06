@@ -7,9 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.StorageReference;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.CameraActivity;
@@ -21,6 +22,8 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class PhotoPreviewFragment extends Fragment implements View.OnClickListener {
 
     private byte[] mPreviewImage;
+    private StorageReference mStorageRef;
+    private boolean mShowKeepButton = false;
     private static final String TAG = Fragment.class.getSimpleName();
 
     @Override
@@ -33,12 +36,22 @@ public class PhotoPreviewFragment extends Fragment implements View.OnClickListen
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         ImageView preview = (ImageView) view.findViewById(R.id.photo_preview);
 
-        Glide.with(this)
-                .load(mPreviewImage)
-                .asBitmap()
-                .into((preview));
+        if(mPreviewImage.length > 0)
+            Glide.with(this)
+                    .load(mPreviewImage)
+                    .asBitmap()
+                    .into((preview));
+        else
+            Glide.with(this)
+                    .using(new FirebaseImageLoader())
+                    .load(mStorageRef)
+                    .into((preview));
 
-        view.findViewById(R.id.keep_photo).setOnClickListener(this);
+        if(mShowKeepButton)
+            view.findViewById(R.id.keep_photo).setOnClickListener(this);
+        else
+            view.findViewById(R.id.keep_photo).setVisibility(View.GONE);
+
         view.findViewById(R.id.dismiss_photo).setOnClickListener(this);
         new PhotoViewAttacher(preview);
     }
@@ -51,6 +64,10 @@ public class PhotoPreviewFragment extends Fragment implements View.OnClickListen
         mPreviewImage = previewImage;
     }
 
+    public void setStorageRef(StorageReference storageRef) {
+        mStorageRef = storageRef;
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -60,14 +77,11 @@ public class PhotoPreviewFragment extends Fragment implements View.OnClickListen
             case R.id.dismiss_photo:
                 dismissPhoto();
                 break;
-
         }
     }
 
     private void keepPhoto() {
         final String expenseReportRef = ((CameraActivity) getActivity()).getExpenseReportRef();
-
-        Toast.makeText(getActivity(), expenseReportRef, Toast.LENGTH_SHORT).show();
 
         new Thread(new Runnable() {
             @Override
@@ -88,5 +102,9 @@ public class PhotoPreviewFragment extends Fragment implements View.OnClickListen
 
     private void dismissPhoto() {
         getActivity().onBackPressed();
+    }
+
+    public void showKeepButton(boolean showKeepButton) {
+        this.mShowKeepButton = showKeepButton;
     }
 }

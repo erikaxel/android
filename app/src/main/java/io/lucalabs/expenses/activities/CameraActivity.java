@@ -37,10 +37,8 @@ public class CameraActivity extends Activity {
         mExpenseReportRef = getIntent().getStringExtra("expense_report_ref");
 
         setToFullscreen();
-        if (savedInstanceState == null) {
-
+        if (savedInstanceState == null)
             showCamera();
-        }
     }
 
     private void showCamera() {
@@ -54,6 +52,7 @@ public class CameraActivity extends Activity {
         mShowingPreview = true;
         PhotoPreviewFragment photoPreviewFragment = PhotoPreviewFragment.newInstance();
         photoPreviewFragment.setPreviewImage(previewImage);
+        photoPreviewFragment.showKeepButton(true);
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, photoPreviewFragment)
