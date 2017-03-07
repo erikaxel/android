@@ -8,7 +8,7 @@ import android.view.animation.AnimationUtils;
 /**
  * Runs animations asynchronously.
  */
-public class AnimationRunner extends Thread implements Runnable{
+public class AnimationRunner {
 
     private final Context context;
     private final View view;
@@ -22,7 +22,6 @@ public class AnimationRunner extends Thread implements Runnable{
         this.duration = duration;
     }
 
-    @Override
     public void run() {
         Animation animation = AnimationUtils.loadAnimation(context, animationId);
         animation.setDuration(duration);

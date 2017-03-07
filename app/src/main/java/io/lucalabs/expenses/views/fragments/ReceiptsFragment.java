@@ -80,7 +80,7 @@ public class ReceiptsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean atLeastOneReceiptIsPresent = dataSnapshot.getChildren().iterator().hasNext();
                 if (atLeastOneReceiptIsPresent)
-                    rootView.findViewById(R.id.no_receipts_card).setVisibility(View.INVISIBLE);
+                    rootView.findViewById(R.id.no_receipts_card).setVisibility(View.GONE);
                 else
                     rootView.findViewById(R.id.no_receipts_card).setVisibility(View.VISIBLE);
             }

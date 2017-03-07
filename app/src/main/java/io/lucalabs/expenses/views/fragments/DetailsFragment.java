@@ -98,7 +98,7 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
                 if (((CheckBox) view).isChecked()) {
                     mTravelLayout.setVisibility(View.VISIBLE);
                 } else {
-                    mTravelLayout.setVisibility(View.INVISIBLE);
+                    mTravelLayout.setVisibility(View.GONE);
                 }
             }
         });
@@ -161,7 +161,7 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
                 mEditComment.setText(mExpenseReport.getComment());
 
                 if (!mExpenseReport.isTravel())
-                    mTravelLayout.setVisibility(View.INVISIBLE);
+                    mTravelLayout.setVisibility(View.GONE);
             }
 
             @Override
