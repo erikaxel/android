@@ -36,7 +36,7 @@ public class PhotoPreviewFragment extends Fragment implements View.OnClickListen
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         ImageView preview = (ImageView) view.findViewById(R.id.photo_preview);
 
-        if(mPreviewImage != null && mPreviewImage.length > 0)
+        if (mPreviewImage != null && mPreviewImage.length > 0)
             Glide.with(this)
                     .load(mPreviewImage)
                     .asBitmap()
@@ -47,7 +47,7 @@ public class PhotoPreviewFragment extends Fragment implements View.OnClickListen
                     .load(mStorageRef)
                     .into((preview));
 
-        if(mShowKeepButton)
+        if (mShowKeepButton)
             view.findViewById(R.id.keep_photo).setOnClickListener(this);
         else
             view.findViewById(R.id.keep_photo).setVisibility(View.GONE);

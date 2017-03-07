@@ -262,6 +262,7 @@ public class CameraFragment extends Fragment
             ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[byteBuffer.remaining()];
             byteBuffer.get(bytes);
+            image.close();
 
             ((CameraActivity) getActivity()).showPreview(bytes);
         }
