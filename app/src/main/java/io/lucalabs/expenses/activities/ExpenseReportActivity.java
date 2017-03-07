@@ -20,16 +20,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
-import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.network.webapi.TaskManagerService;
+import io.lucalabs.expenses.utils.AnimationRunner;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
 import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
 import io.lucalabs.expenses.views.presenters.ExpenseReportPresenter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
-public class ExpenseReportActivity extends FirebaseActivity {
+public class ExpenseReportActivity extends FirebaseActivity implements ViewPager.OnPageChangeListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -72,6 +73,8 @@ public class ExpenseReportActivity extends FirebaseActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        mViewPager.addOnPageChangeListener(this);
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
@@ -96,6 +99,12 @@ public class ExpenseReportActivity extends FirebaseActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startService(new Intent(this, TaskManagerService.class));
+    }
+
     private void displaySnackBarIfNecessary() {
         if (getIntent().getStringExtra("status") != null)
             switch (getIntent().getStringExtra("status")) {
@@ -105,19 +114,6 @@ public class ExpenseReportActivity extends FirebaseActivity {
                 case "deleted":
                     Snackbar.make(findViewById(R.id.expense_report_coordinator), R.string.receipt_deleted_notice, Snackbar.LENGTH_SHORT).show();
             }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        overridePendingTransition(0, 0);
-        startService(new Intent(this, TaskManagerService.class));
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        overridePendingTransition(0, 0);
     }
 
     /**
@@ -181,5 +177,25 @@ public class ExpenseReportActivity extends FirebaseActivity {
     @Override
     public void onBackPressed() {
         startActivity(new Intent(this, MainActivity.class));
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        switch(position) {
+            case 0:
+                new AnimationRunner(this, mCameraFab, R.anim.cwac_cam2_fade_in, 200).run();
+                break;
+            case 1:
+                new AnimationRunner(this, mCameraFab, R.anim.cwac_cam2_fade_out, 200).run();
+                break;
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
     }
 }
