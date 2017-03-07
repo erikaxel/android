@@ -188,9 +188,11 @@ public class ExpenseReportActivity extends FirebaseActivity implements ViewPager
         switch(position) {
             case 0:
                 new AnimationRunner(this, mCameraFab, R.anim.cwac_cam2_fade_in, 200).run();
+                mCameraFab.setEnabled(true);
                 break;
             case 1:
                 new AnimationRunner(this, mCameraFab, R.anim.cwac_cam2_fade_out, 200).run();
+                mCameraFab.setEnabled(false);
                 break;
         }
     }
