@@ -23,9 +23,10 @@ import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
 import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
-import io.lucalabs.expenses.network.upload.UploadService;
+import io.lucalabs.expenses.network.webapi.TaskManagerService;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
 import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
+import io.lucalabs.expenses.views.presenters.ExpenseReportPresenter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
 public class ExpenseReportActivity extends FirebaseActivity {
@@ -81,8 +82,8 @@ public class ExpenseReportActivity extends FirebaseActivity {
                 addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        mExpenseReport = (ExpenseReport) dataSnapshot.getValue(ExpenseReport.class);
-                        setTitle(mExpenseReport.getNameString(ExpenseReportActivity.this));
+                        mExpenseReport = dataSnapshot.getValue(ExpenseReport.class);
+                        setTitle(ExpenseReportPresenter.getNameString(ExpenseReportActivity.this, mExpenseReport));
                         if (mExpenseReport.isFinalized())
                             mCameraFab.setVisibility(View.GONE);
                     }
@@ -110,7 +111,7 @@ public class ExpenseReportActivity extends FirebaseActivity {
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
-        startService(new Intent(this, UploadService.class));
+        startService(new Intent(this, TaskManagerService.class));
     }
 
     @Override

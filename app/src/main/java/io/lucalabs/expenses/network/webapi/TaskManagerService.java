@@ -1,4 +1,4 @@
-package io.lucalabs.expenses.network.upload;
+package io.lucalabs.expenses.network.webapi;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,9 +19,10 @@ import com.google.firebase.database.ValueEventListener;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.Task;
+import io.lucalabs.expenses.network.storage.UploadReceiptTask;
 
-public class UploadService extends Service {
-    private final static String TAG = "UploadService";
+public class TaskManagerService extends Service {
+    private final static String TAG = "TaskManagerService";
     private ServiceHandler serviceHandler;
 
     private final class ServiceHandler extends Handler {
@@ -31,7 +32,7 @@ public class UploadService extends Service {
 
         @Override
         public void handleMessage(Message msg) {
-            synchronized (UploadService.this) {
+            synchronized (TaskManagerService.this) {
                 handleTasks();
                 handleReceipts();
             }

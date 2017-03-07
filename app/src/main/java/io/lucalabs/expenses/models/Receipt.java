@@ -93,26 +93,6 @@ public class Receipt implements FirebaseObject  {
         save(context);
     }
 
-    public String getStatusString(Context context) {
-        if (internal_status == null)
-            return context.getString(R.string.name_not_found);
-
-        switch (internal_status) {
-            case PENDING:
-                return context.getString(R.string.waiting_to_upload);
-            case UPLOADING:
-                return context.getString(R.string.uploading);
-            case UPLOADED:
-                return context.getString(R.string.uploading);
-            case POSTING:
-                return context.getString(R.string.uploading);
-            case POSTED:
-                return context.getString(R.string.interpreting);
-            default:
-                return getMerchant_name();
-        }
-    }
-
     public void setExpense_report_firebase_key(Context context, String expenseReportRef) {
         if (expenseReportRef == null)
             expenseReportRef = UserDatabase.newReportReference(User.getCurrentUser(),
@@ -183,17 +163,6 @@ public class Receipt implements FirebaseObject  {
 
     public String getPrettyAmountString() {
         return getAmountString().replaceAll("([.]00)", ".-").replaceAll("([,]00)", ",-");
-    }
-
-    public String getMerchantString(Context context) {
-        if (getMerchant_name() == null)
-            return getStatusString(context);
-        else {
-            String merchantString = getMerchant_name();
-            if (merchantString.length() > 24)
-                return merchantString.substring(0, 20) + " ...";
-            else return merchantString;
-        }
     }
 
     public byte[] getImage(Context context) {
@@ -288,15 +257,5 @@ public class Receipt implements FirebaseObject  {
     private void save(Context context){
         DatabaseReference reference = Inbox.findReceipt(context, getFirebase_ref());
         reference.setValue(this);
-    }
-
-    public boolean delete(Context context) {
-        return false;
-//        return delete(this) &&
-//                new File(context.getFilesDir().getAbsolutePath() + "/" + getFilename()).delete();
-    }
-
-    public boolean equals(Receipt other) {
-        return false;
     }
 }

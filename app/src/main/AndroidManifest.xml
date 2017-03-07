@@ -55,7 +55,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".network.upload.UploadService"
+            android:name=".network.webapi.TaskManagerService"
             android:exported="false" />
 
         <receiver android:name=".network.NetworkStateReceiver">

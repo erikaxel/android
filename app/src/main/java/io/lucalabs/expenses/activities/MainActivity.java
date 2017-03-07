@@ -7,7 +7,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,7 +23,7 @@ import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.network.NetworkStatus;
-import io.lucalabs.expenses.network.upload.UploadService;
+import io.lucalabs.expenses.network.webapi.TaskManagerService;
 import io.lucalabs.expenses.views.adapters.ExpenseReportListAdapter;
 
 public class MainActivity extends FirebaseActivity {
@@ -77,7 +76,7 @@ public class MainActivity extends FirebaseActivity {
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
-        startService(new Intent(this, UploadService.class));
+        startService(new Intent(this, TaskManagerService.class));
     }
 
     @Override

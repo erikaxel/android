@@ -39,20 +39,6 @@ public class ExpenseReport implements FirebaseObject {
     public ExpenseReport() {
     }
 
-    public String getNameString(Context context) {
-        if (name != null && !name.isEmpty())
-            return name;
-        else if (reference != null && !reference.isEmpty())
-            return reference;
-        else return context.getString(R.string.new_report);
-    }
-
-    public String getSubtitleString() {
-        if (name == null || name.isEmpty())
-            return "";
-        else return reference;
-    }
-
     public String getName() {
         return name;
     }

@@ -1,4 +1,4 @@
-package io.lucalabs.expenses.network.upload;
+package io.lucalabs.expenses.network.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
