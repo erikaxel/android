@@ -1,6 +1,7 @@
 package io.lucalabs.expenses.activities.firebase;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.GetTokenResult;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.LoginActivity;
+import io.lucalabs.expenses.activities.MainActivity;
 import io.lucalabs.expenses.activities.SettingsActivity;
 import io.lucalabs.expenses.models.User;
 
@@ -42,6 +44,14 @@ public abstract class FirebaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+
+        if(getSupportActionBar() != null && !(this instanceof MainActivity))
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         if (mAuthStateListener != null)
@@ -54,7 +64,6 @@ public abstract class FirebaseActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.main_menu_with_delete, menu);
         else
             getMenuInflater().inflate(R.menu.main_menu, menu);
-
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -83,7 +92,7 @@ public abstract class FirebaseActivity extends AppCompatActivity {
                 startActivity(new Intent(FirebaseActivity.this, SettingsActivity.class));
                 break;
             default:
-                Toast.makeText(this, "An unknown option was selected", Toast.LENGTH_SHORT).show();
+              break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -93,6 +102,12 @@ public abstract class FirebaseActivity extends AppCompatActivity {
     protected void onDeleteAction(){
         // Do nothing unless overridden
     };
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     protected void displayDeleteIcon(){
         displayDeleteIcon = true;

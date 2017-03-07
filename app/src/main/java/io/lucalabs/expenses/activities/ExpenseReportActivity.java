@@ -61,11 +61,14 @@ public class ExpenseReportActivity extends FirebaseActivity implements ViewPager
         displayDeleteIcon();
         setContentView(R.layout.activity_expense_report);
 
+        // Toolbar must be set up before call to super
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         displaySnackBarIfNecessary();
         mFirebaseRef = getIntent().getStringExtra("firebase_ref");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
