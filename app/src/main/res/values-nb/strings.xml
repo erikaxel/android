@@ -75,4 +75,5 @@
     <string name="photo_preview">forhåndsvisning av bilde</string>
     <string name="login_please_connect_prompt">Trenger nettilgang for å logge inn</string>
     <string name="receipt_image">Bilde av kvittering</string>
+    <string name="expense_report_finalized">Innsendt</string>
 </resources>
