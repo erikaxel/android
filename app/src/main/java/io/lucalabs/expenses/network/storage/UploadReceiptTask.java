@@ -1,4 +1,4 @@
-package io.lucalabs.expenses.network.upload;
+package io.lucalabs.expenses.network.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +15,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.IOException;
 
 import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.User;
 import io.lucalabs.expenses.network.NetworkStatus;
@@ -50,7 +51,7 @@ public class UploadReceiptTask {
         }
 
         mReceipt = receipt;
-        if (receipt.getStatus() == Receipt.Status.UPLOADED)
+        if (receipt.getInternal_status() == Receipt.Status.UPLOADED)
             postReceipt();
         else start();
     }
@@ -63,7 +64,7 @@ public class UploadReceiptTask {
                         EnvironmentManager.currentEnvironment(mContext))
                 .child(mReceipt.getFirebase_ref());
 
-        mReceipt.updateStatus(Receipt.Status.UPLOADING);
+        mReceipt.updateInternalStatus(mContext, Receipt.Status.UPLOADING);
 
 //        logger.startUploadingOriginal();
 
@@ -79,14 +80,19 @@ public class UploadReceiptTask {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 Log.e(TAG, "File upload failed");
-                mReceipt.updateStatus(Receipt.Status.PENDING);
+                mReceipt.updateInternalStatus(mContext, Receipt.Status.PENDING);
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 //                    logger.onOriginalUploaded();
-                mReceipt.updateStatus(Receipt.Status.UPLOADED);
-                postReceipt();
+                mReceipt.updateInternalStatus(mContext, Receipt.Status.UPLOADED);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        postReceipt();
+                    }
+                }).start();
             }
         });
     }
@@ -99,8 +105,7 @@ public class UploadReceiptTask {
 //    }
 
     private void postReceipt() {
-        Log.i(TAG, "Posting " + mReceipt.getFirebase_ref());
-        mReceipt.updateStatus(Receipt.Status.POSTING);
+        mReceipt.updateInternalStatus(mContext, Receipt.Status.POSTING);
         OkHttpClient client = new OkHttpClient();
 
         SharedPreferences prefs = PreferenceManager
@@ -124,12 +129,13 @@ public class UploadReceiptTask {
         try {
             Response response = client.newCall(request).execute();
             response.close();
-            if (response.isSuccessful())
-                mReceipt.updateStatus(Receipt.Status.POSTED);
+            if (response.isSuccessful()) {
+                mReceipt.updateInternalStatus(mContext, Receipt.Status.POSTED);
+            }
             else
-                mReceipt.updateStatus(Receipt.Status.UPLOADED);
+                mReceipt.updateInternalStatus(mContext, Receipt.Status.UPLOADED);
         } catch (IOException e) {
-            mReceipt.updateStatus(Receipt.Status.UPLOADED);
+            mReceipt.updateInternalStatus(mContext, Receipt.Status.UPLOADED);
             e.printStackTrace();
         }
         Log.i(TAG, "Finishing " + mReceipt.getFirebase_ref());

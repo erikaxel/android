@@ -21,13 +21,13 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.MainActivity;
 import io.lucalabs.expenses.activities.ReceiptActivity;
-import io.lucalabs.expenses.models.ApiRequestObject;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.network.Routes;
-import io.lucalabs.expenses.network.webapi.ApiRequestTask;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
 
 /**
@@ -128,8 +128,8 @@ public class ReceiptsFragment extends Fragment {
                                     .setMessage(R.string.delete_receipt_confirmation_message)
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int whichButton) {
-                                            new ApiRequestTask(getContext(), "DELETE", new ApiRequestObject(receipt), Routes.receiptsUrl(getContext(), receipt)).execute();
                                             Inbox.findReceipt(getContext(), receipt.getFirebase_ref()).removeValue();
+                                            new Task(getContext(), "DELETE", receipt).performAsync();
                                             Snackbar.make(getActivity().findViewById(R.id.expense_report_coordinator), R.string.receipt_deleted_notice, Snackbar.LENGTH_SHORT).show();
                                         }
                                     })

@@ -36,14 +36,20 @@ public class UserDatabase {
         return ref;
     }
 
+    public static DatabaseReference newReceiptImageReference(FirebaseUser user, String environment, String receiptRef, String filename){
+        DatabaseReference receiptImagesRef = getUserReference(user, environment).child("receipt_images");
+        DatabaseReference receiptImageRef = receiptImagesRef.child(receiptRef);
+        receiptImageRef.setValue(filename);
+        return receiptImageRef;
+    }
+
     /**
      * Pushes new task to task queue
      */
-//
-//    public static DatabaseReference newTaskReference(FirebaseUser user, String environment){
-//        DatabaseReference ref = getUserReference(user, environment).child("receipts").push();
-//        ref.getKey();
-//    }
+
+    public static DatabaseReference newTaskReference(FirebaseUser user, String environment){
+        return getUserReference(user, environment).child("tasks").push();
+    }
 
     /**
      * Pushes a new expense report to the given user and application environment.

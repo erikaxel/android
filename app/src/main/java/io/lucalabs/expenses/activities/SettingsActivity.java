@@ -88,7 +88,7 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         private void showDebugInfo() {
-            Toast.makeText(this.getActivity(), "Displaying debug info", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getActivity(), "Hurray! You found the developer options", Toast.LENGTH_SHORT).show();
             preferenceScreen.addPreference(debugCategory);
 
             ((Preference) findPreference("uid")).setSummary(User.getCurrentUser().getUid());

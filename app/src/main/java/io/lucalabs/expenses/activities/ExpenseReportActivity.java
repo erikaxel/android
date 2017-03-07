@@ -20,14 +20,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
-import io.lucalabs.expenses.models.ApiRequestObject;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
-import io.lucalabs.expenses.network.Routes;
-import io.lucalabs.expenses.network.upload.UploadService;
-import io.lucalabs.expenses.network.webapi.ApiRequestTask;
+import io.lucalabs.expenses.network.webapi.TaskManagerService;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
 import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
+import io.lucalabs.expenses.views.presenters.ExpenseReportPresenter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
 public class ExpenseReportActivity extends FirebaseActivity {
@@ -83,8 +82,8 @@ public class ExpenseReportActivity extends FirebaseActivity {
                 addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        mExpenseReport = (ExpenseReport) dataSnapshot.getValue(ExpenseReport.class);
-                        setTitle(mExpenseReport.getNameString(ExpenseReportActivity.this));
+                        mExpenseReport = dataSnapshot.getValue(ExpenseReport.class);
+                        setTitle(ExpenseReportPresenter.getNameString(ExpenseReportActivity.this, mExpenseReport));
                         if (mExpenseReport.isFinalized())
                             mCameraFab.setVisibility(View.GONE);
                     }
@@ -112,7 +111,7 @@ public class ExpenseReportActivity extends FirebaseActivity {
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
-        startService(new Intent(this, UploadService.class));
+        startService(new Intent(this, TaskManagerService.class));
     }
 
     @Override
@@ -168,11 +167,12 @@ public class ExpenseReportActivity extends FirebaseActivity {
                     .setMessage(R.string.delete_report_confirmation_message)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            new ApiRequestTask(ExpenseReportActivity.this, "DELETE", new ApiRequestObject(mExpenseReport), Routes.expenseReportsUrl(ExpenseReportActivity.this, mExpenseReport)).execute();
-                            Inbox.findReceipt(ExpenseReportActivity.this, mExpenseReport.getFirebase_ref()).removeValue();
+                            mExpenseReport.setFirebase_ref(mFirebaseRef);
+                            Inbox.findExpenseReport(ExpenseReportActivity.this, mExpenseReport.getFirebase_ref()).removeValue();
+                            new Task(ExpenseReportActivity.this, "DELETE", mExpenseReport).performAsync();
                             Intent toMainActivity = new Intent(ExpenseReportActivity.this, MainActivity.class);
                             toMainActivity.putExtra("status", "deleted");
-                            startActivity(new Intent(ExpenseReportActivity.this, MainActivity.class));
+                            startActivity(toMainActivity);
                         }
                     })
                     .setNegativeButton(android.R.string.no, null).show();

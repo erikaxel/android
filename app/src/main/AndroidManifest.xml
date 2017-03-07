@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="com.orm.SugarApp"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -22,9 +21,6 @@
         android:scrollbars="none"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="VERSION"
-            android:value="17" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_application_id" />
@@ -59,7 +55,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".network.upload.UploadService"
+            android:name=".network.webapi.TaskManagerService"
             android:exported="false" />
 
         <receiver android:name=".network.NetworkStateReceiver">
@@ -74,11 +70,13 @@
         <activity
             android:name=".activities.ExpenseReportActivity"
             android:label="@string/title_activity_expense_report"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.ReceiptActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

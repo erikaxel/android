@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
+import android.telecom.Call;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
 import com.google.firebase.database.DataSnapshot;
@@ -28,17 +29,17 @@ import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.MainActivity;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
-import io.lucalabs.expenses.models.Receipt;
-import io.lucalabs.expenses.network.webapi.PatchExpenseReportTask;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.utils.ArgumentComparator;
 import io.lucalabs.expenses.utils.DateFormatter;
+
 
 /**
  * Fragment containing expense report details/form.
  */
 public class DetailsFragment extends Fragment implements CalendarDatePickerDialogFragment.OnDateSetListener, View.OnClickListener {
     private final static String FIREBASE_REF = "firebase_ref";
-    private final static String TAG = "DetailsFragment";
+    private final static String TAG = DetailsFragment.class.getSimpleName();
 
     private static final String ARRIVAL_PICKER_TAG = "arrival_tag";
     private static final String DEPARTURE_PICKER_TAG = "departure_tag";
@@ -108,7 +109,6 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
             @Override
             public void onClick(View view) {
 
-
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.submit_report_confirmation_title)
                         .setMessage(R.string.submit_report_confirmation_message)
@@ -118,7 +118,8 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
                                 Toast.makeText(getContext(), R.string.submitted_report_notice, Toast.LENGTH_SHORT).show();
                                 updateExpenseReport(true);
                                 startActivity(new Intent(getActivity(), MainActivity.class));
-                            }})
+                            }
+                        })
 
                         .setNegativeButton(android.R.string.no, null).show();
             }
@@ -130,7 +131,7 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
                 TextView textView = (TextView) rootView.findViewById(R.id.report_finalized_text);
                 mExpenseReport = dataSnapshot.getValue(ExpenseReport.class);
 
-                if(mExpenseReport.isFinalized()) {
+                if (mExpenseReport.isFinalized()) {
                     mSubmitButton.setVisibility(View.GONE);
                     textView.setVisibility(View.VISIBLE);
                     rootView.findViewById(R.id.name_wrapper).setEnabled(false);
@@ -173,21 +174,22 @@ public class DetailsFragment extends Fragment implements CalendarDatePickerDialo
     }
 
     @Override
-    public void onDestroyView() {
+    public void onPause() {
         updateExpenseReport(false);
-        super.onDestroyView();
+        super.onPause();
     }
 
     private void updateExpenseReport(boolean finalized) {
         ExpenseReport formExpenseReport = getExpenseReportFromForm();
 
-        if(finalized)
+        if (finalized)
             formExpenseReport.setFinalized(true);
 
         if (!ArgumentComparator.haveEqualArgs(formExpenseReport, mExpenseReport)) {
-            Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).setValue(formExpenseReport);
-            new PatchExpenseReportTask(getContext(), formExpenseReport).execute();
             formExpenseReport.setFirebase_ref(getArguments().getString(FIREBASE_REF));
+            Log.i(TAG, "Changes were made. Updating expense report ...");
+            Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF)).setValue(formExpenseReport);
+            new Task(getContext(), "PATCH", formExpenseReport).performAsync();
         }
     }
 

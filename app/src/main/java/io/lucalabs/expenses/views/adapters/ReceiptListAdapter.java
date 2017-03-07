@@ -1,8 +1,6 @@
 package io.lucalabs.expenses.views.adapters;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,48 +11,33 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.List;
-
 import io.lucalabs.expenses.R;
-import io.lucalabs.expenses.activities.ReceiptActivity;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
+import io.lucalabs.expenses.views.presenters.ReceiptPresenter;
 
-public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
+public class ReceiptListAdapter extends FirebaseListAdapter<ReceiptPresenter> {
     private static final String TAG = "ReceiptListAdapter";
     private FirebaseUser user;
 
     public ReceiptListAdapter(Activity activity, Query query) {
-        super(activity, Receipt.class, R.layout.receipt_list_item, query);
+        super(activity, ReceiptPresenter.class, R.layout.receipt_list_item, query);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        Log.d(TAG, "------------------- INSTANCE -------------------");
+        Log.i(TAG, "------------------- RECEIPT LIST -------------------");
     }
 
     @Override
-    protected void populateView(View view, final Receipt receipt, int position) {
-        Log.d(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
+    protected void populateView(View view, final ReceiptPresenter receipt, int position) {
+        Log.i(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
 
-        List<Receipt> cachedReceipts;
-        if(receipt.getFirebase_ref() != null)
-            cachedReceipts = Receipt.find(Receipt.class, "firebaseref = ?", receipt.getFirebase_ref());
-        else cachedReceipts = null;
-
-        if(cachedReceipts == null){
-            handleReceiptFromOtherDevice(view);
-            return;
-        }
-
-        if(cachedReceipts.size() > 0) {
-            Log.d(TAG, "cached receipt present");
-            Receipt cachedReceipt = cachedReceipts.get(0);
-            setThumbnailFromCache(view, cachedReceipt, receipt);
-            receipt.updateFromCache(cachedReceipt);
-        } else {
-            setThumbnailFromFirebase(view, receipt);
-        }
+        setThumbnailFromCache(view, receipt);
+        setThumbnailFromFirebase(view, receipt);
 
         ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString(mActivity));
         ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getPrettyAmountString());
@@ -65,6 +48,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
      * This method runs when a separate device has uploaded a receipt, and the image
      * is not yet in storage.
      */
+
     private void handleReceiptFromOtherDevice(View view) {
         ((TextView) view.findViewById(R.id.receipt_text)).setText(mActivity.getString(R.string.uploading_external_receipt));
         ((ImageView) view.findViewById((R.id.receipt_thumb))).setImageResource(R.drawable.ic_menu_send);
@@ -76,7 +60,6 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
      */
     private void setThumbnailFromFirebase(View view, Receipt receipt) {
         StorageReference ref = Inbox.receiptImage(mActivity, receipt, "thumbnail");
-
         Glide.with(mActivity)
                 .using(new FirebaseImageLoader())
                 .load(ref)
@@ -86,22 +69,36 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     /**
      * Sets receipt thumbnail and merchant name (status) from SQLite database.
      */
-    private void setThumbnailFromCache(View view, Receipt cachedReceipt, Receipt receipt) {
-        Glide.with(mActivity)
-                .load(cachedReceipt.getImage(mActivity))
-                .asBitmap()
-                .into((ImageView) view.findViewById(R.id.receipt_thumb));
+    private void setThumbnailFromCache(final View view, final ReceiptPresenter receipt) {
+        Inbox.cachedReceiptImage(mActivity, receipt.getFirebase_ref()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                receipt.setFilename(dataSnapshot.getValue(String.class));
+
+                if(receipt.getFilename() != null)
+                    Glide.with(mActivity)
+                            .load(receipt.getImage(mActivity))
+                            .asBitmap()
+                            .into((ImageView) view.findViewById(R.id.receipt_thumb));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /**
      * Retrieves list items in reverse order (latest first).
+     *
      * @return null if object is not a Receipt.
      */
     @Override
-    public Receipt getItem(int position) {
+    public ReceiptPresenter getItem(int position) {
         Object obj = super.getItem(super.getCount() - position - 1);
-        if (obj instanceof Receipt)
-            return (Receipt) obj;
+        if (obj instanceof ReceiptPresenter)
+            return (ReceiptPresenter) obj;
         else return null;
     }
 }

@@ -8,48 +8,35 @@ import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.models.annotations.Arg;
 
 @IgnoreExtraProperties
-public class ExpenseReport {
+public class ExpenseReport implements FirebaseObject {
 
-    @Arg(name="expense_report[name]")
+    @Arg(name = "expense_report[name]")
     private String name;
     private String reference;
-    @Arg(name="expense_report[firebase_ref]")
+    @Arg(name = "expense_report[firebase_ref]")
     private String firebase_ref;
-    @Arg(name="expense_report[project_code]")
+    @Arg(name = "expense_report[project_code]")
     private String project_code;
-    @Arg(name="expense_report[billable]")
+    @Arg(name = "expense_report[billable]")
     private boolean billable;
-    @Arg(name="expense_report[comment]")
+    @Arg(name = "expense_report[comment]")
     private String comment;
-    @Arg(name="expense_report[finalized]")
+    @Arg(name = "expense_report[finalized]")
     private boolean finalized;
 
     // Travel specific attributes
-    @Arg(name="expense_report[travel]")
+    @Arg(name = "expense_report[travel]")
     private boolean travel;
-    @Arg(name="expense_report[arrival_at]")
+    @Arg(name = "expense_report[arrival_at]")
     private String arrival_at;
-    @Arg(name="expense_report[departure_at]")
+    @Arg(name = "expense_report[departure_at]")
     private String departure_at;
-    @Arg(name="expense_report[destination]")
+    @Arg(name = "expense_report[destination]")
     private String destination;
-    @Arg(name="expense_report[source]")
+    @Arg(name = "expense_report[source]")
     private String source;
 
-    public ExpenseReport(){}
-
-    public String getNameString(Context context){
-        if(name != null && !name.isEmpty())
-            return name;
-        else if(reference != null && !reference.isEmpty())
-            return reference;
-        else return context.getString(R.string.new_report);
-    }
-
-    public String getSubtitleString() {
-        if(name == null || name.isEmpty())
-            return "";
-        else return reference;
+    public ExpenseReport() {
     }
 
     public String getName() {
@@ -140,7 +127,7 @@ public class ExpenseReport {
         this.source = source;
     }
 
-    public boolean isFinalized(){
+    public boolean isFinalized() {
         return finalized;
     }
 

@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.IgnoreExtraProperties;
-import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -25,10 +23,17 @@ import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.ImageHandler;
 
 @IgnoreExtraProperties
-public class Receipt extends SugarRecord {
+public class Receipt implements FirebaseObject  {
 
-    @Ignore
     public static final String TAG = "ReceiptModel";
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public enum Status {
         PENDING(0), UPLOADING(1), UPLOADED(2), POSTING(3), POSTED(4), PARSED(5);
@@ -41,33 +46,33 @@ public class Receipt extends SugarRecord {
     }
 
     // Fields that are persisted to SQLite database
-    private Status status; // column name = status
+    private Status internal_status; // column name = internal_status
     private String filename; // column name = filename
     @Arg(name="expense_report[firebase_key]")
     private String expense_report_firebase_key; // column name = expensereportfirebasekey
     private String firebase_ref;  // column name = firebaseref
 
     // Firebase attributes
-    @Ignore @Arg(name="receipt[merchant_name]")
+    private String status;
+    @Arg(name="receipt[merchant_name]")
     private String merchant_name;
-    @Ignore @Arg(name="receipt[amount]")
+    @Arg(name="receipt[amount]")
     private long amount_cents;
-    @Ignore
     private String interpreted_at;
-    @Ignore @Arg(name="receipt[used_date]")
+    @Arg(name="receipt[used_date]")
     private String used_date;
-    @Ignore @Arg(name="receipt[currency]")
+    @Arg(name="receipt[currency]")
     private String currency;
-    @Ignore @Arg(name="receipt[reimbursable]")
+    @Arg(name="receipt[reimbursable]")
     private boolean reimbursable;
-    @Ignore @Arg(name="receipt[comment]")
+    @Arg(name="receipt[comment]")
     private String comment;
 
     public Receipt() {
     }
 
     public Receipt(byte[] image, Context context, String expenseReportRef) {
-        this.setStatus(Status.PENDING);
+        this.setInternal_status(Status.PENDING);
 
         filename = generateFilename();
 
@@ -82,34 +87,10 @@ public class Receipt extends SugarRecord {
         DatabaseReference dbRef = UserDatabase
                 .newReceiptReference(User.getCurrentUser(),
                         EnvironmentManager.currentEnvironment(context), expenseReportRef);
-        Log.d("ReceiptListAdapter", "Should instantiate");
-        this.firebase_ref = dbRef.getKey();
-        this.setExpense_report_firebase_key(context, expenseReportRef);
-        this.save();
-    }
-
-    public String getStatusString(Context context) {
-        if (status == null)
-            return context.getString(R.string.name_not_found);
-
-        switch (status) {
-            case PENDING:
-                return context.getString(R.string.waiting_to_upload);
-            case UPLOADING:
-                return context.getString(R.string.uploading);
-            case UPLOADED:
-                return context.getString(R.string.uploading);
-            case POSTING:
-                return context.getString(R.string.uploading);
-            case POSTED:
-                return context.getString(R.string.interpreting);
-            default:
-                return getMerchant_name();
-        }
-    }
-
-    public void updateFromCache(Receipt cachedReceipt) {
-        setStatus(cachedReceipt.getStatus());
+        firebase_ref = dbRef.getKey();
+        Inbox.createReceiptImage(context, getFirebase_ref(), filename);
+        setExpense_report_firebase_key(context, expenseReportRef);
+        save(context);
     }
 
     public void setExpense_report_firebase_key(Context context, String expenseReportRef) {
@@ -184,17 +165,6 @@ public class Receipt extends SugarRecord {
         return getAmountString().replaceAll("([.]00)", ".-").replaceAll("([,]00)", ",-");
     }
 
-    public String getMerchantString(Context context) {
-        if (getMerchant_name() == null)
-            return getStatusString(context);
-        else {
-            String merchantString = getMerchant_name();
-            if (merchantString.length() > 24)
-                return merchantString.substring(0, 20) + " ...";
-            else return merchantString;
-        }
-    }
-
     public byte[] getImage(Context context) {
         File file = getImageFile(context);
 
@@ -238,18 +208,18 @@ public class Receipt extends SugarRecord {
         this.used_date = used_date;
     }
 
-    public Status getStatus() {
-        return this.status;
+    public Status getInternal_status() {
+        return this.internal_status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setInternal_status(Status internal_status){
+        this.internal_status = internal_status;
     }
 
-    public void updateStatus(Status status) {
-        setStatus(status);
-        save();
-        Log.i("ReceiptStatus", firebase_ref + " is now " + status);
+    public void updateInternalStatus(Context context, Status internal_status) {
+        setInternal_status(internal_status);
+        save(context);
+        Log.i("ReceiptStatus", firebase_ref + " is now " + internal_status);
     }
 
     public String getFirebase_ref() {
@@ -284,13 +254,8 @@ public class Receipt extends SugarRecord {
         this.expense_report_firebase_key = expense_report_firebase_key;
     }
 
-
-    public boolean delete(Context context) {
-        return Receipt.delete(this) &&
-                new File(context.getFilesDir().getAbsolutePath() + "/" + getFilename()).delete();
-    }
-
-    public boolean equals(Receipt other) {
-        return false;
+    private void save(Context context){
+        DatabaseReference reference = Inbox.findReceipt(context, getFirebase_ref());
+        reference.setValue(this);
     }
 }
