@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
+import io.lucalabs.expenses.managers.PermissionManager;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Task;
@@ -116,6 +117,7 @@ public class ExpenseReportActivity extends FirebaseActivity implements ViewPager
             }
     }
 
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -185,19 +187,33 @@ public class ExpenseReportActivity extends FirebaseActivity implements ViewPager
 
     @Override
     public void onPageSelected(int position) {
-        switch(position) {
-            case 0:
-                new AnimationRunner(this, mCameraFab, R.anim.cwac_cam2_fade_in, 200).run();
-                mCameraFab.setEnabled(true);
-                break;
-            case 1:
-                new AnimationRunner(this, mCameraFab, R.anim.cwac_cam2_fade_out, 200).run();
-                mCameraFab.setEnabled(false);
-                break;
-        }
+        if (!mExpenseReport.isFinalized())
+            switch (position) {
+                case 0:
+                    new AnimationRunner(this, mCameraFab, R.anim.fab_scale_up, 100).run();
+                    mCameraFab.setVisibility(View.VISIBLE);
+                    mCameraFab.setEnabled(true);
+                    break;
+                case 1:
+                    new AnimationRunner(this, mCameraFab, R.anim.fab_scale_down, 100).run();
+                    mCameraFab.setVisibility(View.GONE);
+                    mCameraFab.setEnabled(false);
+                    break;
+            }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (PermissionManager.allPermissionsWereGranted(grantResults)) {
+            Intent toCameraIntent = new Intent(this, CameraActivity.class);
+            toCameraIntent.putExtra("expense_report_ref", mFirebaseRef);
+            startActivity(toCameraIntent);
+        } else {
+            Toast.makeText(this, R.string.needs_permissions_notice, Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -86,4 +86,5 @@
     <string name="photo_preview">photo preview</string>
     <string name="receipt_image">Receipt image</string>
     <string name="expense_report_finalized">Submitted</string>
+    <string name="needs_permissions_notice">We need camera and storage access to save your receipts</string>
 </resources>
