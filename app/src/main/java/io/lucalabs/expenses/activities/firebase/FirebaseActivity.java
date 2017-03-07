@@ -123,6 +123,7 @@ public abstract class FirebaseActivity extends AppCompatActivity {
                 }
             };
         } catch (FirebaseException e) {
+            Toast.makeText(getBaseContext(), "Failed to authenticate user. Please login", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }

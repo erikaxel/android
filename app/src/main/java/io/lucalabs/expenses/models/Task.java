@@ -87,6 +87,10 @@ public class Task {
     private boolean execute() throws InterruptedException {
         DatabaseReference ref = Inbox.findObject(context, className, objectRef);
 
+        // Update on deleted object
+        if(ref == null)
+            return true;
+
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
