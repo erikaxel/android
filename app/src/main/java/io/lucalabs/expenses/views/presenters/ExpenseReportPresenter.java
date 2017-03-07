@@ -10,10 +10,16 @@ public class ExpenseReportPresenter extends ExpenseReport {
         return getNameString(context, this);
     }
 
-    public String getSubtitleString() {
-        if (getName() == null || getName().isEmpty())
-            return "";
-        else return getReference();
+    public String getSubtitleString(Context context) {
+        StringBuilder sb = new StringBuilder("");
+
+        if (getName() != null && !getName().isEmpty() && getReference() != null)
+            sb.append(getReference()).append(" ");
+
+        if(isFinalized())
+            sb.append(context.getString(R.string.expense_report_finalized));
+
+        return sb.toString();
     }
 
     public static String getNameString(Context context, ExpenseReport object){

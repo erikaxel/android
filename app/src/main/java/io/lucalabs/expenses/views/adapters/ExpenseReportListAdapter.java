@@ -2,7 +2,6 @@ package io.lucalabs.expenses.views.adapters;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -20,11 +19,8 @@ public class ExpenseReportListAdapter extends FirebaseListAdapter<ExpenseReportP
 
     @Override
     protected void populateView(View view, final ExpenseReportPresenter expenseReport, int position) {
-        ((TextView) view.findViewById(R.id.expense_report_text)).setText(expenseReport.getNameString(mActivity));
-        ((TextView) view.findViewById(R.id.expense_report_subtitle)).setText(expenseReport.getSubtitleString());
-
-        if (expenseReport.isFinalized())
-            ((ImageView) view.findViewById(R.id.expense_report_icon)).setImageResource(R.drawable.ic_lock);
+        ((TextView) view.findViewById(R.id.expense_report_text)).setText(expenseReport.getNameString(mActivity.getBaseContext()));
+        ((TextView) view.findViewById(R.id.expense_report_subtitle)).setText(expenseReport.getSubtitleString(mActivity.getBaseContext()));
     }
 
     @Override
