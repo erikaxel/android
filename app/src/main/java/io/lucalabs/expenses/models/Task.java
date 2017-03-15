@@ -95,7 +95,6 @@ public class Task {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
-                    Log.w(TAG, "class long name: " + classLongName);
                     object = dataSnapshot.getValue(Class.forName(classLongName));
 
                 } catch (ClassNotFoundException e) {
