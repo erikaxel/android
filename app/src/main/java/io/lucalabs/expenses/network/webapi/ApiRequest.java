@@ -64,6 +64,7 @@ public class ApiRequest {
         try {
             Response response = client.newCall(request).execute();
             response.close();
+            Log.i(TAG, "code: " + response.code());
             if (response.isSuccessful()) {
                 return true;
             } else {

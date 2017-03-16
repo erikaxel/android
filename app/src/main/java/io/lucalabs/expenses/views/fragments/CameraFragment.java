@@ -503,28 +503,6 @@ public class CameraFragment extends Fragment
         super.onPause();
     }
 
-//    private void requestCameraPermission() {
-//        if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-//            new ConfirmationDialog().show(getChildFragmentManager(), FRAGMENT_DIALOG);
-//        } else {
-//            FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
-//                    REQUEST_CAMERA_PERMISSION);
-//        }
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-//                                           @NonNull int[] grantResults) {
-//        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-//            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                ErrorDialog.newInstance(getString(R.string.request_permission))
-//                        .show(getChildFragmentManager(), FRAGMENT_DIALOG);
-//            }
-//        } else {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        }
-//    }
-
     /**
      * Sets up member variables related to camera.
      *
@@ -967,37 +945,4 @@ public class CameraFragment extends Fragment
         }
 
     }
-
-    /**
-     * Shows OK/Cancel confirmation dialog about camera permission.
-     */
-//    public static class ConfirmationDialog extends DialogFragment {
-//
-//        @Override
-//        public Dialog onCreateDialog(Bundle savedInstanceState) {
-//            final Fragment parent = getParentFragment();
-//            return new AlertDialog.Builder(getActivity())
-//                    .setMessage(R.string.request_permission)
-//                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            FragmentCompat.requestPermissions(parent,
-//                                    new String[]{Manifest.permission.CAMERA},
-//                                    REQUEST_CAMERA_PERMISSION);
-//                        }
-//                    })
-//                    .setNegativeButton(android.R.string.cancel,
-//                            new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    Activity activity = parent.getActivity();
-//                                    if (activity != null) {
-//                                        activity.finish();
-//                                    }
-//                                }
-//                            })
-//                    .create();
-//        }
-//    }
-
 }

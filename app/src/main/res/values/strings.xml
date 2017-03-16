@@ -85,5 +85,13 @@
     <string name="login_please_connect_prompt">Couldn\'t sign in. Please connect to the Internet.</string>
     <string name="photo_preview">photo preview</string>
     <string name="receipt_image">Receipt image</string>
-    <string name="expense_report_finalized">Finalized</string>
+    <string name="expense_report_finalized">Submitted</string>
+    <string name="needs_permissions_notice">We need camera and storage access to save your receipts</string>
+    <string name="email_needs_verification_notice">We\'ve sent an email to %1$s.</string>
+    <string name="resend">Resend email</string>
+    <string name="refreshing">Refreshing ...</string>
+    <string name="email_verified">Email verified</string>
+    <string name="refresh">Refresh</string>
+    <string name="verify_your_email">Verify your email</string>
+    <string name="follow_the_link">Please follow the link we\'ve sent you</string>
 </resources>

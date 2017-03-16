@@ -5,13 +5,14 @@ import android.content.Context;
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.models.Receipt;
 
-public class ReceiptPresenter extends Receipt {
+public class ReceiptPresenter {
+    
 
-    public String getStatusString(Context context) {
-        if (getInternal_status() == null)
+    public static String getStatusString(Context context, Receipt receipt) {
+        if (receipt.getInternal_status() == null)
             return context.getString(R.string.name_not_found);
 
-        switch (getInternal_status()) {
+        switch (receipt.getInternal_status()) {
             case PENDING:
                 return context.getString(R.string.waiting_to_upload);
             case UPLOADING:
@@ -23,15 +24,15 @@ public class ReceiptPresenter extends Receipt {
             case POSTED:
                 return context.getString(R.string.interpreting);
             default:
-                return getMerchant_name();
+                return receipt.getMerchant_name();
         }
     }
 
-    public String getMerchantString(Context context) {
-        if (getMerchant_name() == null)
-            return getStatusString(context);
+    public static String getMerchantString(Context context, Receipt receipt) {
+        if (receipt.getMerchant_name() == null)
+            return getStatusString(context, receipt);
         else {
-            String merchantString = getMerchant_name();
+            String merchantString = receipt.getMerchant_name();
             if (merchantString.length() > 24)
                 return merchantString.substring(0, 20) + " ...";
             else return merchantString;

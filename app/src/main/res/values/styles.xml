@@ -10,6 +10,9 @@
         <item name="colorControlNormal">@color/colorPrimary</item>
         <item name="colorButtonNormal">@color/white</item>
         <item name="android:actionOverflowButtonStyle">@style/ActionButtonLight</item>
+
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme">

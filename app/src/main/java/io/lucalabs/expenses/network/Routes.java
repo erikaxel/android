@@ -13,12 +13,12 @@ import io.lucalabs.expenses.models.Receipt;
 public class Routes {
 
     // Website URLs
-    private static final String DEVELOPMENT_BASE_URL = "http://10.10.10.193:3000"; // hostname -I
+    private static final String DEVELOPMENT_BASE_URL = "http://192.168.1.79:3000"; // hostname -I
     private static final String STAGING_BASE_URL = "https://staging.lucalabs.com";
     private static final String PRODUCTION_BASE_URL = "https://system.lucalabs.com";
 
-    private static final String RECEIPTS_PATH = "/api/v1/receipts";
-    private static final String EXPENSE_REPORTS_PATH = "/api/v1/expense_reports";
+    private static final String RECEIPTS_PATH = "/api/internal/receipts";
+    private static final String EXPENSE_REPORTS_PATH = "/api/internal/expense_reports";
 
     // Firebase Storage URLs
     public static final String FIREBASE_STORAGE_URL = "gs://eu-autocounting";

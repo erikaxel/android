@@ -18,15 +18,15 @@ import io.lucalabs.expenses.managers.PermissionManager;
  */
 public class CameraFab extends FloatingActionButton implements View.OnClickListener {
     private final static String TAG = "CameraFab";
-    private Activity contextActivity;
+    private Activity mActivity;
     private String mExpenseReportRef;
 
     public CameraFab(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public void setup(Activity contextActivity) {
-        this.contextActivity = contextActivity;
+    public void setup(Activity activity) {
+        this.mActivity = activity;
         setOnClickListener(this);
     }
 
@@ -42,18 +42,17 @@ public class CameraFab extends FloatingActionButton implements View.OnClickListe
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             requestActivityPermissions();
-            return;
+        } else {
+            Intent toCameraIntent = new Intent(getContext(), CameraActivity.class);
+            toCameraIntent.putExtra("expense_report_ref", mExpenseReportRef);
+            getContext().startActivity(toCameraIntent);
         }
-
-        Intent toCameraIntent = new Intent(getContext(), CameraActivity.class);
-        toCameraIntent.putExtra("expense_report_ref", mExpenseReportRef);
-        getContext().startActivity(toCameraIntent);
     }
 
     // Permissions (result is handled in MainActivity)
     private void requestActivityPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(contextActivity, new String[]{
+            ActivityCompat.requestPermissions(mActivity, new String[]{
                             android.Manifest.permission.CAMERA,
                             android.Manifest.permission.READ_EXTERNAL_STORAGE,
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE},

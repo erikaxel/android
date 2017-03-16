@@ -22,24 +22,24 @@ import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.views.presenters.ReceiptPresenter;
 
-public class ReceiptListAdapter extends FirebaseListAdapter<ReceiptPresenter> {
+public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     private static final String TAG = "ReceiptListAdapter";
     private FirebaseUser user;
 
     public ReceiptListAdapter(Activity activity, Query query) {
-        super(activity, ReceiptPresenter.class, R.layout.receipt_list_item, query);
+        super(activity, Receipt.class, R.layout.receipt_list_item, query);
         user = FirebaseAuth.getInstance().getCurrentUser();
         Log.i(TAG, "------------------- RECEIPT LIST -------------------");
     }
 
     @Override
-    protected void populateView(View view, final ReceiptPresenter receipt, int position) {
+    protected void populateView(View view, final Receipt receipt, int position) {
         Log.i(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
 
         setThumbnailFromCache(view, receipt);
         setThumbnailFromFirebase(view, receipt);
 
-        ((TextView) view.findViewById(R.id.receipt_text)).setText(receipt.getMerchantString(mActivity));
+        ((TextView) view.findViewById(R.id.receipt_text)).setText(ReceiptPresenter.getMerchantString(mActivity, receipt));
         ((TextView) view.findViewById(R.id.receipt_price)).setText(receipt.getPrettyAmountString());
         ((TextView) view.findViewById(R.id.receipt_date)).setText(receipt.getUsedDateString(mActivity));
     }
@@ -69,13 +69,13 @@ public class ReceiptListAdapter extends FirebaseListAdapter<ReceiptPresenter> {
     /**
      * Sets receipt thumbnail and merchant name (status) from SQLite database.
      */
-    private void setThumbnailFromCache(final View view, final ReceiptPresenter receipt) {
+    private void setThumbnailFromCache(final View view, final Receipt receipt) {
         Inbox.cachedReceiptImage(mActivity, receipt.getFirebase_ref()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 receipt.setFilename(dataSnapshot.getValue(String.class));
 
-                if(receipt.getFilename() != null)
+                if (receipt.getFilename() != null)
                     Glide.with(mActivity)
                             .load(receipt.getImage(mActivity))
                             .asBitmap()
@@ -95,10 +95,10 @@ public class ReceiptListAdapter extends FirebaseListAdapter<ReceiptPresenter> {
      * @return null if object is not a Receipt.
      */
     @Override
-    public ReceiptPresenter getItem(int position) {
+    public Receipt getItem(int position) {
         Object obj = super.getItem(super.getCount() - position - 1);
-        if (obj instanceof ReceiptPresenter)
-            return (ReceiptPresenter) obj;
+        if (obj instanceof Receipt)
+            return (Receipt) obj;
         else return null;
     }
 }

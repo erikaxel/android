@@ -20,16 +20,18 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
-import io.lucalabs.expenses.models.Task;
+import io.lucalabs.expenses.managers.PermissionManager;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
+import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.network.webapi.TaskManagerService;
+import io.lucalabs.expenses.utils.AnimationRunner;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
 import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
 import io.lucalabs.expenses.views.presenters.ExpenseReportPresenter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
-public class ExpenseReportActivity extends FirebaseActivity {
+public class ExpenseReportActivity extends FirebaseActivity implements ViewPager.OnPageChangeListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -59,11 +61,14 @@ public class ExpenseReportActivity extends FirebaseActivity {
         displayDeleteIcon();
         setContentView(R.layout.activity_expense_report);
 
+        // Toolbar must be set up before call to super
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         displaySnackBarIfNecessary();
         mFirebaseRef = getIntent().getStringExtra("firebase_ref");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -71,6 +76,8 @@ public class ExpenseReportActivity extends FirebaseActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        mViewPager.addOnPageChangeListener(this);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -96,6 +103,12 @@ public class ExpenseReportActivity extends FirebaseActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startService(new Intent(this, TaskManagerService.class));
+    }
+
     private void displaySnackBarIfNecessary() {
         if (getIntent().getStringExtra("status") != null)
             switch (getIntent().getStringExtra("status")) {
@@ -107,18 +120,6 @@ public class ExpenseReportActivity extends FirebaseActivity {
             }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        overridePendingTransition(0, 0);
-        startService(new Intent(this, TaskManagerService.class));
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        overridePendingTransition(0, 0);
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -181,5 +182,41 @@ public class ExpenseReportActivity extends FirebaseActivity {
     @Override
     public void onBackPressed() {
         startActivity(new Intent(this, MainActivity.class));
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        if (!mExpenseReport.isFinalized())
+            switch (position) {
+                case 0:
+                    new AnimationRunner(this, mCameraFab, R.anim.fab_scale_up, 200).run();
+                    mCameraFab.setVisibility(View.VISIBLE);
+                    mCameraFab.setEnabled(true);
+                    break;
+                case 1:
+                    new AnimationRunner(this, mCameraFab, R.anim.fab_scale_down, 200).run();
+                    mCameraFab.setVisibility(View.GONE);
+                    mCameraFab.setEnabled(false);
+                    break;
+            }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (PermissionManager.allPermissionsWereGranted(grantResults)) {
+            Intent toCameraIntent = new Intent(this, CameraActivity.class);
+            toCameraIntent.putExtra("expense_report_ref", mFirebaseRef);
+            startActivity(toCameraIntent);
+        } else {
+            Toast.makeText(this, R.string.needs_permissions_notice, Toast.LENGTH_LONG).show();
+        }
     }
 }

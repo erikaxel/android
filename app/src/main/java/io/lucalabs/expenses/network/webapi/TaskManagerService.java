@@ -22,7 +22,7 @@ import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.network.storage.UploadReceiptTask;
 
 public class TaskManagerService extends Service {
-    private final static String TAG = "TaskManagerService";
+    private final static String TAG = TaskManagerService.class.getSimpleName();
     private ServiceHandler serviceHandler;
 
     private final class ServiceHandler extends Handler {

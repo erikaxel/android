@@ -75,4 +75,13 @@
     <string name="photo_preview">forhåndsvisning av bilde</string>
     <string name="login_please_connect_prompt">Trenger nettilgang for å logge inn</string>
     <string name="receipt_image">Bilde av kvittering</string>
+    <string name="expense_report_finalized">Innsendt</string>
+    <string name="needs_permissions_notice">Vi trenger tilgang til kamera og lagring for å lagre dine kvitteringer</string>
+    <string name="email_needs_verification_notice">Vi har sendt en email til %1$s.</string>
+    <string name="email_verified">Email verifisert</string>
+    <string name="follow_the_link">Følg instruksene i mailen vi sendte deg</string>
+    <string name="refresh">Oppfrisk</string>
+    <string name="refreshing">Sjekker server ...</string>
+    <string name="resend">Send mail på nytt</string>
+    <string name="verify_your_email">Verifiser din email</string>
 </resources>

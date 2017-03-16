@@ -6,27 +6,23 @@ import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.models.ExpenseReport;
 
 public class ExpenseReportPresenter extends ExpenseReport {
-    public String getNameString(Context context) {
-        return getNameString(context, this);
-    }
-
-    public String getSubtitleString(Context context) {
+    public static String getSubtitleString(Context context, ExpenseReport expenseReport) {
         StringBuilder sb = new StringBuilder("");
 
-        if (getName() != null && !getName().isEmpty() && getReference() != null)
-            sb.append(getReference()).append(" ");
+        if (expenseReport.getName() != null && !expenseReport.getName().isEmpty() && expenseReport.getReference() != null)
+            sb.append(expenseReport.getReference()).append(" ");
 
-        if(isFinalized())
+        if(expenseReport.isFinalized())
             sb.append(context.getString(R.string.expense_report_finalized));
 
         return sb.toString();
     }
 
-    public static String getNameString(Context context, ExpenseReport object){
-        if (object.getName() != null && !object.getName().isEmpty())
-            return object.getName();
-        else if (object.getReference() != null && !object.getReference().isEmpty())
-            return object.getReference();
+    public static String getNameString(Context context, ExpenseReport expensereport){
+        if (expensereport.getName() != null && !expensereport.getName().isEmpty())
+            return expensereport.getName();
+        else if (expensereport.getReference() != null && !expensereport.getReference().isEmpty())
+            return expensereport.getReference();
         else return context.getString(R.string.new_report);
     }
 }
