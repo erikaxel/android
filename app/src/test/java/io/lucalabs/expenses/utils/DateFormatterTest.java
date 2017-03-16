@@ -13,6 +13,5 @@ public class DateFormatterTest {
     public void dateFormat_isCorrect() {
         assertEquals("date format is correct", "2000-02-15T", DateFormatter.toDateString(2000, 2, 15).substring(0, 11));
         assertNotEquals("does not support Calendar input", "2000-02-15T", DateFormatter.toDateString(2000, Calendar.FEBRUARY, 15).substring(0, 11));
-        System.out.println();
     }
 }
