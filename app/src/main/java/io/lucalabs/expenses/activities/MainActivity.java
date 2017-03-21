@@ -14,8 +14,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
@@ -41,6 +44,23 @@ public class MainActivity extends FirebaseActivity {
         final ListView expenseReportList = (ListView) findViewById(R.id.offline_list);
         mListAdapter = new ExpenseReportListAdapter(this, allExpenseReports);
         expenseReportList.setAdapter(mListAdapter);
+
+        allExpenseReports.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean atLeastOneExpensereportIsPresent = dataSnapshot.getChildren().iterator().hasNext();
+
+                if(atLeastOneExpensereportIsPresent)
+                    findViewById(R.id.no_expenses_card).setVisibility(View.GONE);
+                else
+                    findViewById(R.id.no_expenses_card).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         expenseReportList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -92,7 +112,6 @@ public class MainActivity extends FirebaseActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         final ExpenseReport expenseReport = mListAdapter.getItem(info.position);
         expenseReport.setFirebase_ref(mListAdapter.getRef(info.position).getKey());
-        DatabaseReference key = mListAdapter.getRef(info.position);
         switch (item.getItemId()) {
             case R.id.open_expense_report:
                 Intent toExpenseReportIntent = new Intent(MainActivity.this, ExpenseReportActivity.class);
