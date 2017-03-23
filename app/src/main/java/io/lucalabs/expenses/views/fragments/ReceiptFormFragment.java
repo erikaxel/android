@@ -209,16 +209,16 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                 int selectedIndex = Integer.MAX_VALUE;
                 for (DataSnapshot dataSnapshot : dataSnapshotList.getChildren()) {
                     ExpenseReport expenseReport = dataSnapshot.getValue(ExpenseReport.class);
-                    expenseReportRefs.add(dataSnapshot.getRef().getKey());
+                    expenseReportRefs.add(0, dataSnapshot.getRef().getKey());
 
                     if(mExpenseReportRef.equals(dataSnapshot.getRef().getKey()))
                         selectedIndex = expenseReportRefs.size() - 1;
 
-                    expenseReportNames.add(ExpenseReportPresenter.getNameString(getActivity(), expenseReport));
+                    expenseReportNames.add(0, ExpenseReportPresenter.getNameString(getActivity(), expenseReport));
                 }
 
                 mExpenseReportSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, expenseReportNames));
-                mExpenseReportSpinner.setSelection(selectedIndex);
+                mExpenseReportSpinner.setSelection(expenseReportRefs.size() - 1 - selectedIndex);
                 mExpenseReportSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
