@@ -56,16 +56,13 @@ public class UploadReceiptTask {
         Inbox.findReceipt(mContext, mReceipt.getFirebase_ref()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("mStatus", "before: " + mReceipt.getFirebase_ref());
                 mReceipt = dataSnapshot.getValue(Receipt.class);
-                Log.d("mStatus", "after: " + mReceipt.getFirebase_ref());
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
+
         if (receipt.getInternal_status() == Receipt.Status.UPLOADED)
             postReceipt();
         else start();

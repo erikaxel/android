@@ -26,7 +26,6 @@ public class ReceiptActivity extends FirebaseActivity {
         setContentView(R.layout.activity_receipt);
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.container);
-
         mFormFragment = ReceiptFormFragment.newInstance();
 
         if (savedInstanceState == null)
@@ -62,12 +61,12 @@ public class ReceiptActivity extends FirebaseActivity {
     private void enterFullscreen() {
         mCoordinatorLayout.setFitsSystemWindows(false);
         getWindow().getDecorView().setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
-    private void exitFullscreen(){
+    private void exitFullscreen() {
         mCoordinatorLayout.setFitsSystemWindows(true);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }

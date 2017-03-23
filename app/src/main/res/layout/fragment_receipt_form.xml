@@ -47,8 +47,8 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="@string/receipt_merchant_name_hint"
-                    android:inputType="text"
                     android:imeOptions="actionNext"
+                    android:inputType="text"
                     android:nextFocusDown="@+id/edit_receipt_amount" />
             </android.support.design.widget.TextInputLayout>
 
@@ -63,9 +63,9 @@
                     android:digits="0123456789.,"
                     android:ems="10"
                     android:hint="@string/receipt_amount_hint"
-                    android:inputType="numberDecimal"
                     android:imeOptions="actionNext"
-                    android:nextFocusDown="@+id/edit_receipt_currency"  />
+                    android:inputType="numberDecimal"
+                    android:nextFocusDown="@+id/edit_receipt_currency" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -79,8 +79,8 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="@string/receipt_currency_hint"
-                    android:inputType="text"
                     android:imeOptions="actionNext"
+                    android:inputType="text"
                     android:nextFocusDown="@+id/edit_receipt_used_date" />
             </android.support.design.widget.TextInputLayout>
 
@@ -95,8 +95,8 @@
                     android:ems="10"
                     android:focusable="false"
                     android:hint="@string/receipt_used_date_hint"
-                    android:inputType="text"
                     android:imeOptions="actionNext"
+                    android:inputType="text"
                     android:nextFocusDown="@+id/edit_receipt_comment" />
             </android.support.design.widget.TextInputLayout>
 
@@ -132,10 +132,15 @@
                     android:ems="10"
                     android:hint="@string/receipt_comment_hint"
                     android:imeOptions="actionDone"
+                    android:inputType="text"
                     android:maxLines="20"
-                    android:scrollHorizontally="false"
-                    android:inputType="text" />
+                    android:scrollHorizontally="false" />
             </android.support.design.widget.TextInputLayout>
+
+            <Spinner
+                android:id="@+id/expense_report_spinner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

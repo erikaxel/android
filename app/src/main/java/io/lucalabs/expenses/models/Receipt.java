@@ -45,12 +45,11 @@ public class Receipt implements FirebaseObject  {
         }
     }
 
-    // Fields that are persisted to SQLite database
-    private Status internal_status; // column name = internal_status
-    private String filename; // column name = filename
-    @Arg(name="expense_report[firebase_key]")
-    private String expense_report_firebase_key; // column name = expensereportfirebasekey
-    private String firebase_ref;  // column name = firebaseref
+    private Status internal_status;
+    private String filename;
+    @Arg(name="expense_report_key")
+    private String expense_report_firebase_key;
+    private String firebase_ref;
 
     // Firebase attributes
     private String status;

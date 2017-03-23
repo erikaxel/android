@@ -10,8 +10,11 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import io.lucalabs.expenses.R;
@@ -35,6 +39,7 @@ import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.utils.ArgumentComparator;
 import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.NumberFormatter;
+import io.lucalabs.expenses.views.presenters.ExpenseReportPresenter;
 
 public class ReceiptFormFragment extends Fragment implements CalendarDatePickerDialogFragment.OnDateSetListener, View.OnClickListener {
     private TextInputEditText mEditMerchantName;
@@ -48,9 +53,10 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
 
     private String mFirebaseRef;
     private String mExpenseReportRef;
+    private String mSelectedExpenseReportRef;
     private Receipt mReceipt;
     private ExpenseReport mExpenseReport;
-
+    private Spinner mExpenseReportSpinner;
     private View mView;
 
     public static ReceiptFormFragment newInstance() {
@@ -74,12 +80,14 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
         mEditComment = (TextInputEditText) view.findViewById(R.id.edit_receipt_comment);
         mFirebaseRef = getActivity().getIntent().getStringExtra("firebase_ref");
         mExpenseReportRef = getActivity().getIntent().getStringExtra("expense_report_ref");
+        mExpenseReportSpinner = (Spinner) view.findViewById(R.id.expense_report_spinner);
         mEditUsedDate.setOnClickListener(this);
 
         mView = view;
 
         setReceipt();
         setExpenseReport();
+        setExpenseReportAlternatives();
     }
 
     private void setReceipt() {
@@ -166,6 +174,7 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
     @Override
     public void onDestroyView() {
         Receipt formReceipt = getReceiptFromForm();
+        formReceipt.setExpense_report_firebase_key(mSelectedExpenseReportRef);
 
         if (!ArgumentComparator.haveEqualArgs(formReceipt, mReceipt)) {
             Inbox.findReceipt(getActivity(), mFirebaseRef).setValue(formReceipt);
@@ -189,6 +198,45 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                 .setDoneText(getString(R.string.affirm_action))
                 .setCancelText(getString(R.string.cancel_action));
         cdp.show(((FirebaseActivity) getActivity()).getSupportFragmentManager(), "tag");
+    }
+
+    private void setExpenseReportAlternatives() {
+        Inbox.allExpenseReports(getActivity()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshotList) {
+                final ArrayList<String> expenseReportRefs = new ArrayList();
+                final ArrayList<String> expenseReportNames = new ArrayList();
+                int selectedIndex = Integer.MAX_VALUE;
+                for (DataSnapshot dataSnapshot : dataSnapshotList.getChildren()) {
+                    ExpenseReport expenseReport = dataSnapshot.getValue(ExpenseReport.class);
+                    expenseReportRefs.add(dataSnapshot.getRef().getKey());
+
+                    if(mExpenseReportRef.equals(dataSnapshot.getRef().getKey()))
+                        selectedIndex = expenseReportRefs.size() - 1;
+
+                    expenseReportNames.add(ExpenseReportPresenter.getNameString(getActivity(), expenseReport));
+                }
+
+                mExpenseReportSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, expenseReportNames));
+                mExpenseReportSpinner.setSelection(selectedIndex);
+                mExpenseReportSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        mSelectedExpenseReportRef = expenseReportRefs.get(i);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void onDeleteAction() {

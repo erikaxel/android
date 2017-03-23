@@ -39,23 +39,21 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
         setThumbnailFromCache(view, receipt);
         setThumbnailFromFirebase(view, receipt);
 
-        Log.d("mStatus", "status: " + ReceiptPresenter.getApplicableStatus(receipt));
-
         switch (ReceiptPresenter.getApplicableStatus(receipt)) {
             case "UPLOADING" :
             case "UPLOADED" :
             case "POSTING" :
             case "POSTED" :
-            case "PARSING":
+            case "PARSING" :
                 view.findViewById(R.id.receipt_progress_bar).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.receipt_price).setVisibility(View.GONE);
                 break;
-            case "pending_perfect_scan":
+            case "pending_perfect_scan" :
                 ((TextView) view.findViewById(R.id.receipt_date)).setText("Refining results");
                 view.findViewById(R.id.receipt_progress_bar).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.receipt_price).setVisibility(View.VISIBLE);
                 break;
-            case "awaiting_approval":
+            case "awaiting_approval" :
                 view.findViewById(R.id.receipt_price).setVisibility(View.VISIBLE);
                 ((TextView) view.findViewById(R.id.receipt_date)).setText("Awaiting approval");
             default:
