@@ -202,7 +202,6 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                         public void onClick(DialogInterface dialog, int whichButton) {
                             Inbox.findReceipt(getActivity(), mReceipt.getFirebase_ref()).removeValue();
                             new Task(getActivity(), "DELETE", mReceipt).performAsync();
-
                             Intent toExpenseReportActivity = new Intent(getActivity(), ExpenseReportActivity.class);
                             toExpenseReportActivity.putExtra("status", "deleted");
                             toExpenseReportActivity.putExtra("firebase_ref", mExpenseReportRef);

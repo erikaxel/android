@@ -4,7 +4,8 @@
     android:layout_height="78dp"
     android:paddingBottom="8dp"
     android:paddingTop="8dp"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/receipt_thumb"
@@ -13,7 +14,6 @@
         android:layout_gravity="center"
         android:contentDescription="@string/receipt_thumbnail"
         android:scaleType="fitXY"/>
-
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -43,6 +43,10 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/receipt_price"
         android:textAlignment="textEnd"
@@ -52,4 +56,15 @@
         android:textSize="18sp"
         android:maxLines="1"
         android:textAllCaps="false" />
+
+        <ProgressBar
+            android:id="@+id/receipt_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:indeterminateTint="@color/grey"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:paddingEnd="8dp"
+            android:layout_below="@id/receipt_price" />
+    </RelativeLayout>
 </LinearLayout>

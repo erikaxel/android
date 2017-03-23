@@ -38,4 +38,19 @@ public class ReceiptPresenter {
             else return merchantString;
         }
     }
+
+    public static String getPrettyAmount(Receipt receipt) {
+        return receipt.getAmountString().replaceAll("([.]00)", ".-").replaceAll("([,]00)", ",-");
+    }
+
+    /**
+     * @return Firebase status if it exists, fall back on internal status, then "NOSTATUS"
+     */
+    public static String getApplicableStatus(Receipt receipt) {
+        if(receipt.getStatus() != null)
+            return receipt.getStatus();
+        else if(receipt.getInternal_status() != null)
+            return receipt.getInternal_status().name();
+        else return "NOSTATUS";
+    }
 }

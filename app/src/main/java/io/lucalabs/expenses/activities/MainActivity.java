@@ -95,7 +95,6 @@ public class MainActivity extends FirebaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        overridePendingTransition(0, 0);
         startService(new Intent(this, TaskManagerService.class));
     }
 

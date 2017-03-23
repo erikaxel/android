@@ -161,10 +161,6 @@ public class Receipt implements FirebaseObject  {
         else return new DecimalFormat("#.00").format((double) getAmount_cents() / 100);
     }
 
-    public String getPrettyAmountString() {
-        return getAmountString().replaceAll("([.]00)", ".-").replaceAll("([,]00)", ",-");
-    }
-
     public byte[] getImage(Context context) {
         File file = getImageFile(context);
 

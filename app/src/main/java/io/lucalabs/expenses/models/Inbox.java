@@ -100,7 +100,6 @@ public class Inbox {
         DatabaseReference dbRef = UserDatabase.getUserReference(
                 User.getCurrentUser(),
                 EnvironmentManager.currentEnvironment(context));
-        dbRef.keepSynced(true);
         return dbRef;
     }
 
