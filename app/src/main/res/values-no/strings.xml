@@ -84,4 +84,7 @@
     <string name="refreshing">Sjekker server ...</string>
     <string name="resend">Send mail på nytt</string>
     <string name="verify_your_email">Verifiser din email</string>
+    <string name="title_activity_mail_inbox">Mailmottak</string>
+    <string name="add_to_expense_report">Legg til reiseregning</string>
+    <string name="empty_mail_inbox">Mailmottaket ditt er tomt. Kvitteringer sendt til import@bilag.io vil havne her.</string>
 </resources>

@@ -36,8 +36,13 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     protected void populateView(View view, final Receipt receipt, int position) {
         Log.i(TAG, "receipt " + position + ": " + receipt.getMerchant_name());
 
-        setThumbnailFromCache(view, receipt);
-        setThumbnailFromFirebase(view, receipt);
+        if(receipt.getFirebase_ref() != null) {
+            setThumbnailFromCache(view, receipt);
+            setThumbnailFromFirebase(view, receipt);
+        } else {
+            handleReceiptFromOtherDevice(view);
+            return;
+        }
 
         switch (ReceiptPresenter.getApplicableStatus(receipt)) {
             case "UPLOADING" :

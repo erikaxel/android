@@ -27,7 +27,7 @@ import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.network.webapi.TaskManagerService;
 import io.lucalabs.expenses.utils.AnimationRunner;
 import io.lucalabs.expenses.views.fragments.DetailsFragment;
-import io.lucalabs.expenses.views.fragments.ReceiptsFragment;
+import io.lucalabs.expenses.views.fragments.ReceiptIndexFragment;
 import io.lucalabs.expenses.views.presenters.ExpenseReportPresenter;
 import io.lucalabs.expenses.views.widgets.CameraFab;
 
@@ -135,7 +135,7 @@ public class ExpenseReportActivity extends FirebaseActivity implements ViewPager
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return ReceiptsFragment.newInstance(mFirebaseRef);
+                    return ReceiptIndexFragment.newInstance(mFirebaseRef);
                 default:
                     return DetailsFragment.newInstance(mFirebaseRef);
             }

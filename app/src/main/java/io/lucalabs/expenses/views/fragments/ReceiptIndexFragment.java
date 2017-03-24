@@ -21,31 +21,29 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import io.lucalabs.expenses.R;
-import io.lucalabs.expenses.activities.MainActivity;
 import io.lucalabs.expenses.activities.ReceiptActivity;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.Task;
-import io.lucalabs.expenses.network.Routes;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
 
 /**
  * Fragment containing the expense report receipt list.
  */
-public class ReceiptsFragment extends Fragment {
+public class ReceiptIndexFragment extends Fragment {
     private final static String FIREBASE_REF = "firebase_ref";
     private ReceiptListAdapter mListAdapter;
 
-    public ReceiptsFragment() {
+    public ReceiptIndexFragment() {
     }
 
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static ReceiptsFragment newInstance(String firebaseRef) {
-        ReceiptsFragment fragment = new ReceiptsFragment();
+    public static ReceiptIndexFragment newInstance(String firebaseRef) {
+        ReceiptIndexFragment fragment = new ReceiptIndexFragment();
         Bundle args = new Bundle();
         args.putString(FIREBASE_REF, firebaseRef);
         fragment.setArguments(args);
@@ -55,7 +53,7 @@ public class ReceiptsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_receipt_list, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_receipt_index, container, false);
 
         Query receiptsForReport = Inbox.receiptsForExpenseReport(getContext(), getArguments().getString(FIREBASE_REF));
 
@@ -68,7 +66,7 @@ public class ReceiptsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Receipt receipt = (Receipt) receiptList.getItemAtPosition(position);
-                Intent toReceiptActivity = new Intent(ReceiptsFragment.this.getContext(), ReceiptActivity.class);
+                Intent toReceiptActivity = new Intent(ReceiptIndexFragment.this.getContext(), ReceiptActivity.class);
                 toReceiptActivity.putExtra("firebase_ref", receipt.getFirebase_ref());
                 toReceiptActivity.putExtra("expense_report_ref", getActivity().getIntent().getStringExtra("firebase_ref"));
                 startActivity(toReceiptActivity);

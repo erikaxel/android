@@ -94,4 +94,8 @@
     <string name="refresh">Refresh</string>
     <string name="verify_your_email">Verify your email</string>
     <string name="follow_the_link">Please follow the link we\'ve sent you</string>
+    <string name="title_activity_mail_inbox">Email inbox</string>
+    <string name="add_to_expense_report">Add to expense report ...</string>
+    <string name="empty_mail_inbox">Your inbox is empty. Receipts sent to import@bilag.io from your mail address will show up here.</string>
+    <string name="import_mailaddress">import@bilag.io</string>
 </resources>

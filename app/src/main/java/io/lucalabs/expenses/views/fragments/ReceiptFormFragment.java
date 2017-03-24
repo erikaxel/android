@@ -30,6 +30,7 @@ import java.util.Calendar;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.ExpenseReportActivity;
+import io.lucalabs.expenses.activities.MailInboxActivity;
 import io.lucalabs.expenses.activities.ReceiptActivity;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
 import io.lucalabs.expenses.models.ExpenseReport;
@@ -135,6 +136,10 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
     }
 
     private void setExpenseReport() {
+
+        if (mExpenseReportRef == null)
+            return;
+
         Inbox.findExpenseReport(getActivity(), mExpenseReportRef).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -211,14 +216,21 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                     ExpenseReport expenseReport = dataSnapshot.getValue(ExpenseReport.class);
                     expenseReportRefs.add(0, dataSnapshot.getRef().getKey());
 
-                    if(mExpenseReportRef.equals(dataSnapshot.getRef().getKey()))
+                    if (mExpenseReportRef != null && mExpenseReportRef.equals(dataSnapshot.getRef().getKey()))
                         selectedIndex = expenseReportRefs.size() - 1;
 
                     expenseReportNames.add(0, ExpenseReportPresenter.getNameString(getActivity(), expenseReport));
                 }
 
                 mExpenseReportSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, expenseReportNames));
+
+                if (selectedIndex == Integer.MAX_VALUE) {
+                    expenseReportNames.add(0, getString(R.string.add_to_expense_report));
+                    expenseReportRefs.add(0, null);
+                    selectedIndex = expenseReportRefs.size() - 1;
+                }
                 mExpenseReportSpinner.setSelection(expenseReportRefs.size() - 1 - selectedIndex);
+
                 mExpenseReportSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -240,7 +252,7 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
     }
 
     public void onDeleteAction() {
-        if (mExpenseReport.isFinalized())
+        if (mExpenseReport != null && mExpenseReport.isFinalized())
             Snackbar.make(mView.findViewById(R.id.receipt_coordinator), R.string.deleted_finalized_receipt_notice, Snackbar.LENGTH_SHORT).show();
         else
             new AlertDialog.Builder(getActivity())
@@ -250,10 +262,15 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                         public void onClick(DialogInterface dialog, int whichButton) {
                             Inbox.findReceipt(getActivity(), mReceipt.getFirebase_ref()).removeValue();
                             new Task(getActivity(), "DELETE", mReceipt).performAsync();
-                            Intent toExpenseReportActivity = new Intent(getActivity(), ExpenseReportActivity.class);
-                            toExpenseReportActivity.putExtra("status", "deleted");
-                            toExpenseReportActivity.putExtra("firebase_ref", mExpenseReportRef);
-                            startActivity(toExpenseReportActivity);
+
+                            if (mExpenseReportRef == null)
+                                startActivity(new Intent(getActivity(), MailInboxActivity.class));
+                            else {
+                                Intent toExpenseReportActivity = new Intent(getActivity(), ExpenseReportActivity.class);
+                                toExpenseReportActivity.putExtra("status", "deleted");
+                                toExpenseReportActivity.putExtra("firebase_ref", mExpenseReportRef);
+                                startActivity(toExpenseReportActivity);
+                            }
                         }
                     })
                     .setNegativeButton(android.R.string.no, null).show();
