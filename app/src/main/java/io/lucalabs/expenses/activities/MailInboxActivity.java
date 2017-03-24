@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -15,6 +16,7 @@ import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
+import io.lucalabs.expenses.models.User;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
 
 public class MailInboxActivity extends FirebaseActivity {
@@ -25,6 +27,7 @@ public class MailInboxActivity extends FirebaseActivity {
         setContentView(R.layout.activity_mail_inbox);
 
         Query query = Inbox.receiptsForExpenseReport(this, null);
+        ((TextView) findViewById(R.id.mail_inbox_notice)).setText(getString(R.string.empty_mail_inbox, User.getCurrentUser().getEmail()));
 
         final ListView receiptList = (ListView) findViewById(R.id.mail_list);
         receiptList.setAdapter(new ReceiptListAdapter(this, query));

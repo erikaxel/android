@@ -31,7 +31,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="16dp"
-                android:text="@string/empty_mail_inbox"
                 android:textAlignment="center"
                 android:visibility="gone"
                 android:textSize="18sp" />
