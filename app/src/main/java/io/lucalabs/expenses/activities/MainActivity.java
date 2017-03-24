@@ -56,10 +56,13 @@ public class MainActivity extends FirebaseActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean atLeastOneExpensereportIsPresent = dataSnapshot.getChildren().iterator().hasNext();
 
-                if(atLeastOneExpensereportIsPresent)
-                    findViewById(R.id.no_expenses_card).setVisibility(View.GONE);
-                else
-                    findViewById(R.id.no_expenses_card).setVisibility(View.VISIBLE);
+                if (atLeastOneExpensereportIsPresent) {
+                    findViewById(R.id.expense_report_notice).setVisibility(View.GONE);
+                    findViewById(R.id.expense_report_image).setVisibility(View.GONE);
+                } else {
+                    findViewById(R.id.expense_report_notice).setVisibility(View.VISIBLE);
+                    findViewById(R.id.expense_report_image).setVisibility(View.VISIBLE);
+                }
             }
 
             @Override

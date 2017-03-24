@@ -47,7 +47,9 @@ public class MailInboxActivity extends FirebaseActivity {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getChildren().iterator().hasNext()) {
+                boolean atLeastOneReceiptIsPresent = dataSnapshot.getChildren().iterator().hasNext();
+
+                if (atLeastOneReceiptIsPresent) {
                     findViewById(R.id.mail_inbox_image).setVisibility(View.GONE);
                     findViewById(R.id.mail_inbox_notice).setVisibility(View.GONE);
                 } else {

@@ -50,8 +50,8 @@
     <string name="receipt_used_date_hint">Bruksdato</string>
     <string name="title_activity_receipt">Kvittering</string>
     <string name="title_activity_expense_report">Reiseregning</string>
-    <string name="no_expense_reports_notice">Velkommen til Luca Reiseregning! Legg til en ny reiseregning for komme i gang.</string>
-    <string name="empty_expense_report_notice">Du har ikke lagt til noen kvitteringer enda.</string>
+    <string name="no_expense_reports_notice">Takk for at du valgte Luca Utlegg og Reiseregning! Legg til din første reiseregning med knappen under.</string>
+    <string name="empty_expense_report_notice">Du kan legge til en kvittering på dette utlegget / denne reiseregningen ved å trykke på kameraknappen nedenfor.</string>
     <string name="create_expense_report">Ny reiseregning</string>
     <string name="expense_report_created_notice">La til ny reiseregning</string>
     <string name="new_report">Ny reiseregning</string>
@@ -87,4 +87,5 @@
     <string name="title_activity_mail_inbox">Mailmottak</string>
     <string name="add_to_expense_report">Legg til reiseregning</string>
     <string name="empty_mail_inbox">Mailmottaket ditt er tomt. Kvitteringer sendt til import@bilag.io vil havne her.</string>
+    <string name="import_mailaddress">import@bilag.io</string>
 </resources>

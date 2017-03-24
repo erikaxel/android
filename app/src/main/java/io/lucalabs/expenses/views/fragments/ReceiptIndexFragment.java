@@ -77,10 +77,13 @@ public class ReceiptIndexFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean atLeastOneReceiptIsPresent = dataSnapshot.getChildren().iterator().hasNext();
-                if (atLeastOneReceiptIsPresent)
-                    rootView.findViewById(R.id.no_receipts_card).setVisibility(View.GONE);
-                else
-                    rootView.findViewById(R.id.no_receipts_card).setVisibility(View.VISIBLE);
+                if (atLeastOneReceiptIsPresent) {
+                    rootView.findViewById(R.id.no_receipt_image).setVisibility(View.GONE);
+                    rootView.findViewById(R.id.no_receipt_notice).setVisibility(View.GONE);
+                } else {
+                    rootView.findViewById(R.id.no_receipt_image).setVisibility(View.VISIBLE);
+                    rootView.findViewById(R.id.no_receipt_notice).setVisibility(View.VISIBLE);
+                }
             }
 
             @Override

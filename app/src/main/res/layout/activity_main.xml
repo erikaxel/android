@@ -15,17 +15,17 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="68dp"
+            android:background="@color/colorAccent"
             android:orientation="horizontal"
-            android:paddingTop="8dp"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:background="@color/colorAccent"
+            android:paddingTop="8dp"
             android:weightSum="1">
 
             <LinearLayout
+                android:id="@+id/mail_inbox_link"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/mail_inbox_link"
                 android:orientation="vertical">
 
                 <TextView
@@ -43,8 +43,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/import_mailaddress"
                     android:maxLines="1"
+                    android:text="@string/import_mailaddress"
                     android:textColor="@color/lightgrey"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -57,24 +57,30 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin" />
 
-    </LinearLayout>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/no_expenses_card"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:backgroundTint="@color/colorAccent"
-        android:visibility="gone"
-        app:cardCornerRadius="2dp">
+        <ImageView
+            android:id="@+id/expense_report_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="120dp"
+            android:src="@drawable/ic_happy_sun"
+            android:tint="@color/colorAccent"
+            android:rotation="180"
+            android:visibility="gone" />
 
         <TextView
+            android:id="@+id/expense_report_notice"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="16dp"
             android:text="@string/no_expense_reports_notice"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
-    </android.support.v7.widget.CardView>
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/create_expense_report"
