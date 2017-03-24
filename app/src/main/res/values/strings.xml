@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Luca expenses</string>
+    <string name="app_name">Luca Expenses</string>
 
     <!-- Activity names -->
     <string name="title_activity_welcome">Expense reports</string>
