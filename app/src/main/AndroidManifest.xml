@@ -47,7 +47,6 @@
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CameraActivity"
@@ -80,6 +79,7 @@
         <activity android:name=".activities.WaitForVerificationActivity" />
         <activity
             android:name=".activities.MailInboxActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_mail_inbox" />
     </application>
 

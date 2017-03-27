@@ -36,10 +36,10 @@ public class User {
     }
 
     public static boolean isAdmin() {
-        return true;
-//        String email = getCurrentUser().getEmail();
-//        return email.contains("@autocounting.com")
-//                || email.contains("@lucalabs.io")
-//                || email.contains("tmbv93@gmail.com");
+        String email = getCurrentUser().getEmail();
+        return email.contains("@autocounting.com")
+                || email.contains("@lucalabs.io")
+                || email.contains("tmbv93@gmail.com")
+                || email.contains("tomas.veiden@gmail.com");
     }
 }

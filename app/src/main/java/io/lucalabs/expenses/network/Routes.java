@@ -28,28 +28,28 @@ public class Routes {
     public static String objectsPath(Object object, boolean isPostRequest) {
         Object pathArg = isPostRequest ? null : object;
 
-        switch(object.getClass().getSimpleName()){
-            case "ExpenseReport" :
+        switch (object.getClass().getSimpleName()) {
+            case "ExpenseReport":
                 return expenseReportsPath((ExpenseReport) pathArg);
-            case "Receipt" :
+            case "Receipt":
                 return receiptsPath((Receipt) pathArg);
-            default :
+            default:
                 return null;
         }
     }
 
-    public static String receiptsUrl(Context context, Receipt receipt){
+    public static String receiptsUrl(Context context, Receipt receipt) {
         return baseUrl(context) + receiptsPath(receipt);
     }
 
-    public static String receiptsPath(Receipt receipt){
-        String url = RECEIPTS_PATH;;
+    public static String receiptsPath(Receipt receipt) {
+        String url = RECEIPTS_PATH;
         if (receipt != null)
             url += "/" + receipt.getFirebase_ref();
         return url + ".json";
     }
 
-    public static String expenseReportsUrl(Context context, ExpenseReport expenseReport){
+    public static String expenseReportsUrl(Context context, ExpenseReport expenseReport) {
         return baseUrl(context) + expenseReportsPath(expenseReport);
     }
 
@@ -60,7 +60,7 @@ public class Routes {
         return url + ".json";
     }
 
-    public static String getFullPath(Context context, String path){
+    public static String getFullPath(Context context, String path) {
         return baseUrl(context) + path;
     }
 

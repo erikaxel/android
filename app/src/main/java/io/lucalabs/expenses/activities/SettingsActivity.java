@@ -5,19 +5,21 @@ import android.app.FragmentTransaction;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.activities.abstracts.AppCompatPreferenceActivity;
 import io.lucalabs.expenses.managers.EnvironmentManager;
 import io.lucalabs.expenses.models.User;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    private static final String TAG = "SettingsActivity";
+    private static final String TAG = SettingsActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +33,26 @@ public class SettingsActivity extends PreferenceActivity {
 
         fragmentTransaction.add(android.R.id.content, settingsFragment, "SETTINGS_FRAGMENT");
         fragmentTransaction.commit();
-    }
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
 
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static class SettingsFragment extends PreferenceFragment {
@@ -65,7 +81,7 @@ public class SettingsActivity extends PreferenceActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     debugCounter++;
 
-                    if(debugCounter > DEBUG_COUNTER_LIMIT) {
+                    if (debugCounter > DEBUG_COUNTER_LIMIT) {
                         showDebugInfo();
                         emailDisplay.setOnPreferenceClickListener(null);
                     }
@@ -83,15 +99,14 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             });
 
-            if(!User.isAdmin())
+            if (!User.isAdmin())
                 removeAdminSettings();
         }
 
         private void showDebugInfo() {
             Toast.makeText(this.getActivity(), "Hurray! You found the developer options", Toast.LENGTH_SHORT).show();
             preferenceScreen.addPreference(debugCategory);
-
-            ((Preference) findPreference("uid")).setSummary(User.getCurrentUser().getUid());
+            findPreference("uid").setSummary(User.getCurrentUser().getUid());
         }
 
         private void removeAdminSettings() {

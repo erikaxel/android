@@ -3,7 +3,7 @@
 
     <!-- Activity names -->
     <string name="title_activity_welcome">Expense reports</string>
-    <string name="title_activity_settings">Application Settings</string>
+    <string name="title_activity_settings">Settings</string>
 
     <string name="login_text">Login</string>
     <string name="logout_text">Logout</string>

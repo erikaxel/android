@@ -100,7 +100,6 @@ public class ExpenseReportActivity extends FirebaseActivity implements ViewPager
                         Toast.makeText(ExpenseReportActivity.this, "Couldn't fetch expense report", Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
 
     @Override

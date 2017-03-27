@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.widget.Toast;
 
@@ -44,10 +43,10 @@ public abstract class FirebaseActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getSupportActionBar() != null && !(this instanceof MainActivity))
+        if (getSupportActionBar() != null && !(this instanceof MainActivity))
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -60,7 +59,7 @@ public abstract class FirebaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(displayDeleteIcon)
+        if (displayDeleteIcon)
             getMenuInflater().inflate(R.menu.main_menu_with_delete, menu);
         else
             getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -92,16 +91,16 @@ public abstract class FirebaseActivity extends AppCompatActivity {
                 startActivity(new Intent(FirebaseActivity.this, SettingsActivity.class));
                 break;
             default:
-              break;
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
 
     // ActionBar item actions
-    protected void onDeleteAction(){
+    protected void onDeleteAction() {
         // Do nothing unless overridden
-    };
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -109,7 +108,7 @@ public abstract class FirebaseActivity extends AppCompatActivity {
         return true;
     }
 
-    protected void displayDeleteIcon(){
+    protected void displayDeleteIcon() {
         displayDeleteIcon = true;
     }
 

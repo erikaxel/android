@@ -14,7 +14,7 @@
     <string name="receipt_thumbnail">Kvitteringsbilde</string>
     <string name="save_to_album_pref">Lagre bilder til fotoalbum</string>
     <string name="settings_text">Innstillinger</string>
-    <string name="title_activity_settings">Applikasjonsinnstillinger</string>
+    <string name="title_activity_settings">Innstillinger</string>
     <string name="title_activity_welcome">Luca Reiseregning</string>
     <string name="version">Versjon</string>
     <string name="wifi_only_pref">Last opp kun over Wifi</string>
