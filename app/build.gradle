@@ -51,38 +51,39 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Android support libraries
-    
-
-    // Material Floating Action Buttons / Menu
-    
-    // Material Date-/Timepicker
-    
-    // Firebase
-    
-    // For viewing receipt image
-    
-    // https://mvnrepository.com/artifact/commons-io/commons-io
-    
-    // For HTTP-requests
-    // Camera wrapper
-    
+    // Android support libraries. License: Apache 2.0
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:support-v13:25.2.0'
     compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    // Material Floating Action Buttons / Menu. License: Apache 2.0
     compile 'com.getbase:floatingactionbutton:1.10.1'
+
+    // Material Date-/Timepicker. License: Apache 2.0
     compile 'com.code-troopers.betterpickers:library:3.1.0'
+
+    // Firebase. License: Apache 2.0
     compile 'com.google.firebase:firebase-core:10.2.0'
     compile 'com.google.firebase:firebase-auth:10.2.0'
     compile 'com.google.firebase:firebase-storage:10.2.0'
     compile 'com.google.firebase:firebase-database:10.2.0'
     compile 'com.firebase:firebase-client-android:2.5.2'
     compile 'com.firebaseui:firebase-ui:1.2.0'
+
+    // For viewing receipt images. License: Apache 2.0
     compile 'com.github.chrisbanes:Photoview:1.3.1'
+
+    // Java Commons IO library. License: Apache 2.0
     compile 'commons-io:commons-io:2.4'
+
+    // For HTTP-requests. License: Apache 2.0
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+
+    // Camera wrapper. License: Apache 2.0
     compile 'com.commonsware.cwac:cam2:0.7.4'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    // Tests. License: EPL 1.0
     testCompile 'junit:junit:4.12'
 }
 
