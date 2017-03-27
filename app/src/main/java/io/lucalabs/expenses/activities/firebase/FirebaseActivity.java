@@ -121,12 +121,16 @@ public abstract class FirebaseActivity extends AppCompatActivity {
                     FirebaseUser user = auth.getCurrentUser();
                     if (user != null) {
                         Log.i(TAG, "User is not null");
-                        auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                        user.getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
 
                             @Override
                             public void onComplete(@NonNull Task<GetTokenResult> task) {
-                                Log.i(TAG, "Setting token " + task.getResult().getToken());
-                                User.setToken(FirebaseActivity.this, task.getResult().getToken());
+                                if(task.isSuccessful()) {
+                                    Log.i(TAG, "Setting token " + task.getResult().getToken());
+                                    User.setToken(FirebaseActivity.this, task.getResult().getToken());
+                                } else {
+                                    Log.i(TAG, "Couldn't renew token. Pausing write operations.");
+                                }
                             }
                         });
 

@@ -23,7 +23,7 @@ public class Routes {
     // Firebase Storage URLs
     public static final String FIREBASE_STORAGE_URL = "gs://eu-autocounting";
 
-    private static final String TAG = "Routes";
+    private static final String TAG = Routes.class.getSimpleName();
 
     public static String objectsPath(Object object, boolean isPostRequest) {
         Object pathArg = isPostRequest ? null : object;
