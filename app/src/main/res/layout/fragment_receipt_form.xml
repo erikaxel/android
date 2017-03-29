@@ -68,7 +68,6 @@
                     android:nextFocusDown="@+id/edit_receipt_currency" />
             </android.support.design.widget.TextInputLayout>
 
-
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -100,19 +99,41 @@
                     android:nextFocusDown="@+id/edit_receipt_comment" />
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <android.support.design.widget.TextInputEditText
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/receipt_category_hint"
+                    style="@style/InputLabel" />
+
+                <Spinner
                     android:id="@+id/edit_receipt_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:enabled="false"
-                    android:focusable="false"
                     android:hint="@string/receipt_category_hint" />
-            </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/receipt_expense_report_hint"
+                    style="@style/InputLabel" />
+
+                <Spinner
+                    android:id="@+id/expense_report_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <CheckBox
                 android:id="@+id/edit_receipt_reimbursable"
@@ -136,11 +157,6 @@
                     android:maxLines="20"
                     android:scrollHorizontally="false" />
             </android.support.design.widget.TextInputLayout>
-
-            <Spinner
-                android:id="@+id/expense_report_spinner"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

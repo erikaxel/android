@@ -27,12 +27,15 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import android.util.Log;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.ExpenseReportActivity;
 import io.lucalabs.expenses.activities.MailInboxActivity;
 import io.lucalabs.expenses.activities.ReceiptActivity;
 import io.lucalabs.expenses.activities.firebase.FirebaseActivity;
+import io.lucalabs.expenses.models.CostCategory;
 import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
@@ -40,6 +43,7 @@ import io.lucalabs.expenses.models.Task;
 import io.lucalabs.expenses.utils.ArgumentComparator;
 import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.NumberFormatter;
+import io.lucalabs.expenses.views.presenters.CostCategoryPresenter;
 import io.lucalabs.expenses.views.presenters.ExpenseReportPresenter;
 
 public class ReceiptFormFragment extends Fragment implements CalendarDatePickerDialogFragment.OnDateSetListener, View.OnClickListener {
@@ -49,6 +53,9 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
     private TextInputEditText mEditUsedDate;
     private CheckBox mEditReimbursable;
     private TextInputEditText mEditComment;
+    private Spinner mEditCategory;
+    private List<CostCategory> mCostCategories;
+    private int mNumberOfNonCategoryItems = 0;
 
     private String mUsedDateStamp;
 
@@ -59,6 +66,8 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
     private ExpenseReport mExpenseReport;
     private Spinner mExpenseReportSpinner;
     private View mView;
+
+    private static final String TAG = ReceiptFormFragment.class.getSimpleName();
 
     public static ReceiptFormFragment newInstance() {
         return new ReceiptFormFragment();
@@ -78,6 +87,7 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
         mEditCurrency = (TextInputEditText) view.findViewById(R.id.edit_receipt_currency);
         mEditUsedDate = (TextInputEditText) view.findViewById(R.id.edit_receipt_used_date);
         mEditReimbursable = (CheckBox) view.findViewById(R.id.edit_receipt_reimbursable);
+        mEditCategory = (Spinner) view.findViewById(R.id.edit_receipt_category);
         mEditComment = (TextInputEditText) view.findViewById(R.id.edit_receipt_comment);
         mFirebaseRef = getActivity().getIntent().getStringExtra("firebase_ref");
         mExpenseReportRef = getActivity().getIntent().getStringExtra("expense_report_ref");
@@ -126,11 +136,13 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                             .load(ref)
                             .into(imageView);
                 }
+
+                setCostCategories();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), "Couldn't fetch receipt", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Couldn't fetchData receipt", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -154,6 +166,8 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                     mEditUsedDate.setEnabled(false);
                     mEditReimbursable.setEnabled(false);
                     mEditComment.setEnabled(false);
+                    mEditAmount.setEnabled(false);
+                    mExpenseReportSpinner.setEnabled(false);
                 }
             }
 
@@ -173,6 +187,9 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
         receipt.setComment(mEditComment.getText().toString());
         receipt.setFirebase_ref(mReceipt.getFirebase_ref());
         receipt.setExpense_report_firebase_key(mReceipt.getExpense_report_firebase_key());
+        if(!(mEditCategory.getSelectedItemPosition() == 0 && mNumberOfNonCategoryItems == 1)) { // Do nothing if "None" is selected
+            receipt.setCost_category_id(mCostCategories.get(mEditCategory.getSelectedItemPosition() - mNumberOfNonCategoryItems).getId());
+        }
         return receipt;
     }
 
@@ -230,7 +247,6 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                     selectedIndex = expenseReportRefs.size() - 1;
                 }
                 mExpenseReportSpinner.setSelection(expenseReportRefs.size() - 1 - selectedIndex);
-
                 mExpenseReportSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -249,6 +265,24 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
 
             }
         });
+    }
+
+    private void setCostCategories() {
+        mCostCategories = CostCategory.getAll(getActivity());
+
+        boolean costCategoryIsSelected = mReceipt.getCost_category_id() != 0;
+        if(!costCategoryIsSelected)
+            mNumberOfNonCategoryItems = 1;
+
+        mEditCategory.setAdapter(new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                CostCategoryPresenter.selectOptions(getActivity(), mCostCategories, !costCategoryIsSelected)));
+
+        for(int i = 0; i < mCostCategories.size(); i++){
+            if(mCostCategories.get(i).getId() == mReceipt.getCost_category_id()) {
+                mEditCategory.setSelection(i + mNumberOfNonCategoryItems);
+            }
+        }
     }
 
     public void onDeleteAction() {

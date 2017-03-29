@@ -19,6 +19,7 @@ public class WaitForVerificationActivity extends AppCompatActivity {
 
     private FirebaseUser mUser;
     private boolean isVerifying;
+    private static final String TAG = WaitForVerificationActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +40,9 @@ public class WaitForVerificationActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
+                                if (task.isSuccessful())
                                     Toast.makeText(WaitForVerificationActivity.this, "Email resent", Toast.LENGTH_SHORT).show();
-                                } else
+                                else
                                     Toast.makeText(WaitForVerificationActivity.this, "Couldn't send email", Toast.LENGTH_SHORT).show();
 
                                 view.setEnabled(true);
@@ -91,7 +92,7 @@ public class WaitForVerificationActivity extends AppCompatActivity {
 
                     mUser.reload();
 
-                    if(mUser.isEmailVerified())
+                    if (mUser.isEmailVerified())
                         runOnUiThread(new Thread(new Runnable() {
                             @Override
                             public void run() {

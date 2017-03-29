@@ -98,4 +98,6 @@
     <string name="add_to_expense_report">Add to expense report ...</string>
     <string name="empty_mail_inbox">Your inbox is empty. Receipts sent to import@bilag.io from %1$s will show up here.</string>
     <string name="import_mailaddress">import@bilag.io</string>
+    <string name="receipt_expense_report_hint">Expense report</string>
+    <string name="no_category">None</string>
 </resources>

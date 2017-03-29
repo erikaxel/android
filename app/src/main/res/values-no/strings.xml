@@ -88,4 +88,6 @@
     <string name="add_to_expense_report">Legg til reiseregning</string>
     <string name="empty_mail_inbox">Mailmottaket ditt er tomt. Kvitteringer sendt til import@bilag.io fra %1$s vil havne her.</string>
     <string name="import_mailaddress">import@bilag.io</string>
+    <string name="receipt_expense_report_hint">Reiseregning / utlegg</string>
+    <string name="no_category">Ingen</string>
 </resources>

@@ -13,12 +13,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import io.lucalabs.expenses.R;
+import io.lucalabs.expenses.models.CostCategory;
+import io.lucalabs.expenses.models.ServerToken;
 import io.lucalabs.expenses.models.User;
+import io.lucalabs.expenses.network.Routes;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class LoginActivity extends FragmentActivity {
 
@@ -30,7 +38,7 @@ public class LoginActivity extends FragmentActivity {
             new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()
     );
 
-    private final String TAG = "Login";
+    private final String TAG = LoginActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +104,8 @@ public class LoginActivity extends FragmentActivity {
                     user.getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                                                                    @Override
                                                                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                                                                       User.setToken(LoginActivity.this, task.getResult().getToken());
+                                                                       User.setFirebaseToken(LoginActivity.this, task.getResult().getToken());
+                                                                       fetchToken();
                                                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                                                        finish();
                                                                    }
@@ -108,5 +117,29 @@ public class LoginActivity extends FragmentActivity {
                 Log.i(TAG, "Login failed (RESULT_CANCELLED)");
             }
         }
+    }
+
+    private void fetchToken() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url(Routes.userTokenUrl(LoginActivity.this) + "?token=" + User.getFirebaseToken(LoginActivity.this))
+                        .build();
+
+                try {
+                    Response response = client.newCall(request).execute();
+                    Log.i(TAG, "fetching token. Code: " + response.code() + ", message: " + response.message());
+                    Gson gson = new Gson();
+                    ServerToken token = gson.fromJson(response.body().string(), ServerToken.class);
+                    User.setServerToken(LoginActivity.this, token);
+                    CostCategory.fetchData(LoginActivity.this);
+                } catch (IOException e) {
+                    Log.w(TAG, "IOException occured while trying to fetchData token");
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }

@@ -41,7 +41,7 @@ public class PatchReceiptTask extends AsyncTask<Void, Void, Void> {
         smartAdd(formBuilder, "receipt[used_date]", mReceipt.getUsed_date());
         smartAdd(formBuilder, "receipt[reimbursable]", mReceipt.isReimbursable() ? "true" : "false");
         smartAdd(formBuilder, "receipt[comment]", mReceipt.getComment());
-        smartAdd(formBuilder, "token", User.getToken(mContext));
+        smartAdd(formBuilder, "token", User.getFirebaseToken(mContext));
 
         Request request = new Request.Builder()
                 .url(Routes.receiptsUrl(mContext, mReceipt))

@@ -127,7 +127,7 @@ public abstract class FirebaseActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<GetTokenResult> task) {
                                 if(task.isSuccessful()) {
                                     Log.i(TAG, "Setting token " + task.getResult().getToken());
-                                    User.setToken(FirebaseActivity.this, task.getResult().getToken());
+                                    User.setFirebaseToken(FirebaseActivity.this, task.getResult().getToken());
                                 } else {
                                     Log.i(TAG, "Couldn't renew token. Pausing write operations.");
                                 }
@@ -136,7 +136,7 @@ public abstract class FirebaseActivity extends AppCompatActivity {
 
                     } else {
                         Log.i(TAG, "Setting token to null");
-                        User.setToken(FirebaseActivity.this, null);
+                        User.setFirebaseToken(FirebaseActivity.this, null);
                     }
                 }
             };

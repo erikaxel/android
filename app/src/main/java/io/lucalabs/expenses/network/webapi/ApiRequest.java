@@ -86,7 +86,7 @@ public class ApiRequest {
             for (String[] argPair : mParams)
                 RESTBuilder.addToForm(formBuilder, argPair[0], argPair[1]);
 
-        RESTBuilder.addToForm(formBuilder, "token", User.getToken(mContext));
+        RESTBuilder.addToForm(formBuilder, "token", User.getFirebaseToken(mContext));
         return formBuilder.build();
     }
 

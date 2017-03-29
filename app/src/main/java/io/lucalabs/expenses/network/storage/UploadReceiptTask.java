@@ -126,7 +126,7 @@ public class UploadReceiptTask {
         RequestBody form = new FormBody.Builder()
                 .add("receipt[firebase_ref]", mReceipt.getFirebase_ref())
                 .add("page_one_file_name", "0.jpg")
-                .add("token", User.getToken(mContext))
+                .add("token", User.getFirebaseToken(mContext))
                 .add("use_ocr", prefs.getBoolean("disable_ocr_pref", false) ? "0" : "1")
                 .add("expense_report[firebase_ref]", mReceipt.getExpense_report_firebase_key())
                 .add("create_expense_report", "true") // Creates expense report if it doesn't exist

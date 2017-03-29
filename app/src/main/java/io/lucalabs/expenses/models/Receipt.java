@@ -50,6 +50,7 @@ public class Receipt implements FirebaseObject  {
     @Arg(name="expense_report_key")
     private String expense_report_firebase_key;
     private String firebase_ref;
+    private String image_file_name;
 
     // Firebase attributes
     private String status;
@@ -66,6 +67,8 @@ public class Receipt implements FirebaseObject  {
     private boolean reimbursable;
     @Arg(name="receipt[comment]")
     private String comment;
+    @Arg(name="receipt[cost_category_id]")
+    private int cost_category_id;
 
     public Receipt() {
     }
@@ -247,6 +250,18 @@ public class Receipt implements FirebaseObject  {
 
     public void setExpense_report_firebase_key(String expense_report_firebase_key) {
         this.expense_report_firebase_key = expense_report_firebase_key;
+    }
+
+    public String getImage_file_name() {
+        return image_file_name;
+    }
+
+    public int getCost_category_id() {
+        return cost_category_id;
+    }
+
+    public void setCost_category_id(int cost_category_id) {
+        this.cost_category_id = cost_category_id;
     }
 
     private void save(Context context){
