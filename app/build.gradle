@@ -8,8 +8,8 @@ android {
         applicationId "io.lucalabs.expenses"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 59
-        versionName "1.1.8"
+        versionCode 60
+        versionName "1.1.9"
         multiDexEnabled true
     }
 
@@ -82,6 +82,9 @@ dependencies {
 
     // Camera wrapper. License: Apache 2.0
     compile 'com.commonsware.cwac:cam2:0.7.4'
+
+    // For serializing / deserializing JSON to Java Objects. License: Apache: 2.0
+    compile 'com.google.code.gson:gson:2.8.0'
 
     // Tests. License: EPL 1.0
     testCompile 'junit:junit:4.12'
