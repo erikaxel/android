@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp"
+    android:weightSum="1"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/expense_report_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/darkgrey"
+            android:textSize="18sp"
+            android:maxLines="1"/>
+
+        <TextView
+            android:id="@+id/expense_report_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/grey"
+            android:textSize="18sp"
+            android:maxLines="1"/>
+    </LinearLayout>
+</LinearLayout>

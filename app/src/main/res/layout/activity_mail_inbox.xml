@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="io.lucalabs.expenses.activities.MailInboxActivity">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:weightSum="1"
+        tools:context="io.lucalabs.expenses.views.fragments.ReceiptIndexFragment">
+
+            <ImageView
+                android:id="@+id/mail_inbox_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="140dp"
+                android:src="@drawable/ic_mailbox"
+                android:visibility="gone"
+                android:tint="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/mail_inbox_notice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:textAlignment="center"
+                android:visibility="gone"
+                android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/mail_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:paddingBottom="10dp" />
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/photo_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/photo_preview" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/keep_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_check"
+            android:tint="@color/white"
+            android:layout_margin="16dp"
+            app:elevation="4dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/dismiss_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/keep_photo"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_close"
+            app:backgroundTint="@android:color/white"
+            app:elevation="4dp" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
