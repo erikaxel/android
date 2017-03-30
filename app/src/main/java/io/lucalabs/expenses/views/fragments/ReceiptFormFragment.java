@@ -167,6 +167,7 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
                     mEditReimbursable.setEnabled(false);
                     mEditComment.setEnabled(false);
                     mEditAmount.setEnabled(false);
+                    mEditCategory.setEnabled(false);
                     mExpenseReportSpinner.setEnabled(false);
                 }
             }
