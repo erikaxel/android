@@ -14,6 +14,7 @@ import android.widget.Toast;
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.abstracts.AppCompatPreferenceActivity;
 import io.lucalabs.expenses.managers.EnvironmentManager;
+import io.lucalabs.expenses.models.Device;
 import io.lucalabs.expenses.models.User;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -93,6 +94,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     EnvironmentManager.reset();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Device.register(getActivity());
+                        }
+                    }).start();
                     return true;
                 }
             });

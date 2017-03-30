@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.models.CostCategory;
+import io.lucalabs.expenses.models.Device;
 import io.lucalabs.expenses.models.ServerToken;
 import io.lucalabs.expenses.models.User;
 import io.lucalabs.expenses.network.Routes;
@@ -105,7 +106,7 @@ public class LoginActivity extends FragmentActivity {
                                                                    @Override
                                                                    public void onComplete(@NonNull Task<GetTokenResult> task) {
                                                                        User.setFirebaseToken(LoginActivity.this, task.getResult().getToken());
-                                                                       fetchToken();
+                                                                       connectWithBackendServer();
                                                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                                                        finish();
                                                                    }
@@ -119,7 +120,7 @@ public class LoginActivity extends FragmentActivity {
         }
     }
 
-    private void fetchToken() {
+    private void connectWithBackendServer() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -134,6 +135,7 @@ public class LoginActivity extends FragmentActivity {
                     Gson gson = new Gson();
                     ServerToken token = gson.fromJson(response.body().string(), ServerToken.class);
                     User.setServerToken(LoginActivity.this, token);
+                    Device.register(LoginActivity.this);
                     CostCategory.fetchData(LoginActivity.this);
                 } catch (IOException e) {
                     Log.w(TAG, "IOException occured while trying to fetchData token");

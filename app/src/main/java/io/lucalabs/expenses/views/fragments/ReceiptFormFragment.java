@@ -142,7 +142,7 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity(), "Couldn't fetchData receipt", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Couldn't fetch receipt", Toast.LENGTH_SHORT).show();
             }
         });
     }
