@@ -8,8 +8,8 @@ android {
         applicationId "io.lucalabs.expenses"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 61
-        versionName "1.1.9"
+        versionCode 62
+        versionName "1.1.10"
         multiDexEnabled true
     }
 
