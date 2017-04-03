@@ -16,7 +16,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * Handles and synchronizes device information with The Rails Server
+ * Handles and posts device information to The Rails Server
  */
 public class Device {
 
