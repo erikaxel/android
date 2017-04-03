@@ -20,6 +20,7 @@ public class Routes {
     private static final String COST_CATEGORIES_PATH = "/api/v1_beta/cost_categories";
 
     private static final String TOKEN_PATH = "/api/internal/users/token";
+    private static final String DEVICE_REGISTRATION_PATH = "/api/v1_beta/mobile_devices";
 
     // Firebase Storage URLs
     public static final String FIREBASE_STORAGE_URL = "gs://eu-autocounting";
@@ -60,6 +61,10 @@ public class Routes {
 
     public static String userTokenUrl(Context context) {
         return baseUrl(context) + TOKEN_PATH;
+    }
+
+    public static String deviceRegistrationUrl(Context context) {
+        return baseUrl(context) + DEVICE_REGISTRATION_PATH;
     }
 
     public static String expenseReportsPath(ExpenseReport expenseReport) {

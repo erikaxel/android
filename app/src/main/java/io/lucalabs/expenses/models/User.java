@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class User {
     private static String firebaseToken;
     private static ServerToken serverToken;
-    private static final String TAG = "User";
+    private static final String TAG = "UserModel";
 
     public static FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
