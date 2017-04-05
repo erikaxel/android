@@ -98,8 +98,13 @@ public class LoginActivity extends FragmentActivity {
                                                                    @Override
                                                                    public void onComplete(@NonNull Task<GetTokenResult> task) {
                                                                        User.setFirebaseToken(LoginActivity.this, task.getResult().getToken());
-                                                                       BackendServer.exchangeTokens(LoginActivity.this);
-                                                                       BackendServer.exchangeData(LoginActivity.this);
+                                                                       new Thread(new Runnable() {
+                                                                           @Override
+                                                                           public void run() {
+                                                                               BackendServer.exchangeTokens(LoginActivity.this);
+                                                                               BackendServer.exchangeData(LoginActivity.this);
+                                                                           }
+                                                                       }).start();
                                                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                                                        finish();
                                                                    }
