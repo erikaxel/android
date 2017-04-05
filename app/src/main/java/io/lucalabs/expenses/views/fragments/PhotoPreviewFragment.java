@@ -24,7 +24,7 @@ public class PhotoPreviewFragment extends Fragment implements View.OnClickListen
     private byte[] mPreviewImage;
     private StorageReference mStorageRef;
     private boolean mShowKeepButton = false;
-    private static final String TAG = Fragment.class.getSimpleName();
+    private static final String TAG = PhotoPreviewFragment.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

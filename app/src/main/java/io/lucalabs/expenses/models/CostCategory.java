@@ -1,9 +1,11 @@
 package io.lucalabs.expenses.models;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -23,7 +25,6 @@ import okhttp3.Response;
 /**
  * Handles fetching and storing of cost categories
  */
-
 public class CostCategory {
     private int id;
     private String name;
@@ -35,26 +36,46 @@ public class CostCategory {
     /**
      * Fetch cost categories from Rails Server
      */
-    public static void fetchData(Context context) {
+    public static boolean fetchData(final Activity activity) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(Routes.costCategoriesUrl(context))
-                .addHeader("Authorization", "Bearer " + User.getServerToken(context).getToken())
+                .url(Routes.costCategoriesUrl(activity))
+                .addHeader("Authorization", "Bearer " + User.getServerToken(activity).getToken())
                 .build();
 
         try {
             Response response = client.newCall(request).execute();
             Log.i(TAG, "fetching cost categories. Code: " + response.code() + ", message: " + response.message());
-            saveData(context, response.body().string());
+            if (response.isSuccessful()) {
+                saveData(activity, response.body().string());
+                return true;
+            } else {
+                Log.w(TAG, "Couldn't fetch cost categories. Response: " + response.code() + ", message: " + response.message());
+                Log.w(TAG, "Token expires at: " + User.getServerToken(activity).getExpires_at());
+                return false;
+            }
         } catch (IOException e) {
             Log.i(TAG, "IOException occurred while trying to fetch cost categories");
             e.printStackTrace();
+            return false;
         }
     }
 
-    private static void saveData(Context context, String responseString){
+    /**
+     * Saves cost categories as JSON to SharedPreferences
+     */
+    private static void saveData(Context context, String responseString) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString("costCategories", responseString);
+        editor.apply();
+    }
+
+    /**
+     * Deletes saved cost categories from SharedPreferences
+     */
+    public static void clearData(Context context) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putString("costCategories", null);
         editor.apply();
     }
 
@@ -66,7 +87,7 @@ public class CostCategory {
             Gson gson = new Gson();
             JSONArray jsonArray = new JSONObject(costCategoryData).getJSONArray("data");
 
-            for(int i = 0; i < jsonArray.length(); i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                 CostCategory costCategory = gson.fromJson(jsonObject.getString("attributes"), CostCategory.class);
                 costCategory.setId(jsonObject.getInt("id"));

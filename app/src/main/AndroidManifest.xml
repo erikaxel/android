@@ -71,12 +71,6 @@
             android:name=".network.webapi.TaskManagerService"
             android:exported="false" />
 
-        <receiver android:name=".network.NetworkStateReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait" />
@@ -96,5 +90,4 @@
             android:screenOrientation="portrait"
             android:label="@string/title_activity_mail_inbox" />
     </application>
-
 </manifest>

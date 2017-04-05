@@ -39,6 +39,10 @@ public class DateFormatter {
         return "";
     }
 
+    /**
+     * Receives year, month, day
+     * @return Firebase-formatted datestring
+     */
     public static String toDateString(int year, int month, int day) {
         SimpleDateFormat sdf = new SimpleDateFormat(FIREBASE_FORMAT);
         Calendar calendar = Calendar.getInstance();
