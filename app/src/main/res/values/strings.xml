@@ -100,4 +100,5 @@
     <string name="import_mailaddress">import@bilag.io</string>
     <string name="receipt_expense_report_hint">Expense report</string>
     <string name="no_category">None</string>
+    <string name="receipt_activity_title">Edit receipt</string>
 </resources>

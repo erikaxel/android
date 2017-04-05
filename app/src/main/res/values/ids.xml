@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="receipt_activity_title" type="id">Edit receipt</item>
     <item name="new_report" type="id">New report</item>
 </resources>

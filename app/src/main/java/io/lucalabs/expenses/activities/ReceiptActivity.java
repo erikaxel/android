@@ -22,7 +22,7 @@ public class ReceiptActivity extends FirebaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         displayDeleteIcon();
-        setTitle(R.id.receipt_activity_title);
+        setTitle(R.string.receipt_activity_title);
         setContentView(R.layout.activity_receipt);
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.container);
