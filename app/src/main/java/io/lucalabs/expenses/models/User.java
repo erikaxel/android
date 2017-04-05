@@ -34,19 +34,18 @@ public class User {
         editor.apply();
     }
 
-    public static ServerToken getServerToken(Context context){
-        if(serverToken == null){
-            ServerToken preferenceServerToken = new ServerToken();
+    public static ServerToken getServerToken(Context context) {
+        if (serverToken == null) {
+            serverToken = new ServerToken();
             serverToken.setToken(PreferenceManager.getDefaultSharedPreferences(context).getString("serverToken", ""));
             serverToken.setExpires_at(PreferenceManager.getDefaultSharedPreferences(context).getString("serverTokenExpiresAt", ""));
             serverToken.setMin_android_version(PreferenceManager.getDefaultSharedPreferences(context).getString("minAndroidVersion", ""));
-            serverToken = preferenceServerToken;
         }
 
         return serverToken;
     }
 
-    public static void setServerToken(Context context, ServerToken newServerToken){
+    public static void setServerToken(Context context, ServerToken newServerToken) {
         serverToken = newServerToken;
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(context).edit();

@@ -21,7 +21,7 @@ public class Inbox {
         return queryDb(context).child("expense_reports");
     }
 
-    public static Query all(Context context){
+    public static Query all(Context context) {
         return queryDb(context);
     }
 
@@ -36,7 +36,7 @@ public class Inbox {
                 .equalTo(key);
     }
 
-    public static Query receiptsByStatus(Context context, String status){
+    public static Query receiptsByStatus(Context context, String status) {
         return queryDb(context)
                 .child("receipts")
                 .orderByChild("internal_status")
@@ -80,7 +80,7 @@ public class Inbox {
         return queryDb(context).child("receipts").child(firebaseRef);
     }
 
-    public static DatabaseReference cachedReceiptImage(Context context, String receiptRef){
+    public static DatabaseReference cachedReceiptImage(Context context, String receiptRef) {
         return queryDb(context).child("receipt_images").child(receiptRef);
     }
 

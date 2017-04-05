@@ -28,7 +28,6 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import android.util.Log;
 
 import io.lucalabs.expenses.R;
 import io.lucalabs.expenses.activities.ExpenseReportActivity;
@@ -40,6 +39,7 @@ import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.Task;
+import io.lucalabs.expenses.network.webapi.BackendServer;
 import io.lucalabs.expenses.utils.ArgumentComparator;
 import io.lucalabs.expenses.utils.DateFormatter;
 import io.lucalabs.expenses.utils.NumberFormatter;
@@ -76,6 +76,7 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        CostCategory.clearData(getActivity());
         return inflater.inflate(R.layout.fragment_receipt_form, container, false);
     }
 
@@ -188,7 +189,7 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
         receipt.setComment(mEditComment.getText().toString());
         receipt.setFirebase_ref(mReceipt.getFirebase_ref());
         receipt.setExpense_report_firebase_key(mReceipt.getExpense_report_firebase_key());
-        if(!(mEditCategory.getSelectedItemPosition() == 0 && mNumberOfNonCategoryItems == 1)) { // Do nothing if "None" is selected
+        if (mCostCategories.size() > 0 && !(mEditCategory.getSelectedItemPosition() == 0 && mNumberOfNonCategoryItems == 1)) { // Do nothing if "None" is selected
             receipt.setCost_category_id(mCostCategories.get(mEditCategory.getSelectedItemPosition() - mNumberOfNonCategoryItems).getId());
         }
         return receipt;
@@ -271,16 +272,33 @@ public class ReceiptFormFragment extends Fragment implements CalendarDatePickerD
     private void setCostCategories() {
         mCostCategories = CostCategory.getAll(getActivity());
 
+        if (mCostCategories.size() == 0)
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // If user has logged in on a version that didn't support cost categories, fetch them now
+                    BackendServer.exchangeTokens(getActivity());
+                    if(CostCategory.fetchData(getActivity())){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setCostCategories();
+                            }
+                        });
+                    }
+                }
+            }).start();
+
         boolean costCategoryIsSelected = mReceipt.getCost_category_id() != 0;
-        if(!costCategoryIsSelected)
+        if (!costCategoryIsSelected)
             mNumberOfNonCategoryItems = 1;
 
         mEditCategory.setAdapter(new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_dropdown_item,
                 CostCategoryPresenter.selectOptions(getActivity(), mCostCategories, !costCategoryIsSelected)));
 
-        for(int i = 0; i < mCostCategories.size(); i++){
-            if(mCostCategories.get(i).getId() == mReceipt.getCost_category_id()) {
+        for (int i = 0; i < mCostCategories.size(); i++) {
+            if (mCostCategories.get(i).getId() == mReceipt.getCost_category_id()) {
                 mEditCategory.setSelection(i + mNumberOfNonCategoryItems);
             }
         }
