@@ -30,7 +30,7 @@
     <string name="receipts">Kvitteringer</string>
     <string name="report_arrival_at">Rapportdetaljer</string>
     <string name="report_arrival_at_hint">Ankomstdato</string>
-    <string name="report_billable_hint">Privat utlegg?</string>
+    <string name="report_billable_hint">Fakturerbar</string>
     <string name="report_comment_hint">Formål</string>
     <string name="report_departure_at">Avreisedato</string>
     <string name="report_departure_at_hint">Avreisedato</string>
