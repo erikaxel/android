@@ -2,18 +2,16 @@ package io.lucalabs.expenses.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import io.lucalabs.expenses.models.Receipt;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+
+import io.lucalabs.expenses.models.Receipt;
 
 public class ImageSaver implements Runnable {
 
@@ -21,6 +19,7 @@ public class ImageSaver implements Runnable {
     private final Context mContext;
     private final byte[] mImage;
     private final String mExpenseReportRef;
+    private boolean mSaveToAlbumOnly = false;
 
     public ImageSaver(Context context, byte[] image, String expenseReportRef) {
         mContext = context;
@@ -28,12 +27,21 @@ public class ImageSaver implements Runnable {
         mExpenseReportRef = expenseReportRef;
     }
 
+    public ImageSaver(Context context, byte[] image, String expenseReportRef, boolean saveToAlbumOnly) {
+        this(context, image, expenseReportRef);
+        mSaveToAlbumOnly = saveToAlbumOnly;
+    }
+
     @Override
     public void run() {
-        Receipt rec = new Receipt(mImage, mContext, mExpenseReportRef);
+        if (!mSaveToAlbumOnly)
+            new Receipt(mImage, mContext, mExpenseReportRef);
 
-        if (PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("save_to_album_pref", false)) {
-            try {saveCopyToAlbum(mImage);
+        boolean saveToAlbum = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("save_to_album_pref", false) || mSaveToAlbumOnly;
+
+        if (saveToAlbum) {
+            try {
+                saveCopyToAlbum(mImage);
             } catch (IOException e) {
                 Log.w(TAG, "Couldn't save copy");
                 e.printStackTrace();

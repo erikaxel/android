@@ -8,8 +8,8 @@ android {
         applicationId "io.lucalabs.expenses"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 66
-        versionName "1.1.13"
+        versionCode 67
+        versionName "1.1.14"
         multiDexEnabled true
     }
 
@@ -89,6 +89,9 @@ dependencies {
 
     // Tests. License: EPL 1.0
     testCompile 'junit:junit:4.12'
+
+//    // Feature tests. License: Apache 2.0
+//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

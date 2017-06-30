@@ -4,6 +4,11 @@
         android:id="@+id/open_receipt"
         android:title="@string/action_open" />
     <item
+        android:id="@+id/save_to_album"
+        android:title="@string/action_save_to_album"
+        android:enabled="false"
+        android:visible="false"/>
+    <item
         android:id="@+id/delete_receipt"
         android:title="@string/action_delete" />
 </menu>
