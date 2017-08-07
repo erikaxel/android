@@ -9,13 +9,6 @@
             android:key="save_to_album_pref"
             android:title="@string/save_to_album_pref" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/network_category">
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="wifi_only_pref"
-            android:title="@string/wifi_only_pref" />
-    </PreferenceCategory>
     <PreferenceCategory
         android:id="@+id/advanced_category"
         android:key="advanced_cat"
@@ -52,5 +45,16 @@
             android:key="disable_ocr_pref"
             android:summary="@string/disable_ocr_summary"
             android:title="@string/disable_ocr_pref" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="wifi_only_pref"
+            android:title="@string/wifi_only_pref" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="enable_emergency_save_pref"
+            android:summary="@string/enable_emergency_save_summary"
+            android:title="@string/enable_emergency_save_pref" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -91,4 +91,7 @@
     <string name="receipt_expense_report_hint">Reiseregning / utlegg</string>
     <string name="no_category">Ingen</string>
     <string name="receipt_activity_title">Rediger kvittering</string>
+    <string name="action_save_to_album">Lagre til album</string>
+    <string name="enable_emergency_save_pref">Aktiver nødlagring</string>
+    <string name="enable_emergency_save_summary">Overfør bilder til album</string>
 </resources>

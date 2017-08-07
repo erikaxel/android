@@ -3,6 +3,7 @@ package io.lucalabs.expenses.views.fragments;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +28,7 @@ import io.lucalabs.expenses.models.ExpenseReport;
 import io.lucalabs.expenses.models.Inbox;
 import io.lucalabs.expenses.models.Receipt;
 import io.lucalabs.expenses.models.Task;
+import io.lucalabs.expenses.utils.ImageSaver;
 import io.lucalabs.expenses.views.adapters.ReceiptListAdapter;
 
 /**
@@ -101,18 +104,28 @@ public class ReceiptIndexFragment extends Fragment {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.receipt_list_context_menu, menu);
+
+        if (PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("enable_emergency_save_pref", false)) {
+            menu.findItem(R.id.save_to_album).setEnabled(true);
+            menu.findItem(R.id.save_to_album).setVisible(true);
+        }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         final Receipt receipt = mListAdapter.getItem(info.position);
+
         switch (item.getItemId()) {
             case R.id.open_receipt:
                 Intent toReceiptActivity = new Intent(getContext(), ReceiptActivity.class);
                 toReceiptActivity.putExtra("firebase_ref", receipt.getFirebase_ref());
                 toReceiptActivity.putExtra("expense_report_ref", getActivity().getIntent().getStringExtra("firebase_ref"));
                 startActivity(toReceiptActivity);
+                return true;
+            case R.id.save_to_album:
+                new ImageSaver(getContext(), receipt.getImage(getContext()), receipt.getExpense_report_firebase_key(), true).run();
+                Toast.makeText(getContext(), "Saving image to album", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.delete_receipt:
                 Query query = Inbox.findExpenseReport(getContext(), getArguments().getString(FIREBASE_REF));

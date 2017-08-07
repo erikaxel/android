@@ -101,4 +101,7 @@
     <string name="receipt_expense_report_hint">Expense report</string>
     <string name="no_category">None</string>
     <string name="receipt_activity_title">Edit receipt</string>
+    <string name="action_save_to_album">Save to album</string>
+    <string name="enable_emergency_save_summary">Transfer receipt pictures to album</string>
+    <string name="enable_emergency_save_pref">Enable emergency save</string>
 </resources>

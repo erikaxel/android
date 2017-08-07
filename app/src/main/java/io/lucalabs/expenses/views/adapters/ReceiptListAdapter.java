@@ -95,7 +95,7 @@ public class ReceiptListAdapter extends FirebaseListAdapter<Receipt> {
     }
 
     /**
-     * Sets receipt thumbnail and merchant name (status) from SQLite database.
+     * Sets receipt thumbnail and merchant name (status) from internal storage.
      */
     private void setThumbnailFromCache(final View view, final Receipt receipt) {
         Inbox.cachedReceiptImage(mActivity, receipt.getFirebase_ref()).addListenerForSingleValueEvent(new ValueEventListener() {
